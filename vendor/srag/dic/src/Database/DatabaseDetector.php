@@ -8,7 +8,7 @@ use ilDBPdoInterface;
 use ilDBPdoPostgreSQL;
 use ilDBStatement;
 use PDO;
-use srag\DIC\AttendanceList\Exception\DICException;
+use srag\DIC\OnlyOffice\Exception\DICException;
 use stdClass;
 
 /**

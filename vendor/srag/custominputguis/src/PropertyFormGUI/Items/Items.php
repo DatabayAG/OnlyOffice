@@ -102,7 +102,7 @@ final class Items
 
                     $item->setValue($key);
                 } else {
-                    if (!$field["setTitle"]) {
+                    if (!key_exists("setTitle", $field) || !$field["setTitle"]) {
                         $item->setTitle($parent->txt($key));
                     }
 
@@ -110,7 +110,7 @@ final class Items
                 }
             }
 
-            if (!$field["setInfo"]) {
+            if (!key_exists("setInfo", $field) ||  !$field["setInfo"]) {
                 $item->setInfo($parent->txt($key . "_info", ""));
             }
         }

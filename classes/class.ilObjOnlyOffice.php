@@ -22,12 +22,23 @@ class ilObjOnlyOffice extends ilObjectPlugin
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
 
+    private ilPlugin $pl;
+    private ilTemplate|ilGlobalPageTemplate $tpl;
+
     /**
      * ilObjOnlyOffice constructor
      */
     public function __construct(int $a_ref_id = 0)
     {
+        global $DIC;
+
         parent::__construct($a_ref_id);
+
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilOnlyOfficePlugin */
+        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->tpl = $DIC["tpl"];
     }
 
     public final function initType(): void
@@ -41,7 +52,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             $start_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START], IL_CAL_DATETIME);
             $end_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END], IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
-                ilUtil::sendFailure(self::plugin()->translate("settings_time_greater_than"), true);
+                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("settings_time_greater_than"), true);
                 self::dic()->ctrl()->redirectByClass("ilRepositoryGUI");
                 return false;
             }
@@ -49,6 +60,9 @@ class ilObjOnlyOffice extends ilObjectPlugin
         return parent::beforeCreate();
     }
 
+    /**
+     * @throws ilDateTimeException
+     */
     public function doCreate(bool $clone_mode = false): void
     {
         $this->object_settings = new ObjectSettings();
@@ -66,13 +80,13 @@ class ilObjOnlyOffice extends ilObjectPlugin
             $_POST['title'] = $title;
         }
 
-        if (!is_null($start_time)) {
+        if ($start_time !== "") {
             $raw_start_time = new ilDateTime($start_time, IL_CAL_DATETIME);
             $formatted_start_time = new ilDateTime($raw_start_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setStartTime($formatted_start_time);
         }
 
-        if (!is_null($end_time)) {
+        if ($end_time !== "") {
             $raw_end_time = new ilDateTime($end_time, IL_CAL_DATETIME);
             $formatted_end_time = new ilDateTime($raw_end_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setEndTime($formatted_end_time);
@@ -93,6 +107,9 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($this->id));
     }
 
+    /**
+     * @throws ilDateTimeException
+     */
     public function doUpdate(): void
     {
         $start_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START];

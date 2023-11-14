@@ -4,16 +4,16 @@ namespace srag\DIC\OnlyOffice;
 
 use ilLogLevel;
 use ilPlugin;
-use srag\DIC\AttendanceList\DIC\DICInterface;
-use srag\DIC\AttendanceList\DIC\Implementation\ILIAS60DIC;
-use srag\DIC\AttendanceList\DIC\Implementation\ILIAS70DIC;
-use srag\DIC\AttendanceList\Exception\DICException;
-use srag\DIC\AttendanceList\Output\Output;
-use srag\DIC\AttendanceList\Output\OutputInterface;
-use srag\DIC\AttendanceList\Plugin\Plugin;
-use srag\DIC\AttendanceList\Plugin\PluginInterface;
-use srag\DIC\AttendanceList\Version\Version;
-use srag\DIC\AttendanceList\Version\VersionInterface;
+use srag\DIC\OnlyOffice\DIC\DICInterface;
+use srag\DIC\OnlyOffice\DIC\Implementation\ILIAS60DIC;
+use srag\DIC\OnlyOffice\DIC\Implementation\ILIAS70DIC;
+use srag\DIC\OnlyOffice\Exception\DICException;
+use srag\DIC\OnlyOffice\Output\Output;
+use srag\DIC\OnlyOffice\Output\OutputInterface;
+use srag\DIC\OnlyOffice\Plugin\Plugin;
+use srag\DIC\OnlyOffice\Plugin\PluginInterface;
+use srag\DIC\OnlyOffice\Version\Version;
+use srag\DIC\OnlyOffice\Version\VersionInterface;
 
 /**
  * Class DICStatic

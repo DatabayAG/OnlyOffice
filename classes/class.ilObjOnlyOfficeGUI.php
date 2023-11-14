@@ -78,12 +78,12 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         "presentation"     => "pptx"
     ];
 
-    public ?ilObject $object;
+    public ?ilObject $object = null;
     protected StorageService $storage_service;
     /**
      * @var ilOnlyOfficePlugin|ilPlugin|null
      */
-    protected ?ilPlugin $plugin;
+    protected ?ilPlugin $plugin = null;
 
     protected function afterConstructor(): void
     {
@@ -404,7 +404,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
             return;
         }
-        ilUtil::sendSuccess(self::plugin()->translate("saved", self::LANG_MODULE_SETTINGS), true);
+        $this->tpl->setOnScreenMessage('success',$this->plugin->txt("saved"), true);
 
         self::dic()->ctrl()->redirect($this, self::CMD_SETTINGS);
     }

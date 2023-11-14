@@ -8,6 +8,7 @@ use ilAdministrationGUI;
 use ilConfirmationGUI;
 use ilObjComponentSettingsGUI;
 use ilSession;
+use ilTemplate;
 use ilUtil;
 use srag\DIC\OnlyOffice\DICStatic;
 use srag\DIC\OnlyOffice\DICTrait;
@@ -32,13 +33,17 @@ class RemovePluginDataConfirmCtrl
     const KEY_UNINSTALL_REMOVES_DATA = "uninstall_removes_data";
     const LANG_MODULE = "removeplugindataconfirm";
 
+    private ilTemplate $tpl;
+
+
 
     /**
      * RemovePluginDataConfirmCtrl constructor
      */
     public function __construct()
     {
-
+        global $DIC;
+        $this->tpl = $DIC["tpl"];
     }
 
 
@@ -200,7 +205,7 @@ class RemovePluginDataConfirmCtrl
     {
         self::setUninstallRemovesData(false);
 
-        ilUtil::sendInfo($this->txt("msg_kept_data"), true);
+        $this->tpl->setOnScreenMessage('info',$this->txt("msg_kept_data"), true);
 
         $this->redirectToPlugins("uninstallPlugin");
     }
@@ -212,9 +217,7 @@ class RemovePluginDataConfirmCtrl
     protected function setRemoveData()/* : void*/
     {
         self::setUninstallRemovesData(true);
-
-        ilUtil::sendInfo($this->txt("msg_removed_data"), true);
-
+        $this->tpl->setOnScreenMessage('info',$this->txt("msg_removed_data"), true);
         $this->redirectToPlugins("uninstallPlugin");
     }
 

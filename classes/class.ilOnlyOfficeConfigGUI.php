@@ -41,6 +41,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     const TAB_SUB_CONFIGURATION = "subConfiguration";
     const TAB_SUB_TEMPLATES = "templates";
     protected StorageService $storage_service;
+    private ilPlugin $pl;
+    private ilTemplate|ilGlobalPageTemplate $tpl;
 
 
     /**
@@ -48,12 +50,20 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
      */
     public function __construct()
     {
+        global $DIC;
+
         $this->storage_service = new StorageService(
             self::dic()->dic(),
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
+
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilOnlyOfficePlugin */
+        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->tpl = $DIC["tpl"];
     }
 
     public function performCommand(string $cmd): void
@@ -231,9 +241,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
             return;
         }
-
-        ilUtil::sendSuccess(self::plugin()->translate("configuration_saved", self::LANG_MODULE), true);
-
+        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_configuration_saved"), true);
         self::dic()->ctrl()->redirect($this, self::CMD_CONFIGURE);
     }
 
@@ -255,8 +263,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $result = end($results);
 
         // Return if file extension not whitelisted by ILIAS instance
-        if (!ilFileUtils::hasValidExtension($result->getName())) {
-            ilUtil::sendFailure(self::plugin()->translate("template_invalid_extension", self::LANG_MODULE), true);
+        if ( str_contains("sec", !ilFileUtils::getSafeFilename($result->getName())) === true) {
+            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_configuration_saved"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
@@ -266,13 +274,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         // Return if file extension not recognized by OnlyOffice
         if (empty($path)) {
-            ilUtil::sendFailure(self::plugin()->translate("template_unrecognised_extension", self::LANG_MODULE), true);
+            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
         }
 
-        ilUtil::sendSuccess(self::plugin()->translate("template_saved", self::LANG_MODULE), true);
+        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_saved"), true);
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
@@ -333,8 +341,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
-
-                ilUtil::sendFailure(self::plugin()->translate("template_invalid_extension", self::LANG_MODULE), true);
+                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
                     "title" => $_POST["title"],
@@ -352,8 +359,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
-                
-                ilUtil::sendFailure(self::plugin()->translate("template_unrecognised_extension", self::LANG_MODULE), true);
+
+                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
                     "title" => $_POST["title"],
@@ -369,7 +376,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $path = $this->storage_service->createFileTemplate($result, $_POST["title"], $_POST["desc"]);
         }
 
-        ilUtil::sendSuccess(self::plugin()->translate("template_edited", self::LANG_MODULE), true);
+        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_edited"), true);
+
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
@@ -398,7 +406,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $success = $this->storage_service->deleteFileTemplate($target, $extension);
 
         if ($success) {
-            ilUtil::sendSuccess(self::plugin()->translate("template_deleted", self::LANG_MODULE), true);
+            $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_deleted"), true);
         }
 
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);

@@ -2,11 +2,11 @@
 
 namespace srag\DIC\OnlyOffice;
 
-use srag\DIC\AttendanceList\DIC\DICInterface;
-use srag\DIC\AttendanceList\Exception\DICException;
-use srag\DIC\AttendanceList\Output\OutputInterface;
-use srag\DIC\AttendanceList\Plugin\PluginInterface;
-use srag\DIC\AttendanceList\Version\VersionInterface;
+use srag\DIC\OnlyOffice\DIC\DICInterface;
+use srag\DIC\OnlyOffice\Exception\DICException;
+use srag\DIC\OnlyOffice\Output\OutputInterface;
+use srag\DIC\OnlyOffice\Plugin\PluginInterface;
+use srag\DIC\OnlyOffice\Version\VersionInterface;
 
 /**
  * Trait DICTrait

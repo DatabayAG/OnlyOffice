@@ -23,23 +23,28 @@ class xonoContentGUI extends xonoAbstractGUI
     const BASE_URL = ILIAS_HTTP_PATH;
 
     protected ilOnlyOfficePlugin $plugin;
-    /** @var StorageService */
-    protected $storage_service;
-    /** @var int */
-    protected $file_id;
+    protected StorageService $storage_service;
+    protected int $file_id;
+    private ilTemplate $tpl;
+
 
     const CMD_STANDARD = 'showVersions';
     const CMD_SHOW_VERSIONS = 'showVersions';
     const CMD_DOWNLOAD = 'downloadFileVersion';
     const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
 
+
     public function __construct(
         \ILIAS\DI\Container $dic,
         ilOnlyOfficePlugin $plugin,
         int $object_id
     ) {
+        global $DIC;
+
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
+        $this->tpl = $DIC["tpl"];
+
         $this->afterConstructor();
     }
 
@@ -106,7 +111,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         $url = $this->getDownloadUrlArray($fileVersions, $fileName, $ext);
 
-        ilUtil::sendInfo($this->plugin->txt('xono_reload_info'));
+        $this->tpl->setOnScreenMessage('info',$this->plugin->txt("xono_reload_info"), true);
 
         $tpl = $this->plugin->getTemplate('html/tpl.file_history.html');
         $tpl->setVariable('FORWARD', $this->buttonTarget());

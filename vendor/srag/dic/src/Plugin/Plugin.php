@@ -21,15 +21,11 @@ final class Plugin implements PluginInterface
 {
 
     use DICTrait;
-
     /**
      * @var ilLanguage[]
      */
-    private static $languages = [];
-    /**
-     * @var ilPlugin
-     */
-    private $plugin_object;
+    private static array $languages = [];
+    private ilPlugin $plugin_object;
 
 
     /**
@@ -48,7 +44,7 @@ final class Plugin implements PluginInterface
      *
      * @return ilLanguage
      */
-    private static final function getLanguage(string $lang) : ilLanguage
+    private static function getLanguage(string $lang) : ilLanguage
     {
         if (!isset(self::$languages[$lang])) {
             self::$languages[$lang] = new ilLanguage($lang);
@@ -57,29 +53,17 @@ final class Plugin implements PluginInterface
         return self::$languages[$lang];
     }
 
-
-    /**
-     * @inheritDoc
-     */
     public function directory() : string
     {
         return $this->plugin_object->getDirectory();
     }
 
-
-    /**
-     * @inheritDoc
-     */
     public function getPluginObject() : ilPlugin
     {
         return $this->plugin_object;
     }
 
-
-    /**
-     * @inheritDoc
-     */
-    public function reloadCtrlStructure()/* : void*/
+    public function reloadCtrlStructure(): void
     {
         if (!self::version()->is6()) {
             // Stupid core, why not in autoload too?!
@@ -112,35 +96,24 @@ final class Plugin implements PluginInterface
     /**
      * @inheritDoc
      */
-    public function reloadDatabase()/* : void*/
+    public function reloadDatabase() : void
     {
-        $this->plugin_object->updateDatabase();
+        $this->plugin_object->update();
     }
 
 
-    /**
-     * @inheritDoc
-     */
-    public function reloadLanguages()/* : void*/
+    public function reloadLanguages() : void
     {
         $this->plugin_object->updateLanguages();
     }
 
-
-    /**
-     * @inheritDoc
-     */
-    public function reloadPluginXml()/* : void*/
+    public function reloadPluginXml() : void
     {
         Closure::bind(function ()/* : void*/ {
             $this->readEventListening();
         }, $this->plugin_object, ilPlugin::class)();
     }
 
-
-    /**
-     * @inheritDoc
-     */
     public function template(string $template_file, bool $remove_unknown_variables = true, bool $remove_empty_blocks = true, bool $plugin = true) : Template
     {
         if ($plugin) {
@@ -150,10 +123,6 @@ final class Plugin implements PluginInterface
         }
     }
 
-
-    /**
-     * @inheritDoc
-     */
     public function translate(string $key, string $module = "", array $placeholders = [], bool $plugin = true, string $lang = "", string $default = "MISSING %s") : string
     {
         if (!empty($module)) {

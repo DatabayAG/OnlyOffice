@@ -2,12 +2,14 @@
 
 namespace srag\Plugins\OnlyOffice\ObjectSettings;
 
+use ilComponentFactory;
 use ilDateTime;
 use ilDateTimeInputGUI;
 use ilOnlyOfficePlugin;
 use ilCheckboxInputGUI;
 use ilObjOnlyOffice;
 use ilObjOnlyOfficeGUI;
+use ilPlugin;
 use ilTextAreaInputGUI;
 use ilTextInputGUI;
 use ilRadioOption;
@@ -28,9 +30,16 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
     protected ilObjOnlyOffice $object;
+    private ilPlugin $pl;
+
     public function __construct(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object)
     {
+        global $DIC;
         $this->object = $object;
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilOnlyOfficePlugin */
+        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
 
         parent::__construct($parent, $object);
     }
@@ -142,7 +151,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
             $start_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START], IL_CAL_DATETIME);
             $end_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END], IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
-                ilUtil::sendFailure(self::plugin()->translate("time_greater_than", self::LANG_MODULE), true);
+                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_time_greater_than"), true);
                 return false;
             }
         }

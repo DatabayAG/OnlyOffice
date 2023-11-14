@@ -260,7 +260,7 @@ abstract class PropertyFormGUI extends ilPropertyFormGUI
                 throw new PropertyFormGUIException("\$fields needs to be an array!", PropertyFormGUIException::CODE_INVALID_FIELD);
             }
 
-            if ($field[self::PROPERTY_NOT_ADD]) {
+            if (key_exists(self::PROPERTY_NOT_ADD, $field) && $field[self::PROPERTY_NOT_ADD]) {
                 continue;
             }
 
@@ -284,7 +284,7 @@ abstract class PropertyFormGUI extends ilPropertyFormGUI
                 }
             }
 
-            if (is_array($field[self::PROPERTY_SUBITEMS])) {
+            if (key_exists(self::PROPERTY_SUBITEMS, $field) && is_array($field[self::PROPERTY_SUBITEMS])) {
                 $this->getFields($field[self::PROPERTY_SUBITEMS], $item);
             }
 
@@ -360,7 +360,7 @@ abstract class PropertyFormGUI extends ilPropertyFormGUI
                     $this->storeValue($key, $value);
                 }
 
-                if (is_array($field[self::PROPERTY_SUBITEMS])) {
+                if (key_exists(self::PROPERTY_SUBITEMS, $field) && is_array($field[self::PROPERTY_SUBITEMS])) {
                     if (!($item instanceof MultiLineInputGUI) && !($item instanceof MultiLineNewInputGUI) && !($item instanceof TabsInputGUI) && !($item instanceof TabsInputGUITab)) {
                         $this->storeFormItems($field[self::PROPERTY_SUBITEMS]);
                     }

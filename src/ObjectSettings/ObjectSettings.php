@@ -92,14 +92,14 @@ class ObjectSettings extends ActiveRecord
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected ilDateTime $start_time;
+    protected ?ilDateTime $start_time = null;
 
     /**
      * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected ilDateTime $end_time;
+    protected ?ilDateTime $end_time = null;
 
     /**
      * @var bool
