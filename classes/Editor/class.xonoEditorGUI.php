@@ -1,5 +1,7 @@
 <?php
 
+use ILIAS\DI\Container;
+use srag\DIC\OnlyOffice\Exception\DICException;
 use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
 use srag\Plugins\OnlyOffice\StorageService\DTO\File;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
@@ -12,24 +14,13 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepositor
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use srag\Plugins\OnlyOffice\InfoService\InfoService;
 use srag\Plugins\OnlyOffice\CryptoService\JwtService;
-use \ILIAS\DI\Container;
 use srag\Plugins\OnlyOffice\CryptoService\WebAccessService;
 use srag\Plugins\OnlyOffice\Utils\DateFetcher;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 
-
-define('oo_url', InfoService::getOnlyOfficeUrl());
-define('secret', InfoService::getSecret());
-
-
-/**
- * Class xonoEditorGUI
- *
- * @author              Sophie Pfister <sophie@fluxlabs.ch>
- * @ilCtrl_IsCalledBy   xonoEditorGUI: ilObjOnlyOfficeGUI
- */
 class xonoEditorGUI extends xonoAbstractGUI
 {
+
     use OnlyOfficeTrait;
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
@@ -37,19 +28,29 @@ class xonoEditorGUI extends xonoAbstractGUI
     const CMD_EDIT = "editFile";
     const CMD_STANDARD = "editFile";
     const BASE_URL = ILIAS_HTTP_PATH;
-    const ONLYOFFICE_URL = oo_url;
-    const ONLYOFFICE_KEY = secret;
+    protected string $onlyoffice_url;
+    protected string $onlyoffice_key;
 
+    /**
+     * @throws DICException
+     */
     public function __construct(
         Container $dic,
         ilOnlyOfficePlugin $plugin,
         int $object_id
     ) {
         parent::__construct($dic, $plugin);
+
+        $this->onlyoffice_url = InfoService::getOnlyOfficeUrl();
+        $this->onlyoffice_key = InfoService::getSecret();
+
         $this->file_id = $object_id;
         $this->afterConstructor();
     }
 
+    /**
+     * @throws DICException
+     */
     protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
@@ -65,6 +66,10 @@ class xonoEditorGUI extends xonoAbstractGUI
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
 
+    /**
+     * @throws DICException
+     * @throws ilCtrlException
+     */
     public function executeCommand(): void
     {
         self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
@@ -113,7 +118,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
         $tpl->setVariable('FILE_TITLE', $file->getTitle());
         $tpl->setVariable('BUTTON', $this->plugin->txt('xono_back_button'));
-        $tpl->setVariable('SCRIPT_SRC', self::ONLYOFFICE_URL . '/web-apps/apps/api/documents/api.js');
+        $tpl->setVariable('SCRIPT_SRC', $this->onlyoffice_url . '/web-apps/apps/api/documents/api.js');
         $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
         $tpl->setVariable('RETURN', $this->generateReturnUrl());
         $tpl->setVariable('LATEST', $latest_version->getVersion());
@@ -165,7 +170,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         );
 
         // add token
-        $token = JwtService::jwtEncode($as_array, self::ONLYOFFICE_KEY);
+        $token = JwtService::jwtEncode($as_array, $this->onlyoffice_key);
         $as_array['token'] = $token;
 
         // convert to valid string
@@ -195,7 +200,7 @@ class xonoEditorGUI extends xonoAbstractGUI
                 "user" => $this->buildUserArray($version->getUserId()),
                 "version" => $version->getVersion()
             );
-            array_push($history_array, $info_array);
+            $history_array[] = $info_array;
         }
 
         // convert to valid string
@@ -235,7 +240,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $data_array['version'] = $v;
 
             //token
-            $token = JwtService::jwtEncode($data_array, self::ONLYOFFICE_KEY);
+            $token = JwtService::jwtEncode($data_array, $this->onlyoffice_key);
             $data_array['token'] = $token;
             $result[$v] = $data_array;
 
@@ -248,6 +253,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Generates the URL for the return button
      * @return string
+     * @throws ilCtrlException
      */
     protected function generateReturnUrl() : string
     {
@@ -312,7 +318,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Get DIC interface
-     * @throws \srag\DIC\OnlyOffice\Exception\DICException
+     * @throws DICException
      */
     protected static final function dic() : DICInterface
     {

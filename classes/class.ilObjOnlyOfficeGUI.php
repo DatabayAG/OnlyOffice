@@ -27,6 +27,7 @@ use srag\Plugins\OnlyOffice\Config\ConfigFormGUI;
  * @ilCtrl_Calls      ilObjOnlyOfficeGUI: ilObjectCopyGUI
  * @ilCtrl_Calls      ilObjOnlyOfficeGUI: ilCommonActionDispatcherGUI
  * @ilCtrl_Calls      ilObjOnlyOfficeGUI: xonoContentGUI
+ * @ilCtrl_Calls      ilObjOnlyOfficeGUI: xonoEditorGUI
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {

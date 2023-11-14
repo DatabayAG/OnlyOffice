@@ -14,7 +14,6 @@ use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
  * Class xonoContentGUI
  * @author            Theodor Truffer <theo@fluxlabs.ch>
  * @author            Sophie Pfister <sophie@fluxlabs.ch>
- * @ilCtrl_isCalledBy xonoContentGUI: ilObjOnlyOfficeGUI
  */
 class xonoContentGUI extends xonoAbstractGUI
 {
