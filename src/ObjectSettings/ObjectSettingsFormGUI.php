@@ -27,26 +27,13 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
-    /**
-     * @var ilObjOnlyOffice
-     */
-    protected $object;
-
-    /**
-     * ObjectSettingsFormGUI constructor
-     * @param ilObjOnlyOfficeGUI $parent
-     * @param ilObjOnlyOffice    $object
-     */
+    protected ilObjOnlyOffice $object;
     public function __construct(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object)
     {
         $this->object = $object;
 
         parent::__construct($parent, $object);
     }
-
-    /**
-     * @inheritDoc
-     */
     protected function getValue(string $key)
     {
         switch ($key) {
@@ -60,10 +47,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         }
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initCommands()/*: void*/
+    protected function initCommands(): void
     {
         $this->addCommandButton(ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE,
             self::plugin()->translate("save", self::LANG_MODULE));
@@ -72,10 +56,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
             self::plugin()->translate("cancel", self::LANG_MODULE));
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initFields()/*: void*/
+    protected function initFields(): void
     {
         $this->fields = [
             "title" => [
@@ -129,26 +110,17 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initId()/*: void*/
+    protected function initId(): void
     {
 
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initTitle()/*: void*/
+    protected function initTitle(): void
     {
         $this->setTitle(self::plugin()->translate("settings", self::LANG_MODULE));
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function storeValue(string $key, $value)/*: void*/
+    protected function storeValue(string $key, $value): void
     {
         switch ($key) {
             case "desc":
@@ -160,9 +132,6 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function storeForm() : bool
     {
         if (!parent::storeForm()) {

@@ -21,14 +21,8 @@ final class Repository extends AbstractRepository
     use OnlyOfficeTrait;
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    /**
-     * @var self
-     */
-    protected static $instance = null;
+    protected static ?Repository $instance = null;
 
-    /**
-     * @return self
-     */
     public static function getInstance() : self
     {
         if (self::$instance === null) {
@@ -38,34 +32,21 @@ final class Repository extends AbstractRepository
         return self::$instance;
     }
 
-    /**
-     * Repository constructor
-     */
     protected function __construct()
     {
         parent::__construct();
     }
 
-    /**
-     * @inheritDoc
-     * @return Factory
-     */
     public function factory() : AbstractFactory
     {
         return Factory::getInstance();
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getTableName() : string
     {
         return ilOnlyOfficePlugin::PLUGIN_ID . "_config";
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getFields() : array
     {
         return [

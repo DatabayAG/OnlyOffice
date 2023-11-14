@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . "/../vendor/autoload.php";
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettingsFormGUI;
@@ -47,7 +47,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     const CMD_CANCEL = 'cancel';
     const CMD_SHOW_INFO = 'infoScreen';
     const CMD_TEMPLATE = 'createFromTemplate';
-
     const LANG_MODULE_OBJECT = "object";
     const LANG_MODULE_SETTINGS = "settings";
 
@@ -78,23 +77,14 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         "presentation"     => "pptx"
     ];
 
+    public ?ilObject $object;
+    protected StorageService $storage_service;
     /**
-     * @var ilObjOnlyOffice
+     * @var ilOnlyOfficePlugin|ilPlugin|null
      */
-    public $object;
-    /**
-     * @var StorageService
-     */
-    protected $storage_service;
-    /**
-     * @var ilOnlyOfficePlugin
-     */
-    protected $plugin;
+    protected ?ilPlugin $plugin;
 
-    /**
-     * @inheritDoc
-     */
-    protected function afterConstructor()/*: void*/
+    protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
             self::dic()->dic(),
@@ -104,19 +94,15 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         );
     }
 
-    /**
-     * @inheritDoc
-     */
     public final function getType() : string
     {
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
 
     /**
-     * @param string $cmd
      * @throws ilCtrlException
      */
-    public function performCommand(string $cmd)/*: void*/
+    public function performCommand(string $cmd): void
     {
         self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = self::dic()->ctrl()->getNextClass($this);
@@ -187,10 +173,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
     }
 
-    /**
-     * @param string $html
-     */
-    protected function show(string $html)/*: void*/
+    protected function show(string $html): void
     {
         if (!self::dic()->ctrl()->isAsynch()) {
             self::dic()->ui()->mainTemplate()->setTitle($this->object->getTitle());
@@ -211,20 +194,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         self::output()->output($html);
     }
 
-    /* --- Create new OnlyOffice File --- */
-    /**
-     * @inheritDoc
-     */
-    protected function initCreationForms($a_new_type): array
+    protected function initCreationForms(string $a_new_type): array
     {
         $forms = parent::initCreationForms($a_new_type);
         return $forms;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function initCreateForm(/*string*/ $a_new_type = null) : ilPropertyFormGUI
+    public function initCreateForm(string $a_new_type = null) : ilPropertyFormGUI
     {
         $form = new ilPropertyFormGUI();
         $form->setTarget("_top");
@@ -301,8 +277,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $file_settings->setInfo(self::plugin()->translate('form_input_template_no_templates'));
         }
 
-
-
         $file_settings->setValue("ilias");
         $file_settings->setRequired(true);
         $form->addItem($file_settings);
@@ -361,13 +335,12 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
 
     /**
-     * @inheritDoc
-     * @param ilObject $a_new_object
+     * @param ilObject|ilObjOnlyOffice $a_new_object
      * @throws IllegalStateException
      * @throws IOException
      * @throws ilDateTimeException
      */
-    public function afterSave(/*ilObjOnlyOffice*/ ilObject $a_new_object)/*: void*/
+    public function afterSave(/*ilObjOnlyOffice*/ ilObject $a_new_object): void
     {
         $form = $this->initCreateForm($a_new_object->getType());
         $form->checkInput();
@@ -379,9 +352,9 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $result = end($results);
             $this->storage_service->createNewFileFromUpload($result, $a_new_object->getId());
 
-            $title = $a_new_object->title;
+            $title = $a_new_object->getTitle();
             if ($title == "") {
-                $a_new_object->title = explode(".", $result->getName())[0];
+                $a_new_object->setTitle(explode(".", $result->getName())[0]);
                 $a_new_object->update();
             }
         } else if ($_POST[self::POST_VAR_FILE_SETTING] === self::OPTION_SETTING_CREATE) {
@@ -404,20 +377,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         parent::afterSave($a_new_object);
     }
 
-    /* -- Setiings -- */
-    /**
-     * @return ObjectSettingsFormGUI
-     */
     protected function getSettingsForm() : ObjectSettingsFormGUI
     {
         $form = new ObjectSettingsFormGUI($this, $this->object);
         return $form;
     }
 
-    /**
-     *
-     */
-    protected function settings()/*: void*/
+    protected function settings(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_SETTINGS);
 
@@ -426,10 +392,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         self::output()->output($form);
     }
 
-    /**
-     *
-     */
-    protected function settingsStore()/*: void*/
+    protected function settingsStore(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_SETTINGS);
 
@@ -445,10 +408,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         self::dic()->ctrl()->redirect($this, self::CMD_SETTINGS);
     }
 
-    /**
-     *
-     */
-    protected function setTabs()/*: void*/
+    protected function setTabs(): void
     {
         self::dic()->tabs()->addTab(self::TAB_SHOW_CONTENTS,
             self::plugin()->translate("show_contents", self::LANG_MODULE_OBJECT), self::dic()->ctrl()
@@ -473,31 +433,21 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                                                                                      ], self::CMD_PERMISSIONS));
         }
 
-        self::dic()->tabs()->manual_activation = true; // Show all tabs as links when no activation
+        //self::dic()->tabs()->manual_activation = true; // Show all tabs as links when no activation
     }
 
-    /**
-     * @return string
-     */
     public static function getStartCmd() : string
     {
         return self::CMD_SHOW_CONTENTS;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getAfterCreationCmd() : string
     {
         return self::getStartCmd();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getStandardCmd() : string
     {
         return self::getStartCmd();
     }
-
 }

@@ -23,10 +23,7 @@ class FileSystemService
 
     const BASE_PATH = '/only_office/';
     const BASE_TEMPLATE_PATH = '/only_office/templates/';
-    /**
-     * @var Container
-     */
-    protected $dic;
+    protected Container $dic;
 
     /**
      * FileRepository constructor.
@@ -38,9 +35,6 @@ class FileSystemService
     }
 
     /**
-     * @param UploadResult $upload_result
-     * @param int          $obj_id
-     * @param string       $file_id
      * @throws IOException
      */
     public function storeUploadResult(
@@ -80,9 +74,6 @@ class FileSystemService
 
     /**
      * Store a template from the config form
-     * @param string $tmp_path  the path where the file is currently stored
-     * @param string $type      word, excel or powerpoint
-     * @param string $extension file extension
      * @throws IOException
      */
     public function storeTemplate(UploadResult $upload_result, string $type, string $title, string $description, string $extension) : string
@@ -116,7 +107,7 @@ class FileSystemService
         return $full_path;
     }
 
-    public function fetchTemplate(string $target, string $extension, string $type)
+    public function fetchTemplate(string $target, string $extension, string $type): ?FileTemplate
     {
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
         $file_name = $target . "." . $extension;
@@ -146,11 +137,8 @@ class FileSystemService
         return null;
     }
 
-    /**
-     * @param string $type
-     * @return array
-     */
-    public function fetchTemplates(string $type) {
+    public function fetchTemplates(string $type): array
+    {
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
         $converted_files = array();
 
@@ -230,8 +218,6 @@ class FileSystemService
 
     /**
      * Store a draft
-     * @param string $name  the preferred name
-     * @param string $extension file extension
      * @throws IOException
      */
     public function storeDraft(string $name, string $extension, int $obj_id, string $new_file_id) : string
@@ -256,11 +242,8 @@ class FileSystemService
 
     }
 
-
     /**
      * Store a draft
-     * @param string $name  the preferred name
-     * @param string $extension file extension
      * @throws IOException
      */
     public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id) : string
@@ -314,7 +297,7 @@ class FileSystemService
         return $child_path;
     }
 
-    public function deletePath(int $file_id)
+    public function deletePath(int $file_id): void
     {
         $path = self::BASE_PATH . $file_id;
         $web = $this->dic->filesystem()->web();
@@ -323,9 +306,6 @@ class FileSystemService
     }
 
     /**
-     * @param int    $obj_id
-     * @param string $file_id
-     * @return string
      * @throws IOException
      */
     protected function createAndGetPath(int $file_id, string $uuid, bool $isChange = false) : string
@@ -344,13 +324,9 @@ class FileSystemService
     }
 
     /**
-     * @param string $description
-     * @param string $type
-     * @param string $title
-     * @return void
      * @throws IOException
      */
-    private function generateTemplateDescription(string $description, string $type, string $title)
+    private function generateTemplateDescription(string $description, string $type, string $title): void
     {
         if (!empty($description)) {
             $description_path = self::BASE_TEMPLATE_PATH . $type . "/descriptions/";
@@ -368,13 +344,10 @@ class FileSystemService
     }
 
     /**
-     * @param string $path
-     * @param string $target
-     * @return void
      * @throws FileNotFoundException
      * @throws IOException
      */
-    private function deleteTemplateDescription(string $path, string $target)
+    private function deleteTemplateDescription(string $path, string $target): void
     {
         // Delete template description
         $full_path_description = $path . "descriptions/" . $target . ".txt";

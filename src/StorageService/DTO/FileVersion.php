@@ -14,26 +14,11 @@ class FileVersion implements \JsonSerializable
 {
 
     const FIRST_VERSION = 1;
-    /**
-     * @var int
-     */
-    protected $version;
-    /**
-     * @var ilDateTime
-     */
-    protected $created_at;
-    /**
-     * @var int
-     */
-    protected $user_id;
-    /**
-     * @var string
-     */
-    protected $url;
-    /**
-     * @var UUID
-     */
-    protected $file_uuid;
+    protected int $version;
+    protected ilDateTime $created_at;
+    protected int $user_id;
+    protected string $url;
+    protected UUID $file_uuid;
 
     /**
      * FileVersion constructor.
@@ -51,87 +36,57 @@ class FileVersion implements \JsonSerializable
         $this->file_uuid = $file_uuid;
     }
 
-    /**
-     * @return int
-     */
     public function getVersion() : int
     {
         return $this->version;
     }
 
-    /**
-     * @param int $version
-     */
-    public function setVersion(int $version)
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }
 
-    /**
-     * @return ilDateTime
-     */
     public function getCreatedAt() : ilDateTime
     {
         return $this->created_at;
     }
 
-    /**
-     * @param ilDateTime $date
-     */
-    public function setCreatedAt(ilDateTime $date)
+    public function setCreatedAt(ilDateTime $date): void
     {
         $this->created_at = $date;
     }
 
-    /**
-     * @return int
-     */
     public function getUserId() : int
     {
         return $this->user_id;
     }
 
-    /**
-     * @param int $user_id
-     */
-    public function setUserId(int $user_id)
+    public function setUserId(int $user_id): void
     {
         $this->user_id = $user_id;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl() : string
     {
         return $this->url;
     }
 
-    /**
-     * @param string $url
-     */
-    public function setUrl(string $url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
 
-    /**
-     * @return string
-     */
     public function getFileUuid() : UUID
     {
         return $this->file_uuid;
     }
 
-    /**
-     * @param string $uuid
-     */
-    public function setFileUuid(UUID $uuid)
+    public function setFileUuid(UUID $uuid): void
     {
         $this->file_uuid = $uuid;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         global $DIC;
         $user = new \ilObjUser($this->user_id);

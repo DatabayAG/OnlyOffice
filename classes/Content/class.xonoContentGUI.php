@@ -23,8 +23,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
     const BASE_URL = ILIAS_HTTP_PATH;
 
-    /** @var ilOnlyOfficePlugin */
-    protected $plugin;
+    protected ilOnlyOfficePlugin $plugin;
     /** @var StorageService */
     protected $storage_service;
     /** @var int */

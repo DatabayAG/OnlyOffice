@@ -1,5 +1,5 @@
 <?php
-
+require_once __DIR__ . "/../vendor/autoload.php";
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
 use srag\Plugins\OnlyOffice\Utils\DateFetcher;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
@@ -22,9 +22,9 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
-    protected $settings = false;
-    protected $versions = true;
-    protected $available = false;
+    //protected $settings = false;
+    //protected $versions = true;
+    //protected $available = false;
 
     /**
      * ilObjOnlyOfficeListGUI constructor
@@ -152,7 +152,8 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $a_get_asynch_commands = false,
         $a_asynch_url = "",
         $a_header_actions = false
-    ) {
+    ): string
+    {
         return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url,
             $a_header_actions);
     }
@@ -160,7 +161,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
     /**
      * @inheritDoc
      */
-    public function initType()/*: void*/
+    public function initType(): void
     {
         $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
     }

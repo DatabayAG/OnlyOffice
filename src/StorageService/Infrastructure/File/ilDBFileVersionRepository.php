@@ -17,13 +17,9 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
  */
 class ilDBFileVersionRepository implements FileVersionRepository
 {
-
     /**
-     * @param UUID $file_uuid
-     * @param int $user_id
-     * @param ilDateTime $created_at
-     * @return int
      * @throws arException
+     * @throws ilDateTimeException
      */
     public function create(
         UUID $file_uuid,
@@ -50,11 +46,6 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $file_version_AR->getVersion();
     }
 
-    /**
-     * @param UUID $file_uuid
-     * @return int
-     * @throws arException
-     */
     protected function determineVersion(UUID $file_uuid) : int
     {
         /** @var FileVersionAR $latest_version */
@@ -63,10 +54,6 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $latest_version ? $latest_version->getVersion() + 1 : FileVersion::FIRST_VERSION;
     }
 
-    /**
-     * @param int $object_id
-     * @return FileVersion
-     */
     public function getByObjectID(int $object_id) : FileVersion
     {
         /** @var FileVersionAR $file_version_ar */
@@ -74,12 +61,6 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $this->buildFileVersionFromAR($file_version_ar);
     }
 
-    /**
-     * Returns all versions of a file
-     * @param UUID $file_uuid
-     * @return array
-     * @throws arException
-     */
     public function getAllVersions(UUID $file_uuid) : array
     {
         /** @var array $all_file_version_ar */
@@ -90,7 +71,7 @@ class ilDBFileVersionRepository implements FileVersionRepository
         $result = array();
         foreach ($all_file_version_ar as $fileVersionAr) {
             $fileVersion = $this->buildFileVersionFromAR($fileVersionAr);
-            array_push($result, $fileVersion);
+            $result[] = $fileVersion;
         }
         return $result;
     }
@@ -104,10 +85,6 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $this->buildFileVersionFromAR($latest_file_version_ar);
     }
 
-    /**
-     * @param FileVersionAR $ar
-     * @return FileVersion
-     */
     protected function buildFileVersionFromAR(FileVersionAR $ar) : FileVersion
     {
         $version = $ar->getVersion();

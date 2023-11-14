@@ -2,16 +2,16 @@
 
 namespace srag\DIC\OnlyOffice;
 
-use srag\DIC\OnlyOffice\DIC\DICInterface;
-use srag\DIC\OnlyOffice\Exception\DICException;
-use srag\DIC\OnlyOffice\Output\OutputInterface;
-use srag\DIC\OnlyOffice\Plugin\PluginInterface;
-use srag\DIC\OnlyOffice\Version\VersionInterface;
+use srag\DIC\AttendanceList\DIC\DICInterface;
+use srag\DIC\AttendanceList\Exception\DICException;
+use srag\DIC\AttendanceList\Output\OutputInterface;
+use srag\DIC\AttendanceList\Plugin\PluginInterface;
+use srag\DIC\AttendanceList\Version\VersionInterface;
 
 /**
  * Trait DICTrait
  *
- * @package srag\DIC\OnlyOffice
+ * @package srag\DIC\AttendanceList
  */
 trait DICTrait
 {
@@ -78,7 +78,7 @@ trait DICTrait
     /**
      * @throws DICException Your class needs to implement the PLUGIN_CLASS_NAME constant!
      */
-    private static final function checkPluginClassNameConst()/*: void*/
+    private static function checkPluginClassNameConst() : void
     {
         if (!defined("static::PLUGIN_CLASS_NAME") || empty(static::PLUGIN_CLASS_NAME)) {
             throw new DICException("Your class needs to implement the PLUGIN_CLASS_NAME constant!", DICException::CODE_MISSING_CONST_PLUGIN_CLASS_NAME);

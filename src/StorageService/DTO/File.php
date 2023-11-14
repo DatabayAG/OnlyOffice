@@ -13,32 +13,15 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
  */
 class File
 {
-
-    /**
-     * @var UUID
-     */
-    protected $uuid;
-    /**
-     * @var int
-     */
-    protected $obj_id;
-    /**
-     * @var string
-     */
-    protected $title;
-    /**
-     * @var string
-     */
-    protected $file_type;
-
-    /** @var string */
-    protected $mime_type;
+    protected UUID $uuid;
+    protected int $obj_id;
+    protected string $title;
+    protected string $file_type;
+    protected string $mime_type;
 
 
     /**
      * Determines the doc type (word, cell, or slide) based on the file extension
-     * @param string $extension
-     * @return string
      */
     public static function determineDocType(string $extension, bool $formatForEditor = true) : string
     {
@@ -99,7 +82,6 @@ class File
         }
     }
 
-
     /**
      * File constructor.
      *
@@ -117,36 +99,21 @@ class File
         $this->mime_type = $mime_type;
     }
 
-
-    /**
-     * @return UUID
-     */
     public function getUuid() : UUID
     {
         return $this->uuid;
     }
 
-    /**
-     * @return string
-     */
     public function getTitle() : string
     {
         return $this->title;
     }
 
-
-    /**
-     * @return int
-     */
     public function getObjId() : int
     {
         return $this->obj_id;
     }
 
-
-    /**
-     * @return string
-     */
     public function getFileType() : string
     {
         return $this->file_type;

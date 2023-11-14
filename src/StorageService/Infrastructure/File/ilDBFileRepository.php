@@ -12,11 +12,7 @@ use srag\Plugins\OnlyOffice\StorageService\DTO\File;
  */
 class ilDBFileRepository implements FileRepository
 {
-
-    /**
-     * @inheritDoc
-     */
-    public function create(UUID $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type)
+    public function create(UUID $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type): mixed
     {
         $file_AR = new FileAR();
         $file_AR->setUUID($file_uuid);

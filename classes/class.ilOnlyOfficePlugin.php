@@ -25,53 +25,48 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     const PLUGIN_NAME = "OnlyOffice";
     const PLUGIN_CLASS_NAME = self::class;
 
-    /**
-     * @var self|null
-     */
-    protected static $instance = null;
+    protected static ?ilOnlyOfficePlugin $instance = null;
 
-    /**
-     * @return self
-     */
     public static function getInstance() : self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (static::$instance === NULL) {
+            global $DIC;
+
+            /** @var $component_factory ilComponentFactory */
+            $component_factory = $DIC['component.factory'];
+            /** @var $plugin ilOnlyOfficePlugin */
+            $plugin = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+
+            static::$instance = $plugin;
         }
 
         return self::$instance;
     }
 
-    /**
-     * ilOnlyOfficePlugin constructor
-     */
-    public function __construct()
+    public function __construct(
+        ilDBInterface              $db,
+        ilComponentRepositoryWrite $component_repository,
+        string                     $id
+    )
     {
-        parent::__construct();
+        global $DIC;
+        parent::__construct($db, $component_repository, $id);
+        $this->db = $DIC->database();
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getPluginName() : string
     {
         return self::PLUGIN_NAME;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function updateLanguages(/*?array*/ $a_lang_keys = null)/*:void*/
+    public function updateLanguages(/*?array*/ $a_lang_keys = null):void
     {
         parent::updateLanguages($a_lang_keys);
 
         $this->installRemovePluginDataConfirmLanguages();
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function deleteData()/*: void */
+    protected function deleteData(): void
     {
         self::onlyOffice()->dropTables();
     }
@@ -81,7 +76,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return false;
     }
 
-    protected function uninstallCustom()
+    protected function uninstallCustom(): void
     {
         require_once("./Services/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = \ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
@@ -98,14 +93,13 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     }
 
-    public static function checkPluginClassNameConst()
+    public static function checkPluginClassNameConst(): string
     {
         return self::PLUGIN_CLASS_NAME;
     }
 
-    public function allowCopy()
+    public function allowCopy(): bool
     {
         return true;
     }
-
 }

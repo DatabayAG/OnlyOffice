@@ -10,33 +10,12 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
  */
 class FileChange
 {
-
-    /**
-     * @var int
-     */
-    protected $change_id;
-
-    /**
-     * @var UUID
-     */
-    protected $file_uuid;
-    /**
-     * @var int
-     */
-    protected $version;
-
-    /**
-     * @var string
-     */
-    protected $changesObjectString;
-    /**
-     * @var string
-     */
-    protected $serverVersion;
-    /**
-     * @var string
-     */
-    protected $changesUrl;
+    protected int $change_id;
+    protected UUID $file_uuid;
+    protected int $version;
+    protected string $changesObjectString;
+    protected string $serverVersion;
+    protected string $changesUrl;
 
     public function __construct(
         int $change_id,
@@ -54,7 +33,7 @@ class FileChange
         $this->changesUrl = $changesUrl;
     }
 
-    public function setChangeId(int $change_id)
+    public function setChangeId(int $change_id): void
     {
         $this->change_id = $change_id;
     }
@@ -64,7 +43,7 @@ class FileChange
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid)
+    public function setFileUuid(UUID $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
@@ -74,7 +53,7 @@ class FileChange
         return $this->file_uuid;
     }
 
-    public function setVersion(int $version)
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }
@@ -84,7 +63,7 @@ class FileChange
         return $this->version;
     }
 
-    public function setChangesObjectString(string $changes)
+    public function setChangesObjectString(string $changes): void
     {
         $this->changesObjectString = $changes;
     }
@@ -94,7 +73,7 @@ class FileChange
         return $this->changesObjectString;
     }
 
-    public function setServerVersion(string $serverVersion)
+    public function setServerVersion(string $serverVersion): void
     {
         $this->serverVersion = $serverVersion;
     }
@@ -104,7 +83,7 @@ class FileChange
         return $this->serverVersion;
     }
 
-    public function setChangesUrl(string $changesUrl)
+    public function setChangesUrl(string $changesUrl): void
     {
         $this->changesUrl = $changesUrl;
     }

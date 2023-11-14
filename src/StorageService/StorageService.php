@@ -32,32 +32,12 @@ class StorageService
 {
     use OnlyOfficeTrait;
 
-    /**
-     * @var Container
-     */
-    protected $dic;
-    /**
-     * @var FileVersionRepository
-     */
-    protected $file_version_repository;
-    /**
-     * @var FileSystemService
-     */
-    protected $file_system_service;
-    /**
-     * @var FileRepository
-     */
-    protected $file_repository;
+    protected Container $dic;
+    protected FileVersionRepository $file_version_repository;
+    protected FileSystemService $file_system_service;
+    protected FileRepository $file_repository;
+    protected FileChangeRepository $file_change_repository;
 
-    /** @var FileChangeRepository */
-    protected $file_change_repository;
-
-    /**
-     * StorageService constructor.
-     * @param Container             $dic
-     * @param FileVersionRepository $file_version_repository
-     * @param FileRepository        $file_repository
-     */
     public function __construct(
         Container $dic,
         FileVersionRepository $file_version_repository,
@@ -72,11 +52,7 @@ class StorageService
     }
 
     /**
-     * @param UploadResult $upload_result
-     * @param int          $obj_id
-     * @return File
      * @throws IOException
-     * @throws ilDateTimeException
      */
     public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id) : File
     {
@@ -116,7 +92,7 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id)
+    public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
     {
         $new_file_id = new UUID();
         $extension = pathinfo($template_path, PATHINFO_EXTENSION);
@@ -139,6 +115,9 @@ class StorageService
         return $file;
     }
 
+    /**
+     * @throws ilDateTimeException
+     */
     public function updateFileFromUpload(
         string $file_content,
         int $file_id,
@@ -169,6 +148,9 @@ class StorageService
         return $fileVersion;
     }
 
+    /**
+     * @throws IOException
+     */
     public function createFileTemplate(UploadResult $upload_result, string $title, string $description): string {
         $extension = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
         $type = File::determineDocType($extension, false);
@@ -216,7 +198,7 @@ class StorageService
         return $this->file_system_service->fetchTemplate($target, $extension, $type);
     }
 
-    public function createClone(int $child_id, int $parent_id)
+    public function createClone(int $child_id, int $parent_id): void
     {
         // create new file
         $uuid = new UUID();
@@ -242,7 +224,7 @@ class StorageService
 
     }
 
-    public function deleteFile(int $file_id)
+    public function deleteFile(int $file_id): void
     {
         // remove physical structure
         $this->file_system_service->deletePath($file_id);
@@ -268,7 +250,7 @@ class StorageService
         return $this->file_version_repository->getAllVersions($file->getFileUuid());
     }
 
-    public function getAllChanges(string $uuid)
+    public function getAllChanges(string $uuid): array
     {
         return $this->file_change_repository->getAllChanges($uuid);
     }
@@ -299,7 +281,7 @@ class StorageService
      * Deletes all file data from storage and all related database entries
      * Should only be called when uninstalling the plugin
      */
-    public function deleteAll()
+    public function deleteAll(): void
     {
         $all_files = $this->file_repository->getAllFiles();
         /** @var File $file */
@@ -315,6 +297,7 @@ class StorageService
      * @param UUID $new_file_id
      * @param string $path
      * @return array
+     * @throws ilDateTimeException
      */
     private function createNewFile(UUID $new_file_id, string $path): array
     {

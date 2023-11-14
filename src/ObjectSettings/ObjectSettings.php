@@ -24,18 +24,11 @@ class ObjectSettings extends ActiveRecord
     const TABLE_NAME = "rep_robj_xono_set";
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
-    /**
-     * @inheritDoc
-     */
     public function getConnectorContainerName() : string
     {
         return self::TABLE_NAME;
     }
 
-    /**
-     * @inheritDoc
-     * @deprecated
-     */
     public static function returnDbTableName() : string
     {
         return self::TABLE_NAME;
@@ -49,7 +42,7 @@ class ObjectSettings extends ActiveRecord
      * @con_is_notnull   true
      * @con_is_primary   true
      */
-    protected $obj_id;
+    protected ?int $obj_id;
 
     /**
      * @var string
@@ -57,14 +50,14 @@ class ObjectSettings extends ActiveRecord
      * @con_fieldtype  text
      * @con_is_notnull true
      */
-    protected $title;
+    protected string $title;
 
     /**
      * @var string
      * @con_has_field true
      * @con_fieldtype text
      */
-    protected $desc;
+    protected string $desc;
 
     /**
      * @var bool
@@ -73,7 +66,7 @@ class ObjectSettings extends ActiveRecord
      * @con_length       1
      * @con_is_notnull   true
      */
-    protected $is_online = false;
+    protected bool $is_online = false;
 
     /**
      * @var string
@@ -82,7 +75,7 @@ class ObjectSettings extends ActiveRecord
      * @con_length     10
      * @con_is_notnull true
      */
-    protected $open_setting = "ilias";
+    protected string $open_setting = "ilias";
 
     /**
      * @var bool
@@ -92,21 +85,21 @@ class ObjectSettings extends ActiveRecord
      * @con_length     1
      * @con_is_notnull true
      */
-    protected $allow_edit;
+    protected bool $allow_edit;
 
     /**
      * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected $start_time;
+    protected ilDateTime $start_time;
 
     /**
      * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected $end_time;
+    protected ilDateTime $end_time;
 
     /**
      * @var bool
@@ -114,7 +107,7 @@ class ObjectSettings extends ActiveRecord
      * @con_fieldtype  integer
      * @con_length     1
      */
-    protected $limited_period;
+    protected bool $limited_period;
 
     /**
      * ObjectSettings constructor
@@ -126,10 +119,7 @@ class ObjectSettings extends ActiveRecord
         parent::__construct($primary_key_value, $connector);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function sleep(/*string*/ $field_name)
+    public function sleep(/*string*/ $field_name): ?int
     {
         $field_value = $this->{$field_name};
 
@@ -142,9 +132,6 @@ class ObjectSettings extends ActiveRecord
         }
     }
 
-    /**
-     * @inheritDoc
-     */
     public function wakeUp(/*string*/ $field_name, $field_value)
     {
         switch ($field_name) {
@@ -158,18 +145,12 @@ class ObjectSettings extends ActiveRecord
         }
     }
 
-    /**
-     * @return int
-     */
     public function getObjId() : int
     {
         return $this->obj_id;
     }
 
-    /**
-     * @param int $obj_id
-     */
-    public function setObjId(int $obj_id)/*: void*/
+    public function setObjId(int $obj_id): void
     {
         $this->obj_id = $obj_id;
     }
@@ -179,7 +160,7 @@ class ObjectSettings extends ActiveRecord
         return $this->title;
     }
 
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
@@ -189,7 +170,7 @@ class ObjectSettings extends ActiveRecord
         return $this->desc;
     }
 
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->desc = $description;
     }
@@ -198,22 +179,17 @@ class ObjectSettings extends ActiveRecord
         return $this->allow_edit;
     }
 
-    public function setAllowEdit(bool $allow_edit) {
+    public function setAllowEdit(bool $allow_edit): void
+    {
         $this->allow_edit = $allow_edit;
     }
 
-    /**
-     * @return bool
-     */
     public function isOnline() : bool
     {
         return $this->is_online;
     }
 
-    /**
-     * @param bool $is_online
-     */
-    public function setOnline(bool $is_online = true)/*: void*/
+    public function setOnline(bool $is_online = true): void
     {
         $this->is_online = $is_online;
     }
@@ -223,55 +199,37 @@ class ObjectSettings extends ActiveRecord
         return $this->open_setting;
     }
 
-    public function setOpen(string $open)
+    public function setOpen(string $open): void
     {
         $this->open_setting = $open;
     }
 
-    /**
-     * @return string
-     */
     public function getStartTime() : ?string
     {
         return $this->start_time;
     }
 
-    /**
-     * @param ilDateTime $start_time
-     */
-    public function setStartTime(ilDateTime $start_time)
+    public function setStartTime(ilDateTime $start_time): void
     {
         $this->start_time = $start_time;
     }
 
-    /**
-     * @return string
-     */
     public function getEndTime() : ?string
     {
         return $this->end_time;
     }
 
-    /**
-     * @param ilDateTime $end_time
-     */
-    public function setEndTime(ilDateTime $end_time)
+    public function setEndTime(ilDateTime $end_time): void
     {
         $this->end_time = $end_time;
     }
 
-    /**
-     * @return bool
-     */
     public function isLimitedPeriod() : ?bool
     {
         return $this->limited_period;
     }
 
-    /**
-     * @param bool $limited_period
-     */
-    public function setLimitedPeriod(bool $limited_period)
+    public function setLimitedPeriod(bool $limited_period): void
     {
         $this->limited_period = $limited_period;
     }

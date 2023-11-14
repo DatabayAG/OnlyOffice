@@ -23,15 +23,8 @@ final class Repository
     use DICTrait;
     use OnlyOfficeTrait;
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    /**
-     * @var self
-     */
-    protected static $instance = null;
+    protected static ?Repository $instance = null;
 
-
-    /**
-     * @return self
-     */
     public static function getInstance() : self
     {
         if (self::$instance === null) {
@@ -41,48 +34,28 @@ final class Repository
         return self::$instance;
     }
 
-
-    /**
-     * Repository constructor
-     */
     private function __construct()
     {
 
     }
 
-
-    /**
-     * @return ConfigRepository
-     */
     public function config() : ConfigRepository
     {
         return ConfigRepository::getInstance();
     }
 
-
-    /**
-     *
-     */
-    public function dropTables()/*: void*/
+    public function dropTables(): void
     {
         $this->config()->dropTables();
         $this->objectSettings()->dropTables();
     }
 
-
-    /**
-     *
-     */
-    public function installTables()/*: void*/
+    public function installTables(): void
     {
         $this->config()->installTables();
         $this->objectSettings()->installTables();
     }
 
-
-    /**
-     * @return ObjectSettingsRepository
-     */
     public function objectSettings() : ObjectSettingsRepository
     {
         return ObjectSettingsRepository::getInstance();

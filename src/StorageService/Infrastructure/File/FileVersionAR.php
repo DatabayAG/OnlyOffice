@@ -18,10 +18,7 @@ class FileVersionAR extends ActiveRecord
 
     const TABLE_NAME = 'xono_file_version';
 
-    /**
-     * @return string
-     */
-    public function getConnectorContainerName()
+    public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
@@ -35,7 +32,7 @@ class FileVersionAR extends ActiveRecord
      * @con_is_primary   true
      * @con_sequence     true
      */
-    protected $id;
+    protected ?int $id;
     /**
      * @var UUID
      * @con_has_field    true
@@ -43,7 +40,7 @@ class FileVersionAR extends ActiveRecord
      * @con_length       256
      * @con_is_notnull   true
      */
-    protected $file_uuid;
+    protected UUID $file_uuid;
     /**
      * @var int
      * @con_has_field    true
@@ -51,7 +48,7 @@ class FileVersionAR extends ActiveRecord
      * @con_length       8
      * @con_is_notnull   true
      */
-    protected $version;
+    protected int $version;
     /**
      * @var int
      * @con_has_field    true
@@ -59,124 +56,84 @@ class FileVersionAR extends ActiveRecord
      * @con_length       8
      * @con_is_notnull   true
      */
-    protected $user_id;
+    protected int $user_id;
     /**
      * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      * @con_is_notnull       true
      */
-    protected $created_at;
+    protected ilDateTime $created_at;
     /**
      * @var string
      * @db_has_field         true
      * @db_fieldtype         text
      * @con_is_notnull       true
      */
-    protected $url;
+    protected string $url;
 
-    /**
-     * @return int
-     */
     public function getUserId() : int
     {
         return $this->user_id;
     }
 
-    /**
-     * @param int $user_id
-     */
-    public function setUserId(int $user_id)
+    public function setUserId(int $user_id): void
     {
         $this->user_id = $user_id;
     }
 
-    /**
-     * @return int
-     */
     public function getId() : int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId(int $id)
+    public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return UUID
-     */
     public function getFileUuid() : UUID
     {
         return $this->file_uuid;
     }
 
-    /**
-     * @param UUID $file_uuid
-     */
-    public function setFileUuid(UUID $file_uuid)
+    public function setFileUuid(UUID $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
 
-    /**
-     * @return ilDateTime
-     */
     public function getCreatedAt() : ilDateTime
     {
         $this->created_at->switchTimeZone(ilTimeZone::UTC);
         return $this->created_at;
     }
 
-    /**
-     * @param ilDateTime $created_at
-     */
-    public function setCreatedAt(ilDateTime $created_at)
+    public function setCreatedAt(ilDateTime $created_at): void
     {
         $this->created_at = $created_at;
     }
 
-    /**
-     * @return int
-     */
     public function getVersion() : int
     {
         return $this->version;
     }
 
-    /**
-     * @param int $version
-     */
-    public function setVersion(int $version)
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl() : string
     {
         return $this->url;
     }
 
-    /**
-     * @param string $url
-     */
-    public function setUrl(string $url)
+    public function setUrl(string $url): void
     {
         $this->url = $url;
     }
 
-    /**
-     * @param $field_name
-     * @return mixed
-     */
-    public function sleep($field_name)
+    public function sleep($field_name): string|array|int|null
     {
         switch ($field_name) {
             case 'file_uuid':
@@ -191,10 +148,10 @@ class FileVersionAR extends ActiveRecord
     /**
      * @param $field_name
      * @param $field_value
-     * @return mixed
+     * @return UUID
      * @throws ilDateTimeException
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): UUID
     {
         switch ($field_name) {
             case 'file_uuid':

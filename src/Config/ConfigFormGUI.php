@@ -45,9 +45,6 @@ class ConfigFormGUI extends PropertyFormGUI
         parent::__construct($parent);
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getValue(string $key)
     {
         switch ($key) {
@@ -56,18 +53,12 @@ class ConfigFormGUI extends PropertyFormGUI
         }
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initCommands()/*: void*/
+    protected function initCommands(): void
     {
         $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_UPDATE_CONFIGURE, $this->txt("save"));
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initFields()/*: void*/
+    protected function initFields(): void
     {
         $this->fields = [
             self::KEY_ONLYOFFICE_URL => [
@@ -84,26 +75,17 @@ class ConfigFormGUI extends PropertyFormGUI
         ];
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initId()/*: void*/
+    protected function initId(): void
     {
 
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function initTitle()/*: void*/
+    protected function initTitle(): void
     {
         $this->setTitle($this->txt("configuration"));
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function storeValue(string $key, $value)/*: void*/
+    protected function storeValue(string $key, $value): void
     {
         switch ($key) {
             // If less than 1 version should be loaded from storage, a default value (10) is stored

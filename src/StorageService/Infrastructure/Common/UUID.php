@@ -14,27 +14,17 @@ use Ramsey\Uuid\Uuid as RamseyUuid;
  */
 class UUID
 {
+    protected string $uuid;
 
     /**
-     * @var string
-     */
-    protected $uuid;
-
-
-    /**
-     * UUID constructor.
-     *
      * @param string $uuid
+     * @throws Exception
      */
     public function __construct(string $uuid = '')
     {
         $this->uuid = $uuid !== '' ? $uuid : RamseyUuid::uuid4()->toString();
     }
 
-
-    /**
-     * @return string
-     */
     public function asString() : string
     {
         return $this->uuid;

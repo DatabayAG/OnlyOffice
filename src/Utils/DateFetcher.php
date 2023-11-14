@@ -30,7 +30,8 @@ class DateFetcher
         return sprintf("%s - %s", $converted_start_time, $converted_end_time);
     }
 
-    public static function isWithinPotentialTimeLimit($obj_id) {
+    public static function isWithinPotentialTimeLimit($obj_id): bool
+    {
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
         $withinPotentialTimeLimit = true;
         if ($object_settings->isLimitedPeriod()) {

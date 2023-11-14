@@ -15,10 +15,6 @@ use srag\Plugins\OnlyOffice\Repository;
  */
 trait OnlyOfficeTrait
 {
-
-    /**
-     * @return Repository
-     */
     protected static function onlyOffice() : Repository
     {
         return Repository::getInstance();

@@ -8,14 +8,8 @@ use ILIAS\DI\Container;
  */
 abstract class xonoAbstractGUI
 {
-    /**
-     * @var Container
-     */
-    protected $dic;
-    /**
-     * @var ilOnlyOfficePlugin
-     */
-    protected $plugin;
+    protected Container $dic;
+    protected ilOnlyOfficePlugin $plugin;
 
     /**
      * xoofAbstractGUI constructor.

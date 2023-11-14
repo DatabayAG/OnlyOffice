@@ -13,7 +13,7 @@ require_once 'libs/composer/vendor/autoload.php';
  */
 class JwtService {
 
-    public static function jwtEncode($payload, $key)
+    public static function jwtEncode($payload, $key): string
     {
         $header = [
             "alg" => "HS256",
@@ -29,7 +29,7 @@ class JwtService {
         return "$encHeader.$encPayload.$hash";
     }
 
-    public static function jwtDecode($token, $key)
+    public static function jwtDecode($token, $key): string
     {
 
         $split = explode(".", $token);

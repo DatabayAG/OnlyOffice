@@ -1,8 +1,8 @@
 <?php
-
+require_once __DIR__ . "/../vendor/autoload.php";
+use srag\DIC\OnlyOffice\DICTrait;
 use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\DIC\OnlyOffice\DICTrait;
 use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -20,29 +20,22 @@ class ilObjOnlyOffice extends ilObjectPlugin
     use OnlyOfficeTrait;
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    /**
-     * @var ObjectSettings
-     */
-    public $object_settings;
+    public ObjectSettings $object_settings;
 
     /**
      * ilObjOnlyOffice constructor
-     * @param int $a_ref_id
      */
-    public function __construct(/*int*/ $a_ref_id = 0)
+    public function __construct(int $a_ref_id = 0)
     {
         parent::__construct($a_ref_id);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public final function initType()/*: void*/
+    public final function initType(): void
     {
         $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
     }
 
-    protected function beforeCreate()
+    protected function beforeCreate(): bool
     {
         if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
             $start_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START], IL_CAL_DATETIME);
@@ -50,17 +43,13 @@ class ilObjOnlyOffice extends ilObjectPlugin
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 ilUtil::sendFailure(self::plugin()->translate("settings_time_greater_than"), true);
                 self::dic()->ctrl()->redirectByClass("ilRepositoryGUI");
-                return;
+                return false;
             }
         }
         return parent::beforeCreate();
     }
 
-
-    /**
-     * @inheritDoc
-     */
-    public function doCreate()/*: void*/
+    public function doCreate(bool $clone_mode = false): void
     {
         $this->object_settings = new ObjectSettings();
         $title = $_POST['title'];
@@ -99,18 +88,12 @@ class ilObjOnlyOffice extends ilObjectPlugin
         self::onlyOffice()->objectSettings()->storeObjectSettings($this->object_settings);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function doRead()/*: void*/
+    public function doRead(): void
     {
         $this->object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($this->id));
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function doUpdate()/*: void*/
+    public function doUpdate(): void
     {
         $start_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START];
         $end_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END];
@@ -136,10 +119,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         self::onlyOffice()->objectSettings()->storeObjectSettings($this->object_settings);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function doDelete()/*: void*/
+    public function doDelete(): void
     {
         if ($this->object_settings !== null) {
             self::onlyOffice()->objectSettings()->deleteObjectSettings($this->object_settings);
@@ -150,12 +130,8 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     }
 
-    /**
-     * @inheritDoc
-     * @param ilObjOnlyOffice $new_obj
-     */
-    protected function doCloneObject(/*ilObjOnlyOffice*/ $new_obj, /*int*/ $a_target_id, /*?int*/ $a_copy_id = null
-    )/*: void*/
+    protected function doCloneObject(ilObjOnlyOffice|ilObject2 $new_obj, int$a_target_id, ?int $a_copy_id = null
+    ): void
     {
         $new_obj->object_settings = self::onlyOffice()->objectSettings()->cloneObjectSettings($this->object_settings);
         $new_obj->object_settings->setObjId($new_obj->id);
@@ -165,23 +141,17 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $storage->createClone($new_obj->getId(), $this->getId());
     }
 
-    /**
-     * @return bool
-     */
     public function isOnline() : bool
     {
         return $this->object_settings->isOnline();
     }
 
-    /**
-     * @param bool $is_online
-     */
-    public function setOnline(bool $is_online = true)/*: void*/
+    public function setOnline(bool $is_online = true): void
     {
         $this->object_settings->setOnline($is_online);
     }
 
-    public function setOpen(string $open = 'ilias')
+    public function setOpen(string $open = 'ilias'): void
     {
         $this->object_settings->setOpen($open);
     }
@@ -191,7 +161,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         return $this->object_settings->getOpen();
     }
 
-    public function isAllowedEdit()
+    public function isAllowedEdit(): bool
     {
         return $this->object_settings->allowEdit();
     }

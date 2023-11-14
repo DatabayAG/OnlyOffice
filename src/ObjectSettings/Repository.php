@@ -19,14 +19,8 @@ final class Repository
     use OnlyOfficeTrait;
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    /**
-     * @var self
-     */
-    protected static $instance = null;
+    protected static ?Repository $instance = null;
 
-    /**
-     * @return self
-     */
     public static function getInstance() : self
     {
         if (self::$instance === null) {
@@ -36,42 +30,26 @@ final class Repository
         return self::$instance;
     }
 
-    /**
-     * Repository constructor
-     */
     private function __construct()
     {
 
     }
 
-    /**
-     * @param ObjectSettings $object_settings
-     * @return ObjectSettings
-     */
     public function cloneObjectSettings(ObjectSettings $object_settings) : ObjectSettings
     {
         return $object_settings->copy();
     }
 
-    /**
-     * @param ObjectSettings $object_settings
-     */
-    public function deleteObjectSettings(ObjectSettings $object_settings)/*:void*/
+    public function deleteObjectSettings(ObjectSettings $object_settings): void
     {
         $object_settings->delete();
     }
 
-    /**
-     * @internal
-     */
-    public function dropTables()/*:void*/
+    public function dropTables(): void/*:void*/
     {
         self::dic()->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
 
-    /**
-     * @return Factory
-     */
     public function factory() : Factory
     {
         return Factory::getInstance();
@@ -81,7 +59,7 @@ final class Repository
      * @param int $obj_id
      * @return ObjectSettings|null
      */
-    public function getObjectSettingsById(int $obj_id)/*:?ObjectSettings*/
+    public function getObjectSettingsById(int $obj_id): ?ObjectSettings
     {
         /**
          * @var ObjectSettings|null $object_settings
@@ -94,18 +72,12 @@ final class Repository
         return $object_settings;
     }
 
-    /**
-     * @internal
-     */
-    public function installTables()/*:void*/
+    public function installTables(): void
     {
         ObjectSettings::updateDB();
     }
 
-    /**
-     * @param ObjectSettings $object_settings
-     */
-    public function storeObjectSettings(ObjectSettings $object_settings)/*:void*/
+    public function storeObjectSettings(ObjectSettings $object_settings):void
     {
         $object_settings->store();
     }

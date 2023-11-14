@@ -19,33 +19,19 @@ use Matrix\Exception;
  */
 class xonoCallbackHandler
 {
-
-    /** @var $dic Container */
-    protected $dic;
-    /** @var $storage_service StorageService */
-    protected $storage_service;
-    /** @var $data string */
-    protected $file_data;
-    /** @var $uuid UUID */
-    protected $uuid;
-    /** @var $file_id int */
-    protected $file_id;
-    /** @var $editor_id int */
-    protected $editor_id;
-    /** @var $extension string */
-    protected $file_extension;
-    /** @var $changes_object string */
-    protected $changes_object;
-    /** @var $serverVersion string */
-    protected $serverVersion;
-    /** @var $change_data string */
-    protected $change_data;
-    /** @var $change_extension string */
-    protected $change_extension;
-    /** @var string $fileUrl */
-    protected $fileUrl;
-    /** @var string $changeUrl */
-    protected $changeUrl;
+    protected Container $dic;
+    protected StorageService $storage_service;
+    protected string $file_data;
+    protected UUID $uuid;
+    protected int $file_id;
+    protected int $editor_id;
+    protected string|array $file_extension;
+    protected string|false $changes_object;
+    protected string $serverVersion;
+    protected string $change_data;
+    protected string $change_extension;
+    protected string $fileUrl;
+    protected string $changeUrl;
 
     /**
      * @throws Exception if the data cannot be fetched
@@ -76,7 +62,7 @@ class xonoCallbackHandler
 
     }
 
-    protected function afterConstructor()/*: void*/
+    protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
             $this->dic,
@@ -100,10 +86,7 @@ class xonoCallbackHandler
         }
     }
 
-    /**
-     * Fetch the data from ONLYOFFICE Docs
-     */
-    protected function fetchData()
+    protected function fetchData(): void
     {
         $this->file_data = file_get_contents($this->fileUrl);
         $this->change_data = file_get_contents($this->changeUrl);

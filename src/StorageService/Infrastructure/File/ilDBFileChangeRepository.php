@@ -12,15 +12,14 @@ use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
  */
 class ilDBFileChangeRepository implements FileChangeRepository
 {
-
-
     public function create(
         UUID $file_uuid,
         int $version,
         string $changesObjectString,
         string $serverVersion,
         string $changesUrl
-    ) {
+    ): void
+    {
         $file_change_AR = new FileChangeAR();
         $file_change_AR->setFileUuid($file_uuid);
         $file_change_AR->setVersion($version);

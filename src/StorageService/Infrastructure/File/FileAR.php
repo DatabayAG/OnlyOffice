@@ -3,6 +3,7 @@
 namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
+use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 /**
@@ -14,11 +15,7 @@ class FileAR extends ActiveRecord
 {
 
     const TABLE_NAME = 'xono_file';
-
-    /**
-     * @return string
-     */
-    public function getConnectorContainerName()
+    public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
@@ -31,7 +28,7 @@ class FileAR extends ActiveRecord
      * @con_is_unique    true
      * @con_is_notnull   true
      */
-    protected $uuid;
+    protected UUID $uuid;
 
     /**
      * @var int
@@ -40,7 +37,7 @@ class FileAR extends ActiveRecord
      * @con_length       8
      * @con_is_primary   true
      */
-    protected $obj_id;
+    protected ?int $obj_id;
 
     /**
      * @var String
@@ -49,7 +46,7 @@ class FileAR extends ActiveRecord
      * @con_is_notnull      true
      * @db_length           256
      */
-    protected $title;
+    protected string $title;
 
     /**
      * @var String
@@ -58,7 +55,7 @@ class FileAR extends ActiveRecord
      * @con_is_notnull      true
      * @db_length           256
      */
-    protected $file_type;
+    protected string $file_type;
 
     /**
      * @var string
@@ -66,84 +63,54 @@ class FileAR extends ActiveRecord
      * @db_fieldtype        text
      * @db_length           64
      */
-    protected $mime_type;
+    protected string $mime_type;
 
-    /**
-     * @return UUID
-     */
     public function getUUID() : UUID
     {
         return $this->uuid;
     }
 
-    /**
-     * @param UUID $uuid
-     */
-    public function setUUID(UUID $uuid)
+    public function setUUID(UUID $uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    /**
-     * @return UUID
-     */
     public function getId() : UUID
     {
         return $this->id;
     }
 
-    /**
-     * @param UUID $id
-     */
-    public function setId(UUID $id)
+    public function setId(UUID $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return int
-     */
     public function getObjId() : int
     {
         return $this->obj_id;
     }
 
-    /**
-     * @param int $obj_id
-     */
-    public function setObjId(int $obj_id)
+    public function setObjId(int $obj_id): void
     {
         $this->obj_id = $obj_id;
     }
 
-    /**
-     * @return String
-     */
     public function getTitle() : string
     {
         return $this->title;
     }
 
-    /**
-     * @param String $title
-     */
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @return String
-     */
     public function getFileType() : string
     {
         return $this->file_type;
     }
 
-    /**
-     * @param String $file_type
-     */
-    public function setFileType(string $file_type)
+    public function setFileType(string $file_type): void
     {
         $this->file_type = $file_type;
     }
@@ -152,15 +119,12 @@ class FileAR extends ActiveRecord
         return $this->mime_type;
     }
 
-    public function setMimeType(string $mime_type) {
+    public function setMimeType(string $mime_type): void
+    {
         $this->mime_type = $mime_type;
     }
 
-    /**
-     * @param $field_name
-     * @return mixed
-     */
-    public function sleep($field_name)
+    public function sleep($field_name): ?string
     {
         switch ($field_name) {
             case 'uuid':
@@ -173,9 +137,10 @@ class FileAR extends ActiveRecord
     /**
      * @param $field_name
      * @param $field_value
-     * @return mixed
+     * @return \UUID|null
+     * @throws Exception
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): ?\UUID
     {
         switch ($field_name) {
             case 'uuid':

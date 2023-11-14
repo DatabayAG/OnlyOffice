@@ -21,14 +21,7 @@ final class Factory
     use OnlyOfficeTrait;
 
     const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    /**
-     * @var self
-     */
-    protected static $instance = null;
-
-    /**
-     * @return self
-     */
+    protected static ?Factory $instance = null;
     public static function getInstance() : self
     {
         if (self::$instance === null) {
@@ -38,17 +31,11 @@ final class Factory
         return self::$instance;
     }
 
-    /**
-     * Factory constructor
-     */
     private function __construct()
     {
 
     }
 
-    /**
-     * @return ObjectSettings
-     */
     public function newInstance() : ObjectSettings
     {
         $object_settings = new ObjectSettings();
@@ -56,11 +43,6 @@ final class Factory
         return $object_settings;
     }
 
-    /**
-     * @param ilObjOnlyOfficeGUI $parent
-     * @param ilObjOnlyOffice    $object
-     * @return ObjectSettingsFormGUI
-     */
     public function newFormInstance(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object) : ObjectSettingsFormGUI
     {
         $form = new ObjectSettingsFormGUI($parent, $object);

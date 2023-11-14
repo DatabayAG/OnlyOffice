@@ -4,103 +4,58 @@ namespace srag\Plugins\OnlyOffice\StorageService\DTO;
 
 class FileTemplate
 {
-    /**
-     * @var string
-     */
-    protected $title;
-    /**
-     * @var string
-     */
-    protected $description;
-    /**
-     * @var string
-     */
-    protected $extension;
-    /**
-     * @var string
-     */
-    protected $path;
-    /**
-     * @var string
-     */
-    protected $type;
+    protected string $title;
+    protected string $description;
+    protected string $extension;
+    protected string $path;
+    protected string $type;
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     */
-    public function setTitle(string $title)
+    public function setTitle(string $title): void
     {
         $this->title = $title;
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @param string $description
-     */
-    public function setDescription(string $description)
+    public function setDescription(string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * @return string
-     */
     public function getExtension(): string
     {
         return $this->extension;
     }
 
-    /**
-     * @param string $extension
-     */
-    public function setExtension(string $extension)
+    public function setExtension(string $extension): void
     {
         $this->extension = $extension;
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @param string $path
-     */
-    public function setPath(string $path)
+    public function setPath(string $path): void
     {
         $this->path = $path;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
-    public function setType(string $type)
+    public function setType(string $type): void
     {
         $this->type = $type;
     }

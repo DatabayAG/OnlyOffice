@@ -18,6 +18,8 @@ use srag\DIC\OnlyOffice\DICTrait;
  *
  * @author Theodor Truffer <theo@fluxlabs.ch>
  * @author Sophie Pfister <sophie@fluxlabs.ch>
+ *
+ * @ilCtrl_IsCalledBy  ilOnlyOfficeConfigGUI: ilObjComponentSettingsGUI
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
@@ -38,11 +40,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     const TAB_CONFIGURATION = "configuration";
     const TAB_SUB_CONFIGURATION = "subConfiguration";
     const TAB_SUB_TEMPLATES = "templates";
-
-    /**
-     * @var StorageService
-     */
-    protected $storage_service;
+    protected StorageService $storage_service;
 
 
     /**
@@ -58,11 +56,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
     }
 
-
-    /**
-     * @inheritDoc
-     */
-    public function performCommand(/*string*/ $cmd)/*:void*/
+    public function performCommand(string $cmd): void
     {
         $this->setTabs();
 
@@ -95,11 +89,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         }
     }
 
-
-    /**
-     *
-     */
-    protected function setTabs()/*: void*/
+    protected function setTabs(): void
     {
         self::dic()->tabs()->addTab(self::TAB_CONFIGURATION, self::plugin()->translate("configuration", self::LANG_MODULE), self::dic()->ctrl()
             ->getLinkTargetByClass(self::class, self::CMD_CONFIGURE));
@@ -113,11 +103,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->locator()->addItem(ilOnlyOfficePlugin::PLUGIN_NAME, self::dic()->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
     }
 
-
-    /**
-     *
-     */
-    protected function configure()/*: void*/
+    protected function configure(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_CONFIGURATION);
@@ -127,8 +113,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::output()->output($form);
     }
 
-
-    protected function configureTemplates()
+    protected function configureTemplates(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
@@ -190,8 +175,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::output()->output($content);
     }
 
-
-    protected function createTemplate()
+    protected function createTemplate(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
@@ -200,8 +184,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::output()->output($form);
     }
 
-
-    protected function initCreateTemplateForm(bool $edit = false)
+    protected function initCreateTemplateForm(bool $edit = false): ilPropertyFormGUI
     {
         $form = new ilPropertyFormGUI();
         $form->setTarget("_top");
@@ -237,11 +220,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         return $form;
     }
 
-
-    /**
-     *
-     */
-    protected function updateConfigure()/*: void*/
+    protected function updateConfigure(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
 
@@ -258,8 +237,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->ctrl()->redirect($this, self::CMD_CONFIGURE);
     }
 
-
-    protected function updateTemplates()
+    protected function updateTemplates(): void
     {
         $form = $this->initCreateTemplateForm();
 
@@ -298,8 +276,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
-
-    protected function editTemplate()
+    protected function editTemplate(): void
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
@@ -323,8 +300,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     }
 
-
-    protected function saveEditTemplate()
+    protected function saveEditTemplate(): void
     {
         $target = $_POST["title"];
         $description = $_POST["desc"];
@@ -397,8 +373,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
-
-    public function confirmDelete()
+    public function confirmDelete(): void
     {
         self::dic()->ctrl()->saveParameter($this, "ootarget");
         self::dic()->ctrl()->saveParameter($this, "ooextension");
@@ -415,8 +390,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::output()->output($conf->getHTML());
     }
 
-
-    protected function deleteTemplate()
+    protected function deleteTemplate(): void
     {
         $target = $_GET["ootarget"];
         $extension = $_GET["ooextension"];

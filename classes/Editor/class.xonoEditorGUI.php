@@ -31,23 +31,11 @@ define('secret', InfoService::getSecret());
 class xonoEditorGUI extends xonoAbstractGUI
 {
     use OnlyOfficeTrait;
-
-    /**
-     * @var ilOnlyOfficePlugin
-     */
-    protected $plugin;
-    /**
-     * @var StorageService
-     */
-    protected $storage_service;
-    /**
-     * @var int
-     */
-    protected $file_id;
-
+    protected ilOnlyOfficePlugin $plugin;
+    protected StorageService $storage_service;
+    protected int $file_id;
     const CMD_EDIT = "editFile";
     const CMD_STANDARD = "editFile";
-
     const BASE_URL = ILIAS_HTTP_PATH;
     const ONLYOFFICE_URL = oo_url;
     const ONLYOFFICE_KEY = secret;
@@ -62,7 +50,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->afterConstructor();
     }
 
-    protected function afterConstructor()/*: void*/
+    protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
             self::dic()->dic(),
@@ -77,7 +65,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
 
-    public function executeCommand()
+    public function executeCommand(): void
     {
         self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
@@ -94,7 +82,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         }
     }
 
-    protected function editFile()
+    protected function editFile(): void
     {
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id);
 
@@ -140,10 +128,6 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Builds and returns the config array as string
-     *
-     * @param File        $file
-     * @param FileVersion $fileVersion
-     * @return string
      */
     protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit) : string
     {
@@ -194,10 +178,6 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Builds and returns an array containing the version history of a file as string
-     *
-     * @param FileVersion $latestVersion
-     * @param array       $all_versions
-     * @return string
      */
     protected function history(FileVersion $latestVersion, array $all_versions) : string
     {
@@ -232,8 +212,6 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Builds and returns an array containing information about all file versions (as string)
-     * @param array $allVersions
-     * @return string
      */
     protected function historyData(array $allVersions) : string
     {
@@ -281,10 +259,6 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * generates the callback URL for the only office document server
-     * @param UUID   $file_uuid
-     * @param int    $file_id
-     * @param string $extension
-     * @return string
      */
     protected function generateCallbackUrl(UUID $file_uuid, int $file_id, string $extension) : string
     {
@@ -321,7 +295,6 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Determines access rights based on object settings and RBAC
-     * @return string
      */
     protected function determineAccessRights(bool $withinPotentialTimeLimit): string {
         if (
@@ -339,7 +312,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Get DIC interface
-     * @return DICInterface DIC interface
+     * @throws \srag\DIC\OnlyOffice\Exception\DICException
      */
     protected static final function dic() : DICInterface
     {

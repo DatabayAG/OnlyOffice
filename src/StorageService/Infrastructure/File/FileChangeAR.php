@@ -3,6 +3,7 @@
 namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
+use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 /**
@@ -20,7 +21,7 @@ class FileChangeAR extends ActiveRecord
     /**
      * @return string
      */
-    public function getConnectorContainerName()
+    public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
@@ -32,7 +33,7 @@ class FileChangeAR extends ActiveRecord
      * @con_is_primary   true
      * @con_sequence     true
      */
-    protected $change_id;
+    protected ?int $change_id;
 
     /**
      * @var UUID
@@ -40,36 +41,36 @@ class FileChangeAR extends ActiveRecord
      * @con_fieldtype text
      * @con_length    256
      */
-    protected $file_uuid;
+    protected UUID $file_uuid;
     /**
      * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      */
-    protected $version;
+    protected int $version;
 
     /**
      * @var string
      * @con_has_field true
      * @con_fieldtype clob
      */
-    protected $changes_object_string;
+    protected string $changes_object_string;
     /**
      * @var string
      * @con_has_field true
      * @con_fieldtype text
      * @con_length    64
      */
-    protected $server_version;
+    protected string $server_version;
     /**
      * @var string
      * @con_has_field true
      * @con_fieldtype text
      * @con_length    256
      */
-    protected $changes_url;
+    protected string $changes_url;
 
-    public function setChangeId(int $change_id)
+    public function setChangeId(int $change_id): void
     {
         $this->change_id = $change_id;
     }
@@ -79,7 +80,7 @@ class FileChangeAR extends ActiveRecord
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid)
+    public function setFileUuid(UUID $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
@@ -89,7 +90,7 @@ class FileChangeAR extends ActiveRecord
         return $this->file_uuid;
     }
 
-    public function setVersion(int $version)
+    public function setVersion(int $version): void
     {
         $this->version = $version;
     }
@@ -99,7 +100,7 @@ class FileChangeAR extends ActiveRecord
         return $this->version;
     }
 
-    public function setChangesObjectString(string $changesObjectString)
+    public function setChangesObjectString(string $changesObjectString): void
     {
         $this->changes_object_string = $changesObjectString;
     }
@@ -109,7 +110,7 @@ class FileChangeAR extends ActiveRecord
         return $this->changes_object_string;
     }
 
-    public function setServerVersion(string $serverVersion)
+    public function setServerVersion(string $serverVersion): void
     {
         $this->server_version = $serverVersion;
     }
@@ -119,7 +120,7 @@ class FileChangeAR extends ActiveRecord
         return $this->server_version;
     }
 
-    public function setChangesUrl(string $changesUrl)
+    public function setChangesUrl(string $changesUrl): void
     {
         $this->changes_url = $changesUrl;
     }
@@ -131,9 +132,9 @@ class FileChangeAR extends ActiveRecord
 
     /**
      * @param $field_name
-     * @return mixed
+     * @return string|null
      */
-    public function sleep($field_name)
+    public function sleep($field_name): ?string
     {
         switch ($field_name) {
             case 'file_uuid':
@@ -146,9 +147,10 @@ class FileChangeAR extends ActiveRecord
     /**
      * @param $field_name
      * @param $field_value
-     * @return mixed
+     * @return UUID
+     * @throws Exception
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): UUID
     {
         switch ($field_name) {
             case 'file_uuid':
