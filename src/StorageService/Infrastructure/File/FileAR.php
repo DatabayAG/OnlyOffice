@@ -61,7 +61,7 @@ class FileAR extends ActiveRecord
      * @var string
      * @db_has_field        true
      * @db_fieldtype        text
-     * @db_length           64
+     * @db_length           256
      */
     protected string $mime_type;
 
@@ -137,10 +137,9 @@ class FileAR extends ActiveRecord
     /**
      * @param $field_name
      * @param $field_value
-     * @return \UUID|null
      * @throws Exception
      */
-    public function wakeUp($field_name, $field_value): ?\UUID
+    public function wakeUp($field_name, $field_value): ?UUID
     {
         switch ($field_name) {
             case 'uuid':

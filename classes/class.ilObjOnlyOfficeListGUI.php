@@ -127,14 +127,17 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
             'propertyNameVisible' => false
         ];
 
-        $props[] = [
-            "alert" => false,
-            'newline' => true,
-            "property" => self::plugin()->translate('last_edit'),
-            // ToDo: Evtl. Datumformat noch nach Kundenwunsch anpassen
-            "value" => $last_version->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone()),
-            'propertyNameVisible' => true
-        ];
+        if(!is_null($last_version)) {
+            $props[] = [
+                "alert" => false,
+                'newline' => true,
+                "property" => self::plugin()->translate('last_edit'),
+                // ToDo: Evtl. Datumformat noch nach Kundenwunsch anpassen
+                "value" => $last_version->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone()),
+                'propertyNameVisible' => true
+            ];
+        }
+
 
         if (DateFetcher::editingPeriodIsFetchable($file->getObjId())) {
             $editing_time = DateFetcher::fetchEditingPeriod($file->getObjId());

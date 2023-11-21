@@ -82,4 +82,12 @@ $DIC->database()->modifyTableColumn($file_change_table, 'changes_object_string',
 <?php
 \srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
 ?>
-
+<#17>
+<?php
+\srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
+?>
+<#18>
+<?php
+global $DIC;
+$DIC->database()->modifyTableColumn(\srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR::TABLE_NAME, 'mime_type', array('length' => 256));
+?>

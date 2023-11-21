@@ -82,7 +82,6 @@ class StorageService
         $extension = pathinfo($path, PATHINFO_EXTENSION);
 
         // Create DB Entries for File & FileVersion
-
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
         list($created_at, $version) = $this->createNewFile($new_file_id, $path);
 
@@ -105,7 +104,6 @@ class StorageService
         );
 
         // Create DB Entries for File & FileVersion
-
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
         list($created_at, $version) = $this->createNewFile($new_file_id, $path);
 
@@ -282,7 +280,7 @@ class StorageService
         return $this->file_repository->getFile($file_id);
     }
 
-    public function getLatestVersion(UUID $file_uuid) : FileVersion
+    public function getLatestVersion(UUID $file_uuid) : ?FileVersion
     {
         return $this->file_version_repository->getLatestVersion($file_uuid);
     }

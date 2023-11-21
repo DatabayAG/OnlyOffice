@@ -19,7 +19,7 @@ interface FileVersionRepository
 
     public function getAllVersions(UUID $file_uuid) : array;
 
-    public function getLatestVersion(UUID $file_uuid): FileVersion;
+    public function getLatestVersion(UUID $file_uuid): ?FileVersion;
 
     public function getPreviousVersion(string $uuid, int $version): FileVersion;
 }

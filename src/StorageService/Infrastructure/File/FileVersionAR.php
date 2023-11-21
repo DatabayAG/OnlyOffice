@@ -148,10 +148,9 @@ class FileVersionAR extends ActiveRecord
     /**
      * @param $field_name
      * @param $field_value
-     * @return UUID
      * @throws ilDateTimeException
      */
-    public function wakeUp($field_name, $field_value): UUID
+    public function wakeUp($field_name, $field_value): null|UUID|ilDateTime
     {
         switch ($field_name) {
             case 'file_uuid':
