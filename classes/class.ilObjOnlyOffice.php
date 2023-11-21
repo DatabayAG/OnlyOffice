@@ -115,13 +115,13 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $start_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START];
         $end_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END];
 
-        if (!is_null($start_time)) {
+        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED] && !is_null($start_time)) {
             $raw_start_time = new ilDateTime($start_time, IL_CAL_DATETIME);
             $formatted_start_time = new ilDateTime($raw_start_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setStartTime($formatted_start_time);
         }
 
-        if (!is_null($end_time)) {
+        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED] && !is_null($end_time)) {
             $raw_end_time = new ilDateTime($end_time, IL_CAL_DATETIME);
             $formatted_end_time = new ilDateTime($raw_end_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setEndTime($formatted_end_time);
@@ -132,7 +132,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setAllowEdit(boolval($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT]));
         $this->object_settings->setOpen($_POST[ilObjOnlyOfficeGUI::POST_VAR_OPEN_SETTING]);
         $this->object_settings->setOnline($_POST[ilObjOnlyOfficeGUI::POST_VAR_ONLINE]);
-        $this->object_settings->setLimitedPeriod($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]);
+        $this->object_settings->setLimitedPeriod(is_null($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) ? false : $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]);
         self::onlyOffice()->objectSettings()->storeObjectSettings($this->object_settings);
     }
 
