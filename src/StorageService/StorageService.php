@@ -203,6 +203,9 @@ class StorageService
         // create new file
         $uuid = new UUID();
         $parent_file = $this->file_repository->getFile($parent_id);
+        if(is_null($parent_file)) {
+            return;
+        }
         $this->file_repository->create($uuid, $child_id, $parent_file->getTitle(), $parent_file->getFileType(), $parent_file->getMimeType());
 
         // clone file versions
@@ -228,7 +231,11 @@ class StorageService
     {
         // remove physical structure
         $this->file_system_service->deletePath($file_id);
-        $uuid = $this->file_repository->getFile($file_id)->getUuid();
+        $file = $this->file_repository->getFile($file_id);
+        if(is_null($file)) {
+            return;
+        }
+        $uuid = $file->getUuid();
 
         // delete File entry
         $query = 'DELETE FROM xono_file WHERE obj_id=' . $file_id . ';';
@@ -247,6 +254,9 @@ class StorageService
     public function getAllVersions(int $object_id) : array
     {
         $file = $this->file_repository->getFile($object_id);
+        if(is_null($file)) {
+            return [];
+        }
         return $this->file_version_repository->getAllVersions($file->getFileUuid());
     }
 
@@ -267,7 +277,7 @@ class StorageService
         return $this->file_version_repository->getPreviousVersion($uuid, $version);
     }
 
-    public function getFile(int $file_id) : File
+    public function getFile(int $file_id) : ?File
     {
         return $this->file_repository->getFile($file_id);
     }

@@ -23,9 +23,12 @@ class ilDBFileRepository implements FileRepository
         $file_AR->create();
     }
 
-    public function getFile(int $obj_id) : File
+    public function getFile(int $obj_id) : ?File
     {
         $file_ar = FileAR::where(['obj_id' => $obj_id])->first();
+        if(is_null($file_ar)) {
+            return null;
+        }
         return $this->buildFileFromAR($file_ar);
     }
 

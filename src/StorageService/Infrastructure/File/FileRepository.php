@@ -22,7 +22,7 @@ interface FileRepository
      */
     public function create(UUID $file_uuid, int $obj_id, string $getName, string $file_type, string $mime_type): mixed;
 
-    public function getFile(int $obj_id) : File;
+    public function getFile(int $obj_id) : ?File;
 
     public function getAR(int $file_id): \ActiveRecord;
 

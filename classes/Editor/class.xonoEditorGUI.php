@@ -92,8 +92,13 @@ class xonoEditorGUI extends xonoAbstractGUI
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id);
 
         $file = $this->storage_service->getFile($this->file_id);
-        $all_versions = $this->storage_service->getAllVersions($this->file_id);
-        $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
+        $latest_version = null;
+        $all_versions = null;
+
+        if(!is_null($file)) {
+            $all_versions = $this->storage_service->getAllVersions($this->file_id);
+            $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
+        }
 
         $tpl = $this->plugin->getTemplate('html/tpl.editor.html');
 
@@ -116,14 +121,18 @@ class xonoEditorGUI extends xonoAbstractGUI
             }
         }
 
-        $tpl->setVariable('FILE_TITLE', $file->getTitle());
         $tpl->setVariable('BUTTON', $this->plugin->txt('xono_back_button'));
         $tpl->setVariable('SCRIPT_SRC', $this->onlyoffice_url . '/web-apps/apps/api/documents/api.js');
-        $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
         $tpl->setVariable('RETURN', $this->generateReturnUrl());
-        $tpl->setVariable('LATEST', $latest_version->getVersion());
-        $tpl->setVariable('HISTORY', $this->history($latest_version, $all_versions));
-        $tpl->setVariable('HISTORY_DATA', $this->historyData($all_versions));
+
+        if(!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
+            $tpl->setVariable('FILE_TITLE', $file->getTitle());
+            $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
+            $tpl->setVariable('LATEST', $latest_version->getVersion());
+            $tpl->setVariable('HISTORY_DATA', $this->historyData($all_versions));
+            $tpl->setVariable('HISTORY', $this->history($latest_version, $all_versions));
+        }
+
 
         $content = $tpl->get();
         echo $content;

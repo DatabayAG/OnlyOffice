@@ -25,7 +25,7 @@ class xonoContentGUI extends xonoAbstractGUI
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
-    private ilTemplate $tpl;
+    private ilTemplate|ilGlobalPageTemplate $tpl;
 
 
     const CMD_STANDARD = 'showVersions';
@@ -97,6 +97,10 @@ class xonoContentGUI extends xonoAbstractGUI
     {
         $fileVersions = $this->storage_service->getAllVersions($this->file_id);
         $file = $this->storage_service->getFile($this->file_id);
+        if(is_null($file)) {
+            $this->dic->ui()->mainTemplate()->setContent("");
+            return;
+        }
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
         $fileName = rtrim($file->getTitle(), '.' . $ext);
         $json = json_encode($fileVersions);
@@ -213,6 +217,9 @@ class xonoContentGUI extends xonoAbstractGUI
     protected function getDownloadUrlArray(array $fileVersions, string $filename, string $extension) : array
     {
         $file = $this->storage_service->getFile($this->file_id);
+        if(is_null($file)) {
+            return [];
+        }
 
         $result = array();
         foreach ($fileVersions as $fv) {

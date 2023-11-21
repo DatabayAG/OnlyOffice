@@ -105,6 +105,9 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $storage = new srag\Plugins\OnlyOffice\StorageService\StorageService(self::dic()->dic(),
             new ilDBFileVersionRepository(), new ilDBFileRepository(), new ilDBFileChangeRepository());
         $file = $storage->getFile($this->obj_id);
+        if(is_null($file)) {
+            return [];
+        }
         $last_version = $storage->getLatestVersion($file->getUuid());
         $props = [];
 
