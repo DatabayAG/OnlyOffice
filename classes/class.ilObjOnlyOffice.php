@@ -49,8 +49,8 @@ class ilObjOnlyOffice extends ilObjectPlugin
     protected function beforeCreate(): bool
     {
         if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
-            $start_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START], IL_CAL_DATETIME);
-            $end_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END], IL_CAL_DATETIME);
+            $start_time =  new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
+            $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 $this->tpl->setOnScreenMessage('failure',$this->pl->txt("settings_time_greater_than"), true);
                 self::dic()->ctrl()->redirectByClass("ilRepositoryGUI");
@@ -81,15 +81,15 @@ class ilObjOnlyOffice extends ilObjectPlugin
         }
 
         if ($start_time !== "") {
-            $raw_start_time = new ilDateTime($start_time, IL_CAL_DATETIME);
+            $raw_start_time = new ilDateTime(date('Ymdhis', strtotime($start_time)), IL_CAL_DATETIME);
             $formatted_start_time = new ilDateTime($raw_start_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
-            $this->object_settings->setStartTime($formatted_start_time);
+            $this->object_settings->setStartTime($formatted_start_time->get(IL_CAL_DATETIME));
         }
 
         if ($end_time !== "") {
-            $raw_end_time = new ilDateTime($end_time, IL_CAL_DATETIME);
+            $raw_end_time = new ilDateTime(date('Ymdhis', strtotime($end_time)), IL_CAL_DATETIME);
             $formatted_end_time = new ilDateTime($raw_end_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
-            $this->object_settings->setEndTime($formatted_end_time);
+            $this->object_settings->setEndTime($formatted_end_time->get(IL_CAL_DATETIME));
         }
 
         $this->object_settings->setObjId($this->id);
