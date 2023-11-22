@@ -92,14 +92,14 @@ class ObjectSettings extends ActiveRecord
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected ?ilDateTime $start_time = null;
+    protected ?string $start_time = null;
 
     /**
      * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      */
-    protected ?ilDateTime $end_time = null;
+    protected ?string $end_time = null;
 
     /**
      * @var bool
@@ -209,7 +209,7 @@ class ObjectSettings extends ActiveRecord
         return $this->start_time;
     }
 
-    public function setStartTime(ilDateTime $start_time): void
+    public function setStartTime(string $start_time): void
     {
         $this->start_time = $start_time;
     }
@@ -219,7 +219,7 @@ class ObjectSettings extends ActiveRecord
         return $this->end_time;
     }
 
-    public function setEndTime(ilDateTime $end_time): void
+    public function setEndTime(string $end_time): void
     {
         $this->end_time = $end_time;
     }

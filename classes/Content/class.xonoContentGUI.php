@@ -107,6 +107,10 @@ class xonoContentGUI extends xonoAbstractGUI
         // Insert properly converted datetime
         $json_decoded = json_decode($json);
         $i = 0;
+
+
+
+
         foreach ($fileVersions as $fileVersion) {
             $json_decoded[$i]->createdAt = $fileVersion->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
             $i++;

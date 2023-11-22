@@ -105,7 +105,6 @@ class xonoEditorGUI extends xonoAbstractGUI
         $withinPotentialTimelimit = true;
 
         if (!is_null($object_settings)) {
-
             if(ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
                  $withinPotentialTimelimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
                 $tpl->setVariable('IS_LIMITED', $object_settings->isLimitedPeriod());
@@ -132,7 +131,6 @@ class xonoEditorGUI extends xonoAbstractGUI
             $tpl->setVariable('HISTORY_DATA', $this->historyData($all_versions));
             $tpl->setVariable('HISTORY', $this->history($latest_version, $all_versions));
         }
-
 
         $content = $tpl->get();
         echo $content;

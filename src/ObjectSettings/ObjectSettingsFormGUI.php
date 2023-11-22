@@ -36,12 +36,13 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
     {
         global $DIC;
         $this->object = $object;
+
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
 
-        parent::__construct($parent, $object);
+        parent::__construct($parent);
     }
     protected function getValue(string $key)
     {
@@ -148,10 +149,13 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         }
 
         if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
-            $start_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START], IL_CAL_DATETIME);
-            $end_time = new ilDateTime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END], IL_CAL_DATETIME);
+
+            $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START] )), IL_CAL_DATETIME);
+            $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
+
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_time_greater_than"), true);
+                global $DIC;
+                $DIC->ui()->mainTemplate()->setOnScreenMessage('failure',$this->pl->txt("settings_time_greater_than"), true);
                 return false;
             }
         }

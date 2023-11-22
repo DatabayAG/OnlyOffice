@@ -96,7 +96,7 @@ final class Items
                 }
             } else {
                 if ($item instanceof ilRadioOption) {
-                    if (key_exists("setTitle", $field) && !$field["setTitle"]) {
+                    if (!key_exists("setTitle", $field)) {
                         $item->setTitle($parent->txt($parent_item->getPostVar() . "_" . $key));
                     }
 

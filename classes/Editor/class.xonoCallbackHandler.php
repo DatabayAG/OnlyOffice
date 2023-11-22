@@ -55,6 +55,7 @@ class xonoCallbackHandler
         $this->change_extension = pathinfo($this->changeUrl, PATHINFO_EXTENSION);
         $this->fetchData();
         if (!$this->file_data || !$this->change_data) {
+            $this->dic->logger()->root()->error("Data could not be fetched - file data url:".$this->fileUrl." - change data url: ". $this->changeUrl);
             throw new Exception("Data could not be fetched");
         }
 

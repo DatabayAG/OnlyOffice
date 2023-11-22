@@ -131,6 +131,7 @@ class StorageService
         // Store FileVersion and Create Database Entry
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->getLatestVersion($uuid)->getVersion() + 1;
+        echo $version;
         $path = $this->file_system_service->storeNewVersionFromString($file_content, $file_id, $uuid->asString(), $version,
             $file_extension);
         $this->file_version_repository->create($uuid, $editor_id, $created_at, $path);
@@ -211,7 +212,7 @@ class StorageService
         foreach ($parent_file_versions as $version) {
             $path = $this->file_system_service->storeVersionCopy($version, $uuid->asString(), $child_id);
             $created_at = new ilDateTime(time(), IL_CAL_UNIX);
-            $version = $this->file_version_repository->create($uuid, $this->dic->user()->getId(), $created_at, $path,
+            $this->file_version_repository->create($uuid, $this->dic->user()->getId(), $created_at, $path,
                 $version->getVersion());
         }
 

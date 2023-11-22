@@ -55,7 +55,7 @@
               }
           })
           .catch(error => {
-             // console.error('There has been a problem with your JavaScript time fetch operation, using local system time instead:', error);
+             console.error('There has been a problem with your JavaScript time fetch operation, using local system time instead:', error);
               if (is_limited) {
                   var now = new Date();
                   if (!(now.getTime() > start_time_utc.getTime() && now.getTime() < end_time_utc.getTime())) {
