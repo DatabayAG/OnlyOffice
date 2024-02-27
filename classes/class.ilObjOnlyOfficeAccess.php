@@ -69,7 +69,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         return self::getInstance()->_checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id);
     }
 
-    public static function redirectNonAccess(object|string $class, string $cmd = ""): void
+    public static function redirectNonAccess($class, string $cmd = ""): void
     {
         global $DIC;
         /** @var $component_factory ilComponentFactory */

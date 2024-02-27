@@ -25,7 +25,7 @@ class xonoContentGUI extends xonoAbstractGUI
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
-    private ilTemplate|ilGlobalPageTemplate $tpl;
+    private $tpl;
 
 
     const CMD_STANDARD = 'showVersions';
