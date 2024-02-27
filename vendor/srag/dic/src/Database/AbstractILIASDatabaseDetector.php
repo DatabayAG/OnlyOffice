@@ -563,7 +563,7 @@ abstract class AbstractILIASDatabaseDetector implements DatabaseInterface
      *
      * @internal
      */
-    public function loadModule($module): \ilDBManager|\ilDBReverse
+    public function loadModule($module)
     {
         return $this->db->loadModule($module);
     }
