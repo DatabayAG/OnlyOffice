@@ -25,8 +25,8 @@ class xonoCallbackHandler
     protected UUID $uuid;
     protected int $file_id;
     protected int $editor_id;
-    protected string|array $file_extension;
-    protected string|false $changes_object;
+    protected $file_extension;
+    protected $changes_object;
     protected string $serverVersion;
     protected string $change_data;
     protected string $change_extension;

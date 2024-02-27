@@ -42,7 +42,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     const TAB_SUB_TEMPLATES = "templates";
     protected StorageService $storage_service;
     private ilPlugin $pl;
-    private ilTemplate|ilGlobalPageTemplate $tpl;
+    private $tpl;
 
 
     /**

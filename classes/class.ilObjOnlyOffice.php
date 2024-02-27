@@ -23,7 +23,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public ObjectSettings $object_settings;
 
     private ilPlugin $pl;
-    private ilTemplate|ilGlobalPageTemplate $tpl;
+    private $tpl;
 
     /**
      * ilObjOnlyOffice constructor
@@ -147,7 +147,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     }
 
-    protected function doCloneObject(ilObjOnlyOffice|ilObject2 $new_obj, int$a_target_id, ?int $a_copy_id = null
+    protected function doCloneObject($new_obj, int$a_target_id, ?int $a_copy_id = null
     ): void
     {
         $new_obj->object_settings = self::onlyOffice()->objectSettings()->cloneObjectSettings($this->object_settings);
