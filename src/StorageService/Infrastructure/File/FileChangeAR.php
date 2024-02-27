@@ -149,7 +149,7 @@ class FileChangeAR extends ActiveRecord
      * @param $field_value
      * @throws Exception
      */
-    public function wakeUp($field_name, $field_value): null|UUID
+    public function wakeUp($field_name, $field_value)
     {
         switch ($field_name) {
             case 'file_uuid':

@@ -133,7 +133,7 @@ class FileVersionAR extends ActiveRecord
         $this->url = $url;
     }
 
-    public function sleep($field_name): string|array|int|null
+    public function sleep($field_name)
     {
         switch ($field_name) {
             case 'file_uuid':
@@ -150,7 +150,7 @@ class FileVersionAR extends ActiveRecord
      * @param $field_value
      * @throws ilDateTimeException
      */
-    public function wakeUp($field_name, $field_value): null|UUID|ilDateTime
+    public function wakeUp($field_name, $field_value)
     {
         switch ($field_name) {
             case 'file_uuid':
