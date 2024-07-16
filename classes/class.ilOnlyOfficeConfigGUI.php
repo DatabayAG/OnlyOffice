@@ -330,8 +330,9 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             // Dont delete previous template
             $this->storage_service->modifyFileTemplate($prevTitle, $prevExtension, $target, $description);
         } else {
-
-            self::dic()->upload()->process();
+            if (!self::dic()->upload()->hasBeenProcessed()) {
+                self::dic()->upload()->process();
+            }
             $results = self::dic()->upload()->getResults();
             $result = end($results);
 
