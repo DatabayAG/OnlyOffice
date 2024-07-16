@@ -351,7 +351,9 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         // Handle file upload, otherwise create new document
         if ($_POST[self::POST_VAR_FILE_SETTING] === self::OPTION_SETTING_UPLOAD) {
-            self::dic()->upload()->process();
+            if (!self::dic()->upload()->hasBeenProcessed()) {
+                self::dic()->upload()->process();
+            }
             $results = self::dic()->upload()->getResults();
             $result = end($results);
             $this->storage_service->createNewFileFromUpload($result, $a_new_object->getId());
