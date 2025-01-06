@@ -102,8 +102,8 @@ Use `http://%onlyoffice_ip%` as `ONLYOFFICE root URL` in plugin configuration
 
 ##### Requirements
 
-* ILIAS 6.x / 7.x
-* PHP >= 7.1
+* ILIAS 9.x
+* PHP 8.1 | 8.2
 * OnlyOffice Docs 7.2.2
 
 ##### Simple Docker Installation Guide for Developers

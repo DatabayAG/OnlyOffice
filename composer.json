@@ -19,8 +19,8 @@
     "issues": "https://plugins.studer-raimann.ch/goto.php?target=uihk_srsu_PLONLYOFFICE"
   },
   "require": {
-    "php": ">=7.0",
-    "ramsey/uuid": "3.9.2",
+    "php": "^8.1 || ^8.2",
+    "ramsey/uuid": "^4",
     "srag/activerecordconfig": ">=0.1.0",
     "srag/custominputguis": ">=0.1.0",
     "srag/dic": "=0.32.4",

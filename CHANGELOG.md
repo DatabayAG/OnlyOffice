@@ -1,4 +1,8 @@
 # Changelog
+
+## [2025.01.06]
+- ILIAS 9 Update
+
 ## [2023.01.26]
 - Deactivate plugins on api call
 
