@@ -1,579 +1,625 @@
-[
-    {
-        "name": "paragonie/random_compat",
-        "version": "v9.99.99",
-        "version_normalized": "9.99.99.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/paragonie/random_compat.git",
-            "reference": "84b4dfb120c6f9b4ff7b3685f9b8f1aa365a0c95"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/paragonie/random_compat/zipball/84b4dfb120c6f9b4ff7b3685f9b8f1aa365a0c95",
-            "reference": "84b4dfb120c6f9b4ff7b3685f9b8f1aa365a0c95",
-            "shasum": ""
-        },
-        "require": {
-            "php": "^7"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "4.*|5.*",
-            "vimeo/psalm": "^1"
-        },
-        "suggest": {
-            "ext-libsodium": "Provides a modern crypto API that can be used to generate random bytes."
-        },
-        "time": "2018-07-02T15:55:56+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Paragon Initiative Enterprises",
-                "email": "security@paragonie.com",
-                "homepage": "https://paragonie.com"
-            }
-        ],
-        "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
-        "keywords": [
-            "csprng",
-            "polyfill",
-            "pseudorandom",
-            "random"
-        ]
-    },
-    {
-        "name": "ramsey/uuid",
-        "version": "3.9.2",
-        "version_normalized": "3.9.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ramsey/uuid.git",
-            "reference": "7779489a47d443f845271badbdcedfe4df8e06fb"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ramsey/uuid/zipball/7779489a47d443f845271badbdcedfe4df8e06fb",
-            "reference": "7779489a47d443f845271badbdcedfe4df8e06fb",
-            "shasum": ""
-        },
-        "require": {
-            "ext-json": "*",
-            "paragonie/random_compat": "^1 | ^2 | 9.99.99",
-            "php": "^5.4 | ^7 | ^8",
-            "symfony/polyfill-ctype": "^1.8"
-        },
-        "replace": {
-            "rhumsaa/uuid": "self.version"
-        },
-        "require-dev": {
-            "codeception/aspect-mock": "^1 | ^2",
-            "doctrine/annotations": "^1.2",
-            "goaop/framework": "1.0.0-alpha.2 | ^1 | ^2.1",
-            "jakub-onderka/php-parallel-lint": "^1",
-            "mockery/mockery": "^0.9.11 | ^1",
-            "moontoast/math": "^1.1",
-            "paragonie/random-lib": "^2",
-            "php-mock/php-mock-phpunit": "^0.3 | ^1.1",
-            "phpunit/phpunit": "^4.8 | ^5.4 | ^6.5",
-            "squizlabs/php_codesniffer": "^3.5"
-        },
-        "suggest": {
-            "ext-ctype": "Provides support for PHP Ctype functions",
-            "ext-libsodium": "Provides the PECL libsodium extension for use with the SodiumRandomGenerator",
-            "ext-openssl": "Provides the OpenSSL extension for use with the OpenSslGenerator",
-            "ext-uuid": "Provides the PECL UUID extension for use with the PeclUuidTimeGenerator and PeclUuidRandomGenerator",
-            "moontoast/math": "Provides support for converting UUID to 128-bit integer (in string form).",
-            "paragonie/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
-            "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
-            "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
-        },
-        "time": "2019-12-17T08:18:51+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "3.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Ramsey\\Uuid\\": "src/"
+{
+    "packages": [
+        {
+            "name": "brick/math",
+            "version": "0.12.1",
+            "version_normalized": "0.12.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/brick/math.git",
+                "reference": "f510c0a40911935b77b86859eb5223d58d660df1"
             },
-            "files": [
-                "src/functions.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Ben Ramsey",
-                "email": "ben@benramsey.com",
-                "homepage": "https://benramsey.com"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/brick/math/zipball/f510c0a40911935b77b86859eb5223d58d660df1",
+                "reference": "f510c0a40911935b77b86859eb5223d58d660df1",
+                "shasum": ""
             },
-            {
-                "name": "Marijn Huizendveld",
-                "email": "marijn.huizendveld@gmail.com"
+            "require": {
+                "php": "^8.1"
             },
-            {
-                "name": "Thibaud Fabre",
-                "email": "thibaud@aztech.io"
-            }
-        ],
-        "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
-        "homepage": "https://github.com/ramsey/uuid",
-        "keywords": [
-            "guid",
-            "identifier",
-            "uuid"
-        ]
-    },
-    {
-        "name": "srag/activerecordconfig",
-        "version": "0.21.1",
-        "version_normalized": "0.21.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/ActiveRecordConfig.git",
-            "reference": "a717d2f31140a78e71517a6b8d3972e107f1eacb"
+            "require-dev": {
+                "php-coveralls/php-coveralls": "^2.2",
+                "phpunit/phpunit": "^10.1",
+                "vimeo/psalm": "5.16.0"
+            },
+            "time": "2023-11-29T23:19:16+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Brick\\Math\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Arbitrary-precision arithmetic library",
+            "keywords": [
+                "Arbitrary-precision",
+                "BigInteger",
+                "BigRational",
+                "arithmetic",
+                "bigdecimal",
+                "bignum",
+                "bignumber",
+                "brick",
+                "decimal",
+                "integer",
+                "math",
+                "mathematics",
+                "rational"
+            ],
+            "support": {
+                "issues": "https://github.com/brick/math/issues",
+                "source": "https://github.com/brick/math/tree/0.12.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/BenMorel",
+                    "type": "github"
+                }
+            ],
+            "install-path": "../brick/math"
         },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/ActiveRecordConfig/zipball/a717d2f31140a78e71517a6b8d3972e107f1eacb",
-            "reference": "a717d2f31140a78e71517a6b8d3972e107f1eacb",
-            "shasum": ""
+        {
+            "name": "ramsey/collection",
+            "version": "2.0.0",
+            "version_normalized": "2.0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/collection.git",
+                "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
+                "reference": "a4b48764bfbb8f3a6a4d1aeb1a35bb5e9ecac4a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "captainhook/plugin-composer": "^5.3",
+                "ergebnis/composer-normalize": "^2.28.3",
+                "fakerphp/faker": "^1.21",
+                "hamcrest/hamcrest-php": "^2.0",
+                "jangregor/phpstan-prophecy": "^1.0",
+                "mockery/mockery": "^1.5",
+                "php-parallel-lint/php-console-highlighter": "^1.0",
+                "php-parallel-lint/php-parallel-lint": "^1.3",
+                "phpcsstandards/phpcsutils": "^1.0.0-rc1",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpstan/extension-installer": "^1.2",
+                "phpstan/phpstan": "^1.9",
+                "phpstan/phpstan-mockery": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3",
+                "phpunit/phpunit": "^9.5",
+                "psalm/plugin-mockery": "^1.1",
+                "psalm/plugin-phpunit": "^0.18.4",
+                "ramsey/coding-standard": "^2.0.3",
+                "ramsey/conventional-commits": "^1.3",
+                "vimeo/psalm": "^5.4"
+            },
+            "time": "2022-12-31T21:50:55+00:00",
+            "type": "library",
+            "extra": {
+                "captainhook": {
+                    "force-install": true
+                },
+                "ramsey/conventional-commits": {
+                    "configFile": "conventional-commits.json"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Ramsey\\Collection\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Ramsey",
+                    "email": "ben@benramsey.com",
+                    "homepage": "https://benramsey.com"
+                }
+            ],
+            "description": "A PHP library for representing and manipulating collections.",
+            "keywords": [
+                "array",
+                "collection",
+                "hash",
+                "map",
+                "queue",
+                "set"
+            ],
+            "support": {
+                "issues": "https://github.com/ramsey/collection/issues",
+                "source": "https://github.com/ramsey/collection/tree/2.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ramsey",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/ramsey/collection",
+                    "type": "tidelift"
+                }
+            ],
+            "install-path": "../ramsey/collection"
         },
-        "require": {
-            "php": ">=7.2",
-            "srag/custominputguis": ">=0.1.0",
-            "srag/dic": ">=0.1.0"
+        {
+            "name": "ramsey/uuid",
+            "version": "4.7.6",
+            "version_normalized": "4.7.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ramsey/uuid.git",
+                "reference": "91039bc1faa45ba123c4328958e620d382ec7088"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/91039bc1faa45ba123c4328958e620d382ec7088",
+                "reference": "91039bc1faa45ba123c4328958e620d382ec7088",
+                "shasum": ""
+            },
+            "require": {
+                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12",
+                "ext-json": "*",
+                "php": "^8.0",
+                "ramsey/collection": "^1.2 || ^2.0"
+            },
+            "replace": {
+                "rhumsaa/uuid": "self.version"
+            },
+            "require-dev": {
+                "captainhook/captainhook": "^5.10",
+                "captainhook/plugin-composer": "^5.3",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+                "doctrine/annotations": "^1.8",
+                "ergebnis/composer-normalize": "^2.15",
+                "mockery/mockery": "^1.3",
+                "paragonie/random-lib": "^2",
+                "php-mock/php-mock": "^2.2",
+                "php-mock/php-mock-mockery": "^1.3",
+                "php-parallel-lint/php-parallel-lint": "^1.1",
+                "phpbench/phpbench": "^1.0",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.8",
+                "phpstan/phpstan-mockery": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.1",
+                "phpunit/phpunit": "^8.5 || ^9",
+                "ramsey/composer-repl": "^1.4",
+                "slevomat/coding-standard": "^8.4",
+                "squizlabs/php_codesniffer": "^3.5",
+                "vimeo/psalm": "^4.9"
+            },
+            "suggest": {
+                "ext-bcmath": "Enables faster math with arbitrary-precision integers using BCMath.",
+                "ext-gmp": "Enables faster math with arbitrary-precision integers using GMP.",
+                "ext-uuid": "Enables the use of PeclUuidTimeGenerator and PeclUuidRandomGenerator.",
+                "paragonie/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
+                "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
+            },
+            "time": "2024-04-27T21:32:50+00:00",
+            "type": "library",
+            "extra": {
+                "captainhook": {
+                    "force-install": true
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Ramsey\\Uuid\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A PHP library for generating and working with universally unique identifiers (UUIDs).",
+            "keywords": [
+                "guid",
+                "identifier",
+                "uuid"
+            ],
+            "support": {
+                "issues": "https://github.com/ramsey/uuid/issues",
+                "source": "https://github.com/ramsey/uuid/tree/4.7.6"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ramsey",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/ramsey/uuid",
+                    "type": "tidelift"
+                }
+            ],
+            "install-path": "../ramsey/uuid"
         },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
+        {
+            "name": "srag/activerecordconfig",
+            "version": "0.21.1",
+            "version_normalized": "0.21.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/ActiveRecordConfig.git",
+                "reference": "a717d2f31140a78e71517a6b8d3972e107f1eacb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/ActiveRecordConfig/zipball/a717d2f31140a78e71517a6b8d3972e107f1eacb",
+                "reference": "a717d2f31140a78e71517a6b8d3972e107f1eacb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "srag/custominputguis": ">=0.1.0",
+                "srag/dic": ">=0.1.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-07-20T08:32:29+00:00",
+            "type": "library",
+            "extra": {
+                "ilias_plugin": {
+                    "ilias_min_version": "6.0",
+                    "ilias_max_version": "7.999"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\ActiveRecordConfig\\OnlyOffice\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Simple ActiveRecord config for ILIAS plugins",
+            "homepage": "https://github.com/fluxapps/ActiveRecordConfig",
+            "keywords": [
+                "ILIAS",
+                "activerecord",
+                "config"
+            ],
+            "support": {
+                "source": "https://github.com/fluxapps/ActiveRecordConfig/tree/v0.21.1"
+            },
+            "install-path": "../srag/activerecordconfig"
         },
-        "time": "2021-07-20T08:32:29+00:00",
-        "type": "library",
-        "extra": {
-            "ilias_plugin": {
-                "ilias_min_version": "6.0",
-                "ilias_max_version": "7.999"
-            }
+        {
+            "name": "srag/custominputguis",
+            "version": "0.43.1",
+            "version_normalized": "0.43.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/CustomInputGUIs.git",
+                "reference": "5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/CustomInputGUIs/zipball/5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23",
+                "reference": "5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "srag/dic": ">=0.1.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-07-20T08:32:21+00:00",
+            "type": "library",
+            "extra": {
+                "ilias_plugin": {
+                    "ilias_min_version": "6.0",
+                    "ilias_max_version": "7.999"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\CustomInputGUIs\\OnlyOffice\\": "src/"
+                },
+                "classmap": [
+                    "src/MultiSelectSearchNewInputGUI/class.ObjectChildrenAjaxAutoCompleteCtrl.php",
+                    "src/MultiSelectSearchNewInputGUI/class.ObjectsAjaxAutoCompleteCtrl.php",
+                    "src/MultiSelectSearchNewInputGUI/class.OrgUnitAjaxAutoCompleteCtrl.php",
+                    "src/MultiSelectSearchNewInputGUI/class.UsersAjaxAutoCompleteCtrl.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Custom Input-GUI's",
+            "homepage": "https://github.com/fluxapps/CustomInputGUIs",
+            "keywords": [
+                "ILIAS",
+                "PropertyForm",
+                "gui",
+                "input",
+                "table"
+            ],
+            "support": {
+                "source": "https://github.com/fluxapps/CustomInputGUIs/tree/v0.43.1"
+            },
+            "install-path": "../srag/custominputguis"
         },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\ActiveRecordConfig\\OnlyOffice\\": "src/"
-            }
+        {
+            "name": "srag/dic",
+            "version": "0.32.4",
+            "version_normalized": "0.32.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/DIC.git",
+                "reference": "92b966978ca7327502a65fc9ede718b2f3126bda"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/DIC/zipball/92b966978ca7327502a65fc9ede718b2f3126bda",
+                "reference": "92b966978ca7327502a65fc9ede718b2f3126bda",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-06-28T07:03:18+00:00",
+            "type": "library",
+            "extra": {
+                "ilias_plugin": {
+                    "ilias_min_version": "5.4.0",
+                    "ilias_max_version": "6.999"
+                },
+                "generate_plugin_readme_template": "ILIAS_LIBRARY",
+                "long_description_template": "src/LONG_DESCRIPTION.md"
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\DIC\\OnlyOffice\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Use all ILIAS globals in your class",
+            "homepage": "https://github.com/fluxapps/DIC",
+            "keywords": [
+                "ILIAS",
+                "dic",
+                "globals",
+                "trait"
+            ],
+            "install-path": "../srag/dic"
         },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Simple ActiveRecord config for ILIAS plugins",
-        "homepage": "https://github.com/fluxapps/ActiveRecordConfig",
-        "keywords": [
-            "ILIAS",
-            "activerecord",
-            "config"
-        ],
-        "support": {
-            "source": "https://github.com/fluxapps/ActiveRecordConfig/tree/v0.21.1"
+        {
+            "name": "srag/librariesnamespacechanger",
+            "version": "0.15.4",
+            "version_normalized": "0.15.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/LibrariesNamespaceChanger.git",
+                "reference": "41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/LibrariesNamespaceChanger/zipball/41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9",
+                "reference": "41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-06-28T07:04:17+00:00",
+            "type": "library",
+            "extra": {
+                "generate_plugin_readme_template": "LIBRARY",
+                "long_description_template": "src/LONG_DESCRIPTION.md"
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\LibrariesNamespaceChanger\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Change namespace of libraries to plugin namespace",
+            "homepage": "https://github.com/fluxapps/LibrariesNamespaceChanger",
+            "keywords": [
+                "changer",
+                "libraries",
+                "namespace"
+            ],
+            "install-path": "../srag/librariesnamespacechanger"
+        },
+        {
+            "name": "srag/librarylanguageinstaller",
+            "version": "1.2.1",
+            "version_normalized": "1.2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/LibraryLanguageInstaller.git",
+                "reference": "7c0e146d92f66368e9c756bc89e257fc60ea3e59"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/LibraryLanguageInstaller/zipball/7c0e146d92f66368e9c756bc89e257fc60ea3e59",
+                "reference": "7c0e146d92f66368e9c756bc89e257fc60ea3e59",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "srag/dic": ">=0.1.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-07-20T08:31:18+00:00",
+            "type": "library",
+            "extra": {
+                "ilias_plugin": {
+                    "ilias_min_version": "6.0",
+                    "ilias_max_version": "7.999"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\LibraryLanguageInstaller\\OnlyOffice\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Install additional and external lang files for a plugin",
+            "homepage": "https://github.com/fluxapps/LibraryLanguageInstaller",
+            "keywords": [
+                "ILIAS",
+                "installer",
+                "language",
+                "library"
+            ],
+            "support": {
+                "source": "https://github.com/fluxapps/LibraryLanguageInstaller/tree/v1.2.1"
+            },
+            "install-path": "../srag/librarylanguageinstaller"
+        },
+        {
+            "name": "srag/removeplugindataconfirm",
+            "version": "0.8.1",
+            "version_normalized": "0.8.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fluxapps/RemovePluginDataConfirm.git",
+                "reference": "c2bdd6425e04edc3d49da36b0822ba2b33e21600"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fluxapps/RemovePluginDataConfirm/zipball/c2bdd6425e04edc3d49da36b0822ba2b33e21600",
+                "reference": "c2bdd6425e04edc3d49da36b0822ba2b33e21600",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "srag/dic": ">=0.1.0",
+                "srag/librarylanguageinstaller": ">=0.1.0"
+            },
+            "require-dev": {
+                "srag/generateplugininfoshelper": ">=0.1.0"
+            },
+            "time": "2021-07-20T08:30:56+00:00",
+            "type": "library",
+            "extra": {
+                "ilias_plugin": {
+                    "ilias_min_version": "6.0",
+                    "ilias_max_version": "7.999"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "srag\\RemovePluginDataConfirm\\OnlyOffice\\": "src/"
+                },
+                "classmap": [
+                    "src/class.RemovePluginDataConfirmCtrl.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "fluxlabs",
+                    "email": "support@fluxlabs.ch",
+                    "homepage": "https://fluxlabs.ch",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Demand if plugin data should be removed on uninstall",
+            "homepage": "https://github.com/fluxapps/RemovePluginDataConfirm",
+            "keywords": [
+                "ILIAS",
+                "confirm",
+                "data",
+                "plugin",
+                "uninstall"
+            ],
+            "support": {
+                "source": "https://github.com/fluxapps/RemovePluginDataConfirm/tree/v0.8.1"
+            },
+            "install-path": "../srag/removeplugindataconfirm"
         }
-    },
-    {
-        "name": "srag/custominputguis",
-        "version": "0.43.1",
-        "version_normalized": "0.43.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/CustomInputGUIs.git",
-            "reference": "5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/CustomInputGUIs/zipball/5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23",
-            "reference": "5e211fb161d3ae77b79c8ce0a5c6be5fe5147c23",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.2",
-            "srag/dic": ">=0.1.0"
-        },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
-        },
-        "time": "2021-07-20T08:32:21+00:00",
-        "type": "library",
-        "extra": {
-            "ilias_plugin": {
-                "ilias_min_version": "6.0",
-                "ilias_max_version": "7.999"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\CustomInputGUIs\\OnlyOffice\\": "src/"
-            },
-            "classmap": [
-                "src/MultiSelectSearchNewInputGUI/class.ObjectChildrenAjaxAutoCompleteCtrl.php",
-                "src/MultiSelectSearchNewInputGUI/class.ObjectsAjaxAutoCompleteCtrl.php",
-                "src/MultiSelectSearchNewInputGUI/class.OrgUnitAjaxAutoCompleteCtrl.php",
-                "src/MultiSelectSearchNewInputGUI/class.UsersAjaxAutoCompleteCtrl.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Custom Input-GUI's",
-        "homepage": "https://github.com/fluxapps/CustomInputGUIs",
-        "keywords": [
-            "ILIAS",
-            "PropertyForm",
-            "gui",
-            "input",
-            "table"
-        ],
-        "support": {
-            "source": "https://github.com/fluxapps/CustomInputGUIs/tree/v0.43.1"
-        }
-    },
-    {
-        "name": "srag/dic",
-        "version": "0.32.4",
-        "version_normalized": "0.32.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/DIC.git",
-            "reference": "92b966978ca7327502a65fc9ede718b2f3126bda"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/DIC/zipball/92b966978ca7327502a65fc9ede718b2f3126bda",
-            "reference": "92b966978ca7327502a65fc9ede718b2f3126bda",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.0"
-        },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
-        },
-        "time": "2021-06-28T07:03:18+00:00",
-        "type": "library",
-        "extra": {
-            "ilias_plugin": {
-                "ilias_min_version": "5.4.0",
-                "ilias_max_version": "6.999"
-            },
-            "generate_plugin_readme_template": "ILIAS_LIBRARY",
-            "long_description_template": "src/LONG_DESCRIPTION.md"
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\DIC\\OnlyOffice\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Use all ILIAS globals in your class",
-        "homepage": "https://github.com/fluxapps/DIC",
-        "keywords": [
-            "ILIAS",
-            "dic",
-            "globals",
-            "trait"
-        ]
-    },
-    {
-        "name": "srag/librariesnamespacechanger",
-        "version": "0.15.4",
-        "version_normalized": "0.15.4.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/LibrariesNamespaceChanger.git",
-            "reference": "41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/LibrariesNamespaceChanger/zipball/41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9",
-            "reference": "41331e03a86ab4f4ae650df70ef2e4cbc5fc4cf9",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.0"
-        },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
-        },
-        "time": "2021-06-28T07:04:17+00:00",
-        "type": "library",
-        "extra": {
-            "generate_plugin_readme_template": "LIBRARY",
-            "long_description_template": "src/LONG_DESCRIPTION.md"
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\LibrariesNamespaceChanger\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Change namespace of libraries to plugin namespace",
-        "homepage": "https://github.com/fluxapps/LibrariesNamespaceChanger",
-        "keywords": [
-            "changer",
-            "libraries",
-            "namespace"
-        ]
-    },
-    {
-        "name": "srag/librarylanguageinstaller",
-        "version": "1.2.1",
-        "version_normalized": "1.2.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/LibraryLanguageInstaller.git",
-            "reference": "7c0e146d92f66368e9c756bc89e257fc60ea3e59"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/LibraryLanguageInstaller/zipball/7c0e146d92f66368e9c756bc89e257fc60ea3e59",
-            "reference": "7c0e146d92f66368e9c756bc89e257fc60ea3e59",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.2",
-            "srag/dic": ">=0.1.0"
-        },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
-        },
-        "time": "2021-07-20T08:31:18+00:00",
-        "type": "library",
-        "extra": {
-            "ilias_plugin": {
-                "ilias_min_version": "6.0",
-                "ilias_max_version": "7.999"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\LibraryLanguageInstaller\\OnlyOffice\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Install additional and external lang files for a plugin",
-        "homepage": "https://github.com/fluxapps/LibraryLanguageInstaller",
-        "keywords": [
-            "ILIAS",
-            "installer",
-            "language",
-            "library"
-        ],
-        "support": {
-            "source": "https://github.com/fluxapps/LibraryLanguageInstaller/tree/v1.2.1"
-        }
-    },
-    {
-        "name": "srag/removeplugindataconfirm",
-        "version": "0.8.1",
-        "version_normalized": "0.8.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fluxapps/RemovePluginDataConfirm.git",
-            "reference": "c2bdd6425e04edc3d49da36b0822ba2b33e21600"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fluxapps/RemovePluginDataConfirm/zipball/c2bdd6425e04edc3d49da36b0822ba2b33e21600",
-            "reference": "c2bdd6425e04edc3d49da36b0822ba2b33e21600",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.2",
-            "srag/dic": ">=0.1.0",
-            "srag/librarylanguageinstaller": ">=0.1.0"
-        },
-        "require-dev": {
-            "srag/generateplugininfoshelper": ">=0.1.0"
-        },
-        "time": "2021-07-20T08:30:56+00:00",
-        "type": "library",
-        "extra": {
-            "ilias_plugin": {
-                "ilias_min_version": "6.0",
-                "ilias_max_version": "7.999"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "srag\\RemovePluginDataConfirm\\OnlyOffice\\": "src/"
-            },
-            "classmap": [
-                "src/class.RemovePluginDataConfirmCtrl.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-3.0-only"
-        ],
-        "authors": [
-            {
-                "name": "fluxlabs",
-                "email": "support@fluxlabs.ch",
-                "homepage": "https://fluxlabs.ch",
-                "role": "Developer"
-            }
-        ],
-        "description": "Demand if plugin data should be removed on uninstall",
-        "homepage": "https://github.com/fluxapps/RemovePluginDataConfirm",
-        "keywords": [
-            "ILIAS",
-            "confirm",
-            "data",
-            "plugin",
-            "uninstall"
-        ],
-        "support": {
-            "source": "https://github.com/fluxapps/RemovePluginDataConfirm/tree/v0.8.1"
-        }
-    },
-    {
-        "name": "symfony/polyfill-ctype",
-        "version": "v1.23.0",
-        "version_normalized": "1.23.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/polyfill-ctype.git",
-            "reference": "46cd95797e9df938fdd2b03693b5fca5e64b01ce"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/46cd95797e9df938fdd2b03693b5fca5e64b01ce",
-            "reference": "46cd95797e9df938fdd2b03693b5fca5e64b01ce",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=7.1"
-        },
-        "suggest": {
-            "ext-ctype": "For best performance"
-        },
-        "time": "2021-02-19T12:13:01+00:00",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-main": "1.23-dev"
-            },
-            "thanks": {
-                "name": "symfony/polyfill",
-                "url": "https://github.com/symfony/polyfill"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Polyfill\\Ctype\\": ""
-            },
-            "files": [
-                "bootstrap.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Gert de Pagter",
-                "email": "BackEndTea@gmail.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony polyfill for ctype functions",
-        "homepage": "https://symfony.com",
-        "keywords": [
-            "compatibility",
-            "ctype",
-            "polyfill",
-            "portable"
-        ],
-        "funding": [
-            {
-                "url": "https://symfony.com/sponsor",
-                "type": "custom"
-            },
-            {
-                "url": "https://github.com/fabpot",
-                "type": "github"
-            },
-            {
-                "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                "type": "tidelift"
-            }
-        ]
-    }
-]
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
