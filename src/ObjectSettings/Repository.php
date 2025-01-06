@@ -14,14 +14,13 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 final class Repository
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
 
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -35,7 +34,7 @@ final class Repository
 
     }
 
-    public function cloneObjectSettings(ObjectSettings $object_settings) : ObjectSettings
+    public function cloneObjectSettings(ObjectSettings $object_settings): ObjectSettings
     {
         return $object_settings->copy();
     }
@@ -50,15 +49,11 @@ final class Repository
         self::dic()->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
 
-    public function factory() : Factory
+    public function factory(): Factory
     {
         return Factory::getInstance();
     }
 
-    /**
-     * @param int $obj_id
-     * @return ObjectSettings|null
-     */
     public function getObjectSettingsById(int $obj_id): ?ObjectSettings
     {
         /**
@@ -77,7 +72,7 @@ final class Repository
         ObjectSettings::updateDB();
     }
 
-    public function storeObjectSettings(ObjectSettings $object_settings):void
+    public function storeObjectSettings(ObjectSettings $object_settings): void
     {
         $object_settings->store();
     }

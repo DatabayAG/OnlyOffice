@@ -19,13 +19,12 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 final class Repository
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
 
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -39,7 +38,7 @@ final class Repository
 
     }
 
-    public function config() : ConfigRepository
+    public function config(): ConfigRepository
     {
         return ConfigRepository::getInstance();
     }
@@ -56,7 +55,7 @@ final class Repository
         $this->objectSettings()->installTables();
     }
 
-    public function objectSettings() : ObjectSettingsRepository
+    public function objectSettings(): ObjectSettingsRepository
     {
         return ObjectSettingsRepository::getInstance();
     }

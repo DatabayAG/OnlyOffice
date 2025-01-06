@@ -13,11 +13,11 @@ use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
  */
 interface FileVersionRepository
 {
-    public function create(UUID $file_uuid, int $user_id, ilDateTime $created_at, string $url, int $version = -1) : int;
+    public function create(UUID $file_uuid, int $user_id, ilDateTime $created_at, string $url, int $version = -1): int;
 
-    public function getByObjectID(int $object_id) : FileVersion;
+    public function getByObjectID(int $object_id): FileVersion;
 
-    public function getAllVersions(UUID $file_uuid) : array;
+    public function getAllVersions(UUID $file_uuid): array;
 
     public function getLatestVersion(UUID $file_uuid): ?FileVersion;
 

@@ -38,7 +38,7 @@ class FileChange
         $this->change_id = $change_id;
     }
 
-    public function getChangeId() : int
+    public function getChangeId(): int
     {
         return $this->change_id;
     }
@@ -48,7 +48,7 @@ class FileChange
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid() : UUID
+    public function getFileUuid(): UUID
     {
         return $this->file_uuid;
     }
@@ -58,7 +58,7 @@ class FileChange
         $this->version = $version;
     }
 
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -68,7 +68,7 @@ class FileChange
         $this->changesObjectString = $changes;
     }
 
-    public function getChangesObjectString() : string
+    public function getChangesObjectString(): string
     {
         return $this->changesObjectString;
     }
@@ -78,7 +78,7 @@ class FileChange
         $this->serverVersion = $serverVersion;
     }
 
-    public function getServerVersion() : string
+    public function getServerVersion(): string
     {
         return $this->serverVersion;
     }
@@ -88,7 +88,7 @@ class FileChange
         $this->changesUrl = $changesUrl;
     }
 
-    public function getChangesUrl() : string
+    public function getChangesUrl(): string
     {
         return $this->changesUrl;
     }

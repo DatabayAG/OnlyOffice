@@ -5,7 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use arException;
 use ilDateTime;
 use ilDateTimeException;
-use ILIAS\DI\Container;
 use ilTimeZone;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
@@ -27,7 +26,7 @@ class ilDBFileVersionRepository implements FileVersionRepository
         ilDateTime $created_at,
         string $url,
         int $version = -1
-    ) : int {
+    ): int {
         $file_version_AR = new FileVersionAR();
         $file_version_AR->setFileUuid($file_uuid);
         if ($version < 0) {
@@ -46,29 +45,31 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $file_version_AR->getVersion();
     }
 
-    protected function determineVersion(UUID $file_uuid) : int
+    protected function determineVersion(UUID $file_uuid): int
     {
         /** @var FileVersionAR $latest_version */
-        $latest_version = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])->orderBy('version',
-            'desc')->first();
+        $latest_version = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])->orderBy(
+            'version',
+            'desc'
+        )->first();
         return $latest_version ? $latest_version->getVersion() + 1 : FileVersion::FIRST_VERSION;
     }
 
-    public function getByObjectID(int $object_id) : FileVersion
+    public function getByObjectID(int $object_id): FileVersion
     {
         /** @var FileVersionAR $file_version_ar */
         $file_version_ar = FileVersionAR::where(['id' => $object_id])->first();
         return $this->buildFileVersionFromAR($file_version_ar);
     }
 
-    public function getAllVersions(UUID $file_uuid) : array
+    public function getAllVersions(UUID $file_uuid): array
     {
         /** @var array $all_file_version_ar */
         $all_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])
                                             ->orderBy('version', 'desc')
                                             ->get();
         $length = count($all_file_version_ar);
-        $result = array();
+        $result = [];
         foreach ($all_file_version_ar as $fileVersionAr) {
             $fileVersion = $this->buildFileVersionFromAR($fileVersionAr);
             $result[] = $fileVersion;
@@ -76,19 +77,19 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $result;
     }
 
-    public function getLatestVersion(UUID $file_uuid) : ?FileVersion
+    public function getLatestVersion(UUID $file_uuid): ?FileVersion
     {
         /** @var FileVersionAR $latest_file_version_ar */
         $latest_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])
                                                ->orderBy('version', 'desc')
                                                ->first();
-        if(is_null($latest_file_version_ar)) {
+        if (is_null($latest_file_version_ar)) {
             return null;
         }
         return $this->buildFileVersionFromAR($latest_file_version_ar);
     }
 
-    protected function buildFileVersionFromAR(FileVersionAR $ar) : FileVersion
+    protected function buildFileVersionFromAR(FileVersionAR $ar): FileVersion
     {
         $version = $ar->getVersion();
         $created_at = $ar->getCreatedAt();
@@ -98,7 +99,7 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return new FileVersion($version, $created_at, $user_id, $url, $file_uuid);
     }
 
-    public function getPreviousVersion(string $uuid, int $version) : FileVersion
+    public function getPreviousVersion(string $uuid, int $version): FileVersion
     {
         /** @var FileVersionAR $previous_ar */
         $previous_ar = FileVersionAR::where(['file_uuid' => $uuid, 'version' => ($version - 1)])->first();

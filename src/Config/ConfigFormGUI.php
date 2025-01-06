@@ -6,15 +6,7 @@ use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficeConfigGUI;
 use ilOnlyOfficePlugin;
 use ilTextInputGUI;
-use srag\ActiveRecordConfig\OnlyOffice\Config\Config;
 use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
-use ilFileInputGUI;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\DIC\OnlyOffice\DICTrait;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 /**
  * Class ConfigFormGUI
@@ -25,20 +17,18 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ConfigFormGUI extends PropertyFormGUI
 {
-
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
-    const KEY_ONLYOFFICE_URL = "onlyoffice_url";
-    const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
-    const KEY_NUM_VERSIONS = "number_of_versions";
+    public const KEY_ONLYOFFICE_URL = "onlyoffice_url";
+    public const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
+    public const KEY_NUM_VERSIONS = "number_of_versions";
 
-    const LANG_MODULE = ilOnlyOfficeConfigGUI::LANG_MODULE;
+    public const LANG_MODULE = ilOnlyOfficeConfigGUI::LANG_MODULE;
 
     /**
      * ConfigFormGUI constructor
-     * @param ilOnlyOfficeConfigGUI $parent
      */
     public function __construct(ilOnlyOfficeConfigGUI $parent)
     {

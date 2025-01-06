@@ -13,8 +13,6 @@ abstract class xonoAbstractGUI
 
     /**
      * xoofAbstractGUI constructor.
-     * @param Container          $dic
-     * @param ilOnlyOfficePlugin $plugin
      */
     public function __construct(Container $dic, ilOnlyOfficePlugin $plugin)
     {

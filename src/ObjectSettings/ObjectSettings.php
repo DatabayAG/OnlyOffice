@@ -17,25 +17,23 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 class ObjectSettings extends ActiveRecord
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
 
-    const TABLE_NAME = "rep_robj_xono_set";
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const TABLE_NAME = "rep_robj_xono_set";
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
-    public function getConnectorContainerName() : string
+    public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
 
-    public static function returnDbTableName() : string
+    public static function returnDbTableName(): string
     {
         return self::TABLE_NAME;
     }
 
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       8
@@ -45,7 +43,6 @@ class ObjectSettings extends ActiveRecord
     protected ?int $obj_id;
 
     /**
-     * @var string
      * @con_has_field  true
      * @con_fieldtype  text
      * @con_is_notnull true
@@ -53,14 +50,12 @@ class ObjectSettings extends ActiveRecord
     protected string $title;
 
     /**
-     * @var string
      * @con_has_field true
      * @con_fieldtype text
      */
     protected string $desc;
 
     /**
-     * @var bool
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       1
@@ -69,7 +64,6 @@ class ObjectSettings extends ActiveRecord
     protected bool $is_online = false;
 
     /**
-     * @var string
      * @con_has_field  true
      * @con_fieldtype  text
      * @con_length     10
@@ -102,7 +96,6 @@ class ObjectSettings extends ActiveRecord
     protected ?string $end_time = null;
 
     /**
-     * @var bool
      * @con_has_field  true
      * @con_fieldtype  integer
      * @con_length     1
@@ -112,7 +105,6 @@ class ObjectSettings extends ActiveRecord
     /**
      * ObjectSettings constructor
      * @param int              $primary_key_value
-     * @param arConnector|null $connector
      */
     public function __construct(/*int*/ $primary_key_value = 0, arConnector $connector = null)
     {
@@ -145,7 +137,7 @@ class ObjectSettings extends ActiveRecord
         }
     }
 
-    public function getObjId() : int
+    public function getObjId(): int
     {
         return $this->obj_id;
     }
@@ -155,7 +147,7 @@ class ObjectSettings extends ActiveRecord
         $this->obj_id = $obj_id;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -165,7 +157,7 @@ class ObjectSettings extends ActiveRecord
         $this->title = $title;
     }
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return $this->desc;
     }
@@ -175,7 +167,8 @@ class ObjectSettings extends ActiveRecord
         $this->desc = $description;
     }
 
-    public function allowEdit(): bool {
+    public function allowEdit(): bool
+    {
         return $this->allow_edit;
     }
 
@@ -184,7 +177,7 @@ class ObjectSettings extends ActiveRecord
         $this->allow_edit = $allow_edit;
     }
 
-    public function isOnline() : bool
+    public function isOnline(): bool
     {
         return $this->is_online;
     }
@@ -194,7 +187,7 @@ class ObjectSettings extends ActiveRecord
         $this->is_online = $is_online;
     }
 
-    public function getOpen() : string
+    public function getOpen(): string
     {
         return $this->open_setting;
     }
@@ -204,7 +197,7 @@ class ObjectSettings extends ActiveRecord
         $this->open_setting = $open;
     }
 
-    public function getStartTime() : ?string
+    public function getStartTime(): ?string
     {
         return $this->start_time;
     }
@@ -214,7 +207,7 @@ class ObjectSettings extends ActiveRecord
         $this->start_time = $start_time;
     }
 
-    public function getEndTime() : ?string
+    public function getEndTime(): ?string
     {
         return $this->end_time;
     }
@@ -224,7 +217,7 @@ class ObjectSettings extends ActiveRecord
         $this->end_time = $end_time;
     }
 
-    public function isLimitedPeriod() : ?bool
+    public function isLimitedPeriod(): ?bool
     {
         return $this->limited_period;
     }

@@ -17,13 +17,12 @@ use srag\ActiveRecordConfig\OnlyOffice\Config\Config;
  */
 final class Repository extends AbstractRepository
 {
-
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
 
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -37,17 +36,17 @@ final class Repository extends AbstractRepository
         parent::__construct();
     }
 
-    public function factory() : AbstractFactory
+    public function factory(): AbstractFactory
     {
         return Factory::getInstance();
     }
 
-    protected function getTableName() : string
+    protected function getTableName(): string
     {
         return ilOnlyOfficePlugin::PLUGIN_ID . "_config";
     }
 
-    protected function getFields() : array
+    protected function getFields(): array
     {
         return [
             ConfigFormGUI::KEY_ONLYOFFICE_URL => Config::TYPE_STRING,

@@ -23,7 +23,7 @@ class File
     /**
      * Determines the doc type (word, cell, or slide) based on the file extension
      */
-    public static function determineDocType(string $extension, bool $formatForEditor = true) : string
+    public static function determineDocType(string $extension, bool $formatForEditor = true): string
     {
         switch ($extension) {
             case "pptx":
@@ -85,10 +85,6 @@ class File
     /**
      * File constructor.
      *
-     * @param UUID          $uuid
-     * @param int           $obj_id
-     * @param string        $title
-     * @param string        $file_type
      */
     public function __construct(UUID $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
     {
@@ -99,22 +95,22 @@ class File
         $this->mime_type = $mime_type;
     }
 
-    public function getUuid() : UUID
+    public function getUuid(): UUID
     {
         return $this->uuid;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getObjId() : int
+    public function getObjId(): int
     {
         return $this->obj_id;
     }
 
-    public function getFileType() : string
+    public function getFileType(): string
     {
         return $this->file_type;
     }
@@ -124,7 +120,8 @@ class File
         return $this->uuid;
     }
 
-    public function getMimeType(): string {
+    public function getMimeType(): string
+    {
         return $this->mime_type;
     }
 

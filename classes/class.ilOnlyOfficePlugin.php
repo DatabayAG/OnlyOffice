@@ -8,6 +8,8 @@ use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
+use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 /**
  * Class ilOnlyOfficePlugin
@@ -17,19 +19,18 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepositor
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-
     use RepositoryObjectPluginUninstallTrait;
     use OnlyOfficeTrait;
 
-    const PLUGIN_ID = "xono";
-    const PLUGIN_NAME = "OnlyOffice";
-    const PLUGIN_CLASS_NAME = self::class;
+    public const PLUGIN_ID = "xono";
+    public const PLUGIN_NAME = "OnlyOffice";
+    public const PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
 
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
-        if (static::$instance === NULL) {
+        if (static::$instance === null) {
             global $DIC;
 
             /** @var $component_factory ilComponentFactory */
@@ -44,22 +45,21 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     }
 
     public function __construct(
-        ilDBInterface              $db,
+        ilDBInterface $db,
         ilComponentRepositoryWrite $component_repository,
-        string                     $id
-    )
-    {
+        string $id
+    ) {
         global $DIC;
         parent::__construct($db, $component_repository, $id);
         $this->db = $DIC->database();
     }
 
-    public function getPluginName() : string
+    public function getPluginName(): string
     {
         return self::PLUGIN_NAME;
     }
 
-    public function updateLanguages(/*?array*/ $a_lang_keys = null):void
+    public function updateLanguages(/*?array*/ $a_lang_keys = null): void
     {
         parent::updateLanguages($a_lang_keys);
 
@@ -71,7 +71,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         self::onlyOffice()->dropTables();
     }
 
-    protected function shouldUseOneUpdateStepOnly() : bool
+    protected function shouldUseOneUpdateStepOnly(): bool
     {
         return false;
     }
@@ -79,17 +79,21 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     protected function uninstallCustom(): void
     {
         require_once("./Services/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
-        $op_id = \ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
-        $type = \ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
-        \ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);
+        $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
+        $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
+        ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);
 
         // Delete all file data
         global $DIC;
-        $all_files = \srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR::get();
-        $storage = new StorageService($DIC, new ilDBFileVersionRepository(), new ilDBFileRepository(),
-            new ilDBFileChangeRepository());
+        $all_files = FileAR::get();
+        $storage = new StorageService(
+            $DIC,
+            new ilDBFileVersionRepository(),
+            new ilDBFileRepository(),
+            new ilDBFileChangeRepository()
+        );
         $storage->deleteAll();
-        \srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings::truncateDB();
+        ObjectSettings::truncateDB();
 
     }
 

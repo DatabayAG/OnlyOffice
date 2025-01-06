@@ -15,8 +15,7 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
  */
 class FileVersionAR extends ActiveRecord
 {
-
-    const TABLE_NAME = 'xono_file_version';
+    public const TABLE_NAME = 'xono_file_version';
 
     public function getConnectorContainerName(): string
     {
@@ -24,7 +23,6 @@ class FileVersionAR extends ActiveRecord
     }
 
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       8
@@ -34,7 +32,6 @@ class FileVersionAR extends ActiveRecord
      */
     protected ?int $id;
     /**
-     * @var UUID
      * @con_has_field    true
      * @con_fieldtype    text
      * @con_length       256
@@ -42,7 +39,6 @@ class FileVersionAR extends ActiveRecord
      */
     protected UUID $file_uuid;
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       8
@@ -50,7 +46,6 @@ class FileVersionAR extends ActiveRecord
      */
     protected int $version;
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       8
@@ -58,21 +53,19 @@ class FileVersionAR extends ActiveRecord
      */
     protected int $user_id;
     /**
-     * @var ilDateTime
      * @db_has_field         true
      * @db_fieldtype         timestamp
      * @con_is_notnull       true
      */
     protected ilDateTime $created_at;
     /**
-     * @var string
      * @db_has_field         true
      * @db_fieldtype         text
      * @con_is_notnull       true
      */
     protected string $url;
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->user_id;
     }
@@ -82,7 +75,7 @@ class FileVersionAR extends ActiveRecord
         $this->user_id = $user_id;
     }
 
-    public function getId() : int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -92,7 +85,7 @@ class FileVersionAR extends ActiveRecord
         $this->id = $id;
     }
 
-    public function getFileUuid() : UUID
+    public function getFileUuid(): UUID
     {
         return $this->file_uuid;
     }
@@ -102,7 +95,7 @@ class FileVersionAR extends ActiveRecord
         $this->file_uuid = $file_uuid;
     }
 
-    public function getCreatedAt() : ilDateTime
+    public function getCreatedAt(): ilDateTime
     {
         $this->created_at->switchTimeZone(ilTimeZone::UTC);
         return $this->created_at;
@@ -113,7 +106,7 @@ class FileVersionAR extends ActiveRecord
         $this->created_at = $created_at;
     }
 
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -123,7 +116,7 @@ class FileVersionAR extends ActiveRecord
         $this->version = $version;
     }
 
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -146,8 +139,6 @@ class FileVersionAR extends ActiveRecord
     }
 
     /**
-     * @param $field_name
-     * @param $field_value
      * @throws ilDateTimeException
      */
     public function wakeUp($field_name, $field_value)

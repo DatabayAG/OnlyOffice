@@ -17,7 +17,6 @@ class UUID
     protected string $uuid;
 
     /**
-     * @param string $uuid
      * @throws Exception
      */
     public function __construct(string $uuid = '')
@@ -25,7 +24,7 @@ class UUID
         $this->uuid = $uuid !== '' ? $uuid : RamseyUuid::uuid4()->toString();
     }
 
-    public function asString() : string
+    public function asString(): string
     {
         return $this->uuid;
     }
