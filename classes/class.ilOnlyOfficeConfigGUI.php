@@ -5,7 +5,6 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileTemplate;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDbFileTemplateRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
@@ -23,23 +22,22 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    const CMD_CONFIGURE = "configure";
-    const CMD_TEMPLATES = "configureTemplates";
-    const CMD_CREATE_TEMPLATE = "createTemplate";
-    const CMD_EDIT_TEMPLATE = "editTemplate";
-    const CMD_SAVE_EDIT_TEMPLATE = "saveEditTemplate";
-    const CMD_DELETE_TEMPLATE = "deleteTemplate";
-    const CMD_UPDATE_CONFIGURE = "updateConfigure";
-    const CMD_UPDATE_TEMPLATES = "updateTemplates";
-    const CMD_CONFIRM_DELETE = "confirmDelete";
-    const LANG_MODULE = "config";
-    const TAB_CONFIGURATION = "configuration";
-    const TAB_SUB_CONFIGURATION = "subConfiguration";
-    const TAB_SUB_TEMPLATES = "templates";
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const CMD_CONFIGURE = "configure";
+    public const CMD_TEMPLATES = "configureTemplates";
+    public const CMD_CREATE_TEMPLATE = "createTemplate";
+    public const CMD_EDIT_TEMPLATE = "editTemplate";
+    public const CMD_SAVE_EDIT_TEMPLATE = "saveEditTemplate";
+    public const CMD_DELETE_TEMPLATE = "deleteTemplate";
+    public const CMD_UPDATE_CONFIGURE = "updateConfigure";
+    public const CMD_UPDATE_TEMPLATES = "updateTemplates";
+    public const CMD_CONFIRM_DELETE = "confirmDelete";
+    public const LANG_MODULE = "config";
+    public const TAB_CONFIGURATION = "configuration";
+    public const TAB_SUB_CONFIGURATION = "subConfiguration";
+    public const TAB_SUB_TEMPLATES = "templates";
     protected StorageService $storage_service;
     private ilPlugin $pl;
     private $tpl;
@@ -62,7 +60,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
         $this->tpl = $DIC["tpl"];
     }
 
@@ -241,7 +239,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
             return;
         }
-        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_configuration_saved"), true);
+        $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_configuration_saved"), true);
         self::dic()->ctrl()->redirect($this, self::CMD_CONFIGURE);
     }
 
@@ -263,8 +261,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $result = end($results);
 
         // Return if file extension not whitelisted by ILIAS instance
-        if ( str_contains("sec", !ilFileUtils::getSafeFilename($result->getName())) === true) {
-            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_configuration_saved"), true);
+        if (str_contains("sec", !ilFileUtils::getSafeFilename($result->getName())) === true) {
+            $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_configuration_saved"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
@@ -274,13 +272,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         // Return if file extension not recognized by OnlyOffice
         if (empty($path)) {
-            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
+            $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_unrecognised_extension"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
         }
 
-        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_saved"), true);
+        $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_saved"), true);
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
@@ -342,7 +340,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_invalid_extension"), true);
+                $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
                     "title" => $_POST["title"],
@@ -361,7 +359,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
 
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
+                $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_unrecognised_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
                     "title" => $_POST["title"],
@@ -377,7 +375,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $path = $this->storage_service->createFileTemplate($result, $_POST["title"], $_POST["desc"]);
         }
 
-        $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_edited"), true);
+        $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_edited"), true);
 
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
@@ -407,7 +405,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $success = $this->storage_service->deleteFileTemplate($target, $extension);
 
         if ($success) {
-            $this->tpl->setOnScreenMessage('success',$this->pl->txt("config_template_deleted"), true);
+            $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_deleted"), true);
         }
 
         self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);

@@ -11,7 +11,7 @@ class DateFetcher
     use DICTrait;
     use OnlyOfficeTrait;
 
-    public static function editingPeriodIsFetchable($obj_id) : bool
+    public static function editingPeriodIsFetchable($obj_id): bool
     {
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
         if (!is_null($object_settings) && !is_null($object_settings->isLimitedPeriod())) {
@@ -20,7 +20,7 @@ class DateFetcher
         return false;
     }
 
-    public static function fetchEditingPeriod($obj_id) : string
+    public static function fetchEditingPeriod($obj_id): string
     {
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
         $converted_start_time = new ilDateTime($object_settings->getStartTime(), IL_CAL_DATETIME, ilTimeZone::UTC);

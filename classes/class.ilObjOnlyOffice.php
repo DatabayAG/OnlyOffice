@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . "/../vendor/autoload.php";
 use srag\DIC\OnlyOffice\DICTrait;
 use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
@@ -15,11 +16,10 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
  */
 class ilObjOnlyOffice extends ilObjectPlugin
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
 
     private ilPlugin $pl;
@@ -37,11 +37,11 @@ class ilObjOnlyOffice extends ilObjectPlugin
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
         $this->tpl = $DIC["tpl"];
     }
 
-    public final function initType(): void
+    final public function initType(): void
     {
         $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
     }
@@ -49,10 +49,10 @@ class ilObjOnlyOffice extends ilObjectPlugin
     protected function beforeCreate(): bool
     {
         if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
-            $start_time =  new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
+            $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
             $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("settings_time_greater_than"), true);
+                $this->tpl->setOnScreenMessage('failure', $this->pl->txt("settings_time_greater_than"), true);
                 self::dic()->ctrl()->redirectByClass("ilRepositoryGUI");
                 return false;
             }
@@ -141,24 +141,34 @@ class ilObjOnlyOffice extends ilObjectPlugin
         if ($this->object_settings !== null) {
             self::onlyOffice()->objectSettings()->deleteObjectSettings($this->object_settings);
         }
-        $storage = new StorageService(self::dic()->dic(), new ilDBFileVersionRepository(), new ilDBFileRepository(),
-            new ilDBFileChangeRepository());
+        $storage = new StorageService(
+            self::dic()->dic(),
+            new ilDBFileVersionRepository(),
+            new ilDBFileRepository(),
+            new ilDBFileChangeRepository()
+        );
         $storage->deleteFile($this->getId());
 
     }
 
-    protected function doCloneObject($new_obj, int$a_target_id, ?int $a_copy_id = null
-    ): void
-    {
+    protected function doCloneObject(
+        $new_obj,
+        int $a_target_id,
+        ?int $a_copy_id = null
+    ): void {
         $new_obj->object_settings = self::onlyOffice()->objectSettings()->cloneObjectSettings($this->object_settings);
         $new_obj->object_settings->setObjId($new_obj->id);
         self::onlyOffice()->objectSettings()->storeObjectSettings($new_obj->object_settings);
-        $storage = new StorageService(self::dic()->dic(), new ilDBFileVersionRepository(), new ilDBFileRepository(),
-            new ilDBFileChangeRepository());
+        $storage = new StorageService(
+            self::dic()->dic(),
+            new ilDBFileVersionRepository(),
+            new ilDBFileRepository(),
+            new ilDBFileChangeRepository()
+        );
         $storage->createClone($new_obj->getId(), $this->getId());
     }
 
-    public function isOnline() : bool
+    public function isOnline(): bool
     {
         return $this->object_settings->isOnline();
     }
@@ -173,7 +183,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setOpen($open);
     }
 
-    public function getOpen() : string
+    public function getOpen(): string
     {
         return $this->object_settings->getOpen();
     }

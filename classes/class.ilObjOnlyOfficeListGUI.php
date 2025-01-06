@@ -1,6 +1,6 @@
 <?php
+
 require_once __DIR__ . "/../vendor/autoload.php";
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
 use srag\Plugins\OnlyOffice\Utils\DateFetcher;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
@@ -16,11 +16,10 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
  */
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     //protected $settings = false;
     //protected $versions = true;
@@ -28,25 +27,18 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     /**
      * ilObjOnlyOfficeListGUI constructor
-     * @param int $a_context
      */
     public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
     {
         parent::__construct($a_context);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getGuiClass() : string
+    public function getGuiClass(): string
     {
         return ilObjOnlyOfficeGUI::class;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function initCommands() : array
+    public function initCommands(): array
     {
 
         $this->commands_enabled = true;
@@ -97,15 +89,16 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         return $commands;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getProperties() : array
+    public function getProperties(): array
     {
-        $storage = new srag\Plugins\OnlyOffice\StorageService\StorageService(self::dic()->dic(),
-            new ilDBFileVersionRepository(), new ilDBFileRepository(), new ilDBFileChangeRepository());
+        $storage = new StorageService(
+            self::dic()->dic(),
+            new ilDBFileVersionRepository(),
+            new ilDBFileRepository(),
+            new ilDBFileChangeRepository()
+        );
         $file = $storage->getFile($this->obj_id);
-        if(is_null($file)) {
+        if (is_null($file)) {
             return [];
         }
         $last_version = $storage->getLatestVersion($file->getUuid());
@@ -127,7 +120,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
             'propertyNameVisible' => false
         ];
 
-        if(!is_null($last_version)) {
+        if (!is_null($last_version)) {
             $props[] = [
                 "alert" => false,
                 'newline' => true,
@@ -158,15 +151,15 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $a_get_asynch_commands = false,
         $a_asynch_url = "",
         $a_header_actions = false
-    ): string
-    {
-        return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url,
-            $a_header_actions);
+    ): string {
+        return parent::insertCommands(
+            $a_use_asynch,
+            $a_get_asynch_commands,
+            $a_asynch_url,
+            $a_header_actions
+        );
     }
 
-    /**
-     * @inheritDoc
-     */
     public function initType(): void
     {
         $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);

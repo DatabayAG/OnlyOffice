@@ -4,7 +4,6 @@ namespace srag\Plugins\OnlyOffice\CryptoService;
 
 use ilWACSignedPath;
 use ilWebAccessChecker;
-use ilUtil;
 use ilFileDelivery;
 
 /**
@@ -16,8 +15,7 @@ use ilFileDelivery;
  */
 class WebAccessService
 {
-
-    public static function getWACUrl(string $url) : string
+    public static function getWACUrl(string $url): string
     {
         ilWACSignedPath::setTokenMaxLifetimeInSeconds(ilWACSignedPath::MAX_LIFETIME);
         $file_path = ilWACSignedPath::signFile(\ilFileUtils::getWebspaceDir() . $url);

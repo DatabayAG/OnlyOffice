@@ -12,8 +12,7 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
  */
 class FileVersion implements \JsonSerializable
 {
-
-    const FIRST_VERSION = 1;
+    public const FIRST_VERSION = 1;
     protected int $version;
     protected ilDateTime $created_at;
     protected int $user_id;
@@ -22,10 +21,6 @@ class FileVersion implements \JsonSerializable
 
     /**
      * FileVersion constructor.
-     * @param int        $version
-     * @param ilDateTime $created_at
-     * @param int        $user_id
-     * @param string     $url
      */
     public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, UUID $file_uuid)
     {
@@ -36,7 +31,7 @@ class FileVersion implements \JsonSerializable
         $this->file_uuid = $file_uuid;
     }
 
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -46,7 +41,7 @@ class FileVersion implements \JsonSerializable
         $this->version = $version;
     }
 
-    public function getCreatedAt() : ilDateTime
+    public function getCreatedAt(): ilDateTime
     {
         return $this->created_at;
     }
@@ -56,7 +51,7 @@ class FileVersion implements \JsonSerializable
         $this->created_at = $date;
     }
 
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->user_id;
     }
@@ -66,7 +61,7 @@ class FileVersion implements \JsonSerializable
         $this->user_id = $user_id;
     }
 
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return $this->url;
     }
@@ -76,7 +71,7 @@ class FileVersion implements \JsonSerializable
         $this->url = $url;
     }
 
-    public function getFileUuid() : UUID
+    public function getFileUuid(): UUID
     {
         return $this->file_uuid;
     }

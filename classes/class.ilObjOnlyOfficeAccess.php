@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . "/../vendor/autoload.php";
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
@@ -12,13 +13,12 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -32,7 +32,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         parent::__construct();
     }
 
-    public function _checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null) : bool
+    public function _checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
     {
         if ($a_ref_id === null) {
             $a_ref_id = filter_input(INPUT_GET, "ref_id");
@@ -64,7 +64,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         }
     }
 
-    protected static function checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null) : bool
+    protected static function checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
     {
         return self::getInstance()->_checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id);
     }
@@ -75,9 +75,9 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
         $tpl = $DIC["tpl"];
-        $tpl->setOnScreenMessage('failure',$pl->txt("object_permission_denied"), true);
+        $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
 
         if (is_object($class)) {
             self::dic()->ctrl()->clearParameters($class);
@@ -88,7 +88,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         }
     }
 
-    public static function _isOffline(?int $a_obj_id) : bool
+    public static function _isOffline(?int $a_obj_id): bool
     {
         $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($a_obj_id));
 
@@ -99,31 +99,32 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         }
     }
 
-    public static function hasVisibleAccess(?int $ref_id = null) : bool
+    public static function hasVisibleAccess(?int $ref_id = null): bool
     {
         return self::checkAccess("visible", "visible", $ref_id);
     }
 
-    public static function hasReadAccess(?int $ref_id = null) : bool
+    public static function hasReadAccess(?int $ref_id = null): bool
     {
         return self::checkAccess("read", "read", $ref_id);
     }
 
-    public static function hasWriteAccess(?int $ref_id = null) : bool
+    public static function hasWriteAccess(?int $ref_id = null): bool
     {
         return self::checkAccess("write", "write", $ref_id);
     }
 
-    public static function hasEditFileAccess(?int $ref_id = null): bool {
+    public static function hasEditFileAccess(?int $ref_id = null): bool
+    {
         return self::checkAccess("editFile", "editFile", $ref_id);
     }
 
-    public static function hasDeleteAccess(?int $ref_id = null) : bool
+    public static function hasDeleteAccess(?int $ref_id = null): bool
     {
         return self::checkAccess("delete", "delete", $ref_id);
     }
 
-    public static function hasEditPermissionAccess(?int $ref_id = null) : bool
+    public static function hasEditPermissionAccess(?int $ref_id = null): bool
     {
         return self::checkAccess("edit_permission", "edit_permission", $ref_id);
     }

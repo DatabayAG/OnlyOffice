@@ -14,7 +14,6 @@ use ilTextAreaInputGUI;
 use ilTextInputGUI;
 use ilRadioOption;
 use ilRadioGroupInputGUI;
-use ilUtil;
 use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\Items\Items;
 use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
 
@@ -26,9 +25,8 @@ use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
  */
 class ObjectSettingsFormGUI extends PropertyFormGUI
 {
-
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
     protected ilObjOnlyOffice $object;
     private ilPlugin $pl;
 
@@ -40,7 +38,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $this->pl  = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
 
         parent::__construct($parent);
     }
@@ -59,11 +57,15 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
 
     protected function initCommands(): void
     {
-        $this->addCommandButton(ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE,
-            self::plugin()->translate("save", self::LANG_MODULE));
+        $this->addCommandButton(
+            ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE,
+            self::plugin()->translate("save", self::LANG_MODULE)
+        );
 
-        $this->addCommandButton(ilObjOnlyOfficeGUI::CMD_MANAGE_CONTENTS,
-            self::plugin()->translate("cancel", self::LANG_MODULE));
+        $this->addCommandButton(
+            ilObjOnlyOfficeGUI::CMD_MANAGE_CONTENTS,
+            self::plugin()->translate("cancel", self::LANG_MODULE)
+        );
     }
 
     protected function initFields(): void
@@ -142,7 +144,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         }
     }
 
-    public function storeForm() : bool
+    public function storeForm(): bool
     {
         if (!parent::storeForm()) {
             return false;
@@ -150,12 +152,12 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
 
         if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
 
-            $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START] )), IL_CAL_DATETIME);
+            $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
             $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
 
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 global $DIC;
-                $DIC->ui()->mainTemplate()->setOnScreenMessage('failure',$this->pl->txt("settings_time_greater_than"), true);
+                $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $this->pl->txt("settings_time_greater_than"), true);
                 return false;
             }
         }

@@ -16,13 +16,12 @@ use srag\DIC\OnlyOffice\DICTrait;
  */
 final class Factory
 {
-
     use DICTrait;
     use OnlyOfficeTrait;
 
-    const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Factory $instance = null;
-    public static function getInstance() : self
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -36,14 +35,14 @@ final class Factory
 
     }
 
-    public function newInstance() : ObjectSettings
+    public function newInstance(): ObjectSettings
     {
         $object_settings = new ObjectSettings();
 
         return $object_settings;
     }
 
-    public function newFormInstance(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object) : ObjectSettingsFormGUI
+    public function newFormInstance(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object): ObjectSettingsFormGUI
     {
         $form = new ObjectSettingsFormGUI($parent, $object);
 
