@@ -44,5 +44,9 @@
     "pre-autoload-dump": [
       "srag\\LibrariesNamespaceChanger\\LibrariesNamespaceChanger::rewriteLibrariesNamespaces"
     ]
+  },
+  "require-dev": {
+    "captainhook/captainhook": "^5.24",
+    "friendsofphp/php-cs-fixer": "^3.66"
   }
 }
