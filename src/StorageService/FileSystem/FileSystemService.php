@@ -12,21 +12,12 @@ use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Filesystem\Stream\Streams;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
 
-/**
- * Class FileSystemService
- * @package srag\Plugins\OnlyOffice\StorageService\FileSystem
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- *          Sophie Pfister <sophie@fluxlabs.ch>
- */
 class FileSystemService
 {
     public const BASE_PATH = '/only_office/';
     public const BASE_TEMPLATE_PATH = '/only_office/templates/';
     protected Container $dic;
 
-    /**
-     * FileRepository constructor.
-     */
     public function __construct(Container $dic)
     {
         $this->dic = $dic;
@@ -264,7 +255,6 @@ class FileSystemService
 
         return $path;
     }
-
 
     public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
     {

@@ -257,7 +257,6 @@ class xonoEditorGUI extends xonoAbstractGUI
         return json_encode($result);
     }
 
-
     /* --- Helper Methods --- */
     /**
      * Generates the URL for the return button
@@ -269,7 +268,6 @@ class xonoEditorGUI extends xonoAbstractGUI
         return $this->dic->ctrl()->getLinkTarget($content_gui, xonoContentGUI::CMD_SHOW_VERSIONS);
 
     }
-
 
     /**
      * generates the callback URL for the only office document server

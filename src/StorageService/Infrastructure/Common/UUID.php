@@ -5,13 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common;
 use Exception;
 use Ramsey\Uuid\Uuid as RamseyUuid;
 
-/**
- * Class UUID
- *
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common
- *
- * @author  Theodor Truffer <thoe@fluxlabs.ch>
- */
 class UUID
 {
     protected string $uuid;

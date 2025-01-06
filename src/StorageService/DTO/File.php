@@ -4,13 +4,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\DTO;
 
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class File
- *
- * @package srag\Plugins\OnlyOffice\StorageService\DTO
- *
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class File
 {
     protected UUID $uuid;
@@ -18,7 +11,6 @@ class File
     protected string $title;
     protected string $file_type;
     protected string $mime_type;
-
 
     /**
      * Determines the doc type (word, cell, or slide) based on the file extension
@@ -82,10 +74,6 @@ class File
         }
     }
 
-    /**
-     * File constructor.
-     *
-     */
     public function __construct(UUID $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
     {
         $this->uuid = $uuid;

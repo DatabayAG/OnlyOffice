@@ -4,10 +4,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\DTO;
 
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class FileChange
- * @author  Sophie Pfister <sophie@fluxlabs.ch>
- */
 class FileChange
 {
     protected int $change_id;

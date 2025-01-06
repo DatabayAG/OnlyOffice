@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\File;
 
-/**
- * Class ilDBFileRepository
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class ilDBFileRepository implements FileRepository
 {
     public function create(UUID $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type): void

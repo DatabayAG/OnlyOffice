@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\DTO;
 use ilDateTime;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class FileVersion
- * @package srag\Plugins\OnlyOffice\StorageService\DTO
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class FileVersion implements \JsonSerializable
 {
     public const FIRST_VERSION = 1;
@@ -19,9 +14,6 @@ class FileVersion implements \JsonSerializable
     protected string $url;
     protected UUID $file_uuid;
 
-    /**
-     * FileVersion constructor.
-     */
     public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, UUID $file_uuid)
     {
         $this->version = $version;

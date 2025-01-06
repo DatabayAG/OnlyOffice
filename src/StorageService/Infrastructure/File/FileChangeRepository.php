@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
 
-/**
- * interface FileChangeRepository
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Sophie Pfiser <sophie@fluxlabs.ch>
- */
 interface FileChangeRepository
 {
     public const DEFAULT_SERVER_VERSION = '6.3.1';

@@ -8,11 +8,6 @@ use ilDateTimeException;
 use ilTimeZone;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class File
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class FileVersionAR extends ActiveRecord
 {
     public const TABLE_NAME = 'xono_file_version';

@@ -21,12 +21,6 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 
-/**
- * Class StorageService
- * @package srag\Plugins\OnlyOffice\StorageService
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- *          Sophie Pfister <sophie@fluxlabs.ch>
- */
 class StorageService
 {
     use OnlyOfficeTrait;

@@ -9,11 +9,6 @@ use ilTimeZone;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class FileRepository
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class ilDBFileVersionRepository implements FileVersionRepository
 {
     /**

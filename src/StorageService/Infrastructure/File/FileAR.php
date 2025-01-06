@@ -6,11 +6,6 @@ use ActiveRecord;
 use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class FileAR
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class FileAR extends ActiveRecord
 {
     public const TABLE_NAME = 'xono_file';

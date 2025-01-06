@@ -7,12 +7,9 @@ use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 /**
- * Class FileChangeAR
  * Stores the changes between file versions
  * such that they can easily be passed back
  * to the OnlyOffice Server
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Sophie Pfister <sophie@fluxlabs.ch>
  */
 class FileChangeAR extends ActiveRecord
 {

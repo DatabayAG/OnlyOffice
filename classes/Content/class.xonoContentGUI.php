@@ -11,11 +11,6 @@ use srag\Plugins\OnlyOffice\Utils\DateFetcher;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 use ILIAS\DI\Container;
 
-/**
- * Class xonoContentGUI
- * @author            Theodor Truffer <theo@fluxlabs.ch>
- * @author            Sophie Pfister <sophie@fluxlabs.ch>
- */
 class xonoContentGUI extends xonoAbstractGUI
 {
     use OnlyOfficeTrait;
@@ -27,12 +22,10 @@ class xonoContentGUI extends xonoAbstractGUI
     protected int $file_id;
     private $tpl;
 
-
     public const CMD_STANDARD = 'showVersions';
     public const CMD_SHOW_VERSIONS = 'showVersions';
     public const CMD_DOWNLOAD = 'downloadFileVersion';
     public const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
-
 
     public function __construct(
         Container $dic,
@@ -107,9 +100,6 @@ class xonoContentGUI extends xonoAbstractGUI
         // Insert properly converted datetime
         $json_decoded = json_decode($json);
         $i = 0;
-
-
-
 
         foreach ($fileVersions as $fileVersion) {
             $json_decoded[$i]->createdAt = $fileVersion->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
@@ -196,8 +186,6 @@ class xonoContentGUI extends xonoAbstractGUI
         }
 
         ////
-
-
 
         if ($allowEdit === true) {
             return $this->plugin->txt('xono_edit_button');

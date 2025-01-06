@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\File;
 
-/**
- * interface FileRepository
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 interface FileRepository
 {
     /**

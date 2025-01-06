@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
 
-/**
- * Class ilDBFIleChangeRepository
- * @author  Sophie Pfister <sophie@fluxlabs.ch>
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- */
 class ilDBFileChangeRepository implements FileChangeRepository
 {
     public function create(
@@ -31,7 +26,6 @@ class ilDBFileChangeRepository implements FileChangeRepository
         $file_change_AR->setChangesUrl($changesUrl);
         $file_change_AR->create();
     }
-
 
     public function getAllChanges(string $uuid): array
     {
