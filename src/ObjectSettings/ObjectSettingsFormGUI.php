@@ -5,6 +5,7 @@ namespace srag\Plugins\OnlyOffice\ObjectSettings;
 use ilComponentFactory;
 use ilDateTime;
 use ilDateTimeInputGUI;
+use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ilOnlyOfficePlugin;
 use ilCheckboxInputGUI;
 use ilObjOnlyOffice;
@@ -23,6 +24,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
     public const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
     protected ilObjOnlyOffice $object;
     private ilPlugin $pl;
+    private WrapperFactory $httpWrapper;
 
     public function __construct(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object)
     {
@@ -33,6 +35,8 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+
+        $this->httpWrapper = $DIC->http()->wrapper();
 
         parent::__construct($parent);
     }
@@ -144,10 +148,28 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
             return false;
         }
 
-        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
+        $editLimited = $this->httpWrapper->post()->retrieve(
+            ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED,
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->bool(),
+                $this->refinery->always(false)
+            ])
+        );
 
-            $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
-            $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
+        if ($editLimited) {
+
+            $startTime = $this->httpWrapper->post()->retrieve(
+                ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START,
+                $this->refinery->kindlyTo()->string()
+            );
+
+            $endTime = $this->httpWrapper->post()->retrieve(
+                ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END,
+                $this->refinery->kindlyTo()->string()
+            );
+
+            $start_time = new ilDateTime(date('Ymdhis', $startTime), IL_CAL_DATETIME);
+            $end_time = new ilDateTime(date('Ymdhis', $endTime), IL_CAL_DATETIME);
 
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 global $DIC;

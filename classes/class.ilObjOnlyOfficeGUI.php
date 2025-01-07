@@ -3,6 +3,7 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\Exception\IllegalStateException;
+use ILIAS\HTTP\Wrapper\WrapperFactory;
 use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettingsFormGUI;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -371,11 +372,19 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function afterSave(/*ilObjOnlyOffice*/ ilObject $a_new_object): void
     {
+        global $DIC;
+        $httpWrapper = $DIC->http()->wrapper();
+
         $form = $this->initCreateForm($a_new_object->getType());
         $form->checkInput();
 
+        $fileSetting = $httpWrapper->post()->retrieve(
+            self::POST_VAR_FILE_SETTING,
+            $this->refinery->kindlyTo()->string()
+        );
+
         // Handle file upload, otherwise create new document
-        if ($_POST[self::POST_VAR_FILE_SETTING] === self::OPTION_SETTING_UPLOAD) {
+        if ($fileSetting === self::OPTION_SETTING_UPLOAD) {
             if (!self::dic()->upload()->hasBeenProcessed()) {
                 self::dic()->upload()->process();
             }
@@ -384,23 +393,37 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $this->storage_service->createNewFileFromUpload($result, $a_new_object->getId());
 
             $title = $a_new_object->getTitle();
-            if ($title == "") {
+            if ($title === "") {
                 $a_new_object->setTitle(explode(".", $result->getName())[0]);
                 $a_new_object->update();
             }
-        } elseif ($_POST[self::POST_VAR_FILE_SETTING] === self::OPTION_SETTING_CREATE) {
-            $sanitized_file_name = FileSanitizer::sanitizeFileName($_POST["title"]);
+        } elseif ($fileSetting === self::OPTION_SETTING_CREATE) {
+            $title = $httpWrapper->post()->retrieve(
+                "title",
+                $this->refinery->kindlyTo()->string()
+            );
+
+            $sanitized_file_name = FileSanitizer::sanitizeFileName($title);
 
             $template = $this->storage_service->createNewFileFromDraft(
                 $sanitized_file_name,
                 $a_new_object->getId()
             );
-        } elseif ($_POST[self::POST_VAR_FILE_SETTING] === self::OPTION_SETTING_TEMPLATE) {
-            $sanitized_file_name = FileSanitizer::sanitizeFileName($_POST["title"]);
+        } elseif ($fileSetting === self::OPTION_SETTING_TEMPLATE) {
+            $title = $httpWrapper->post()->retrieve(
+                "title",
+                $this->refinery->kindlyTo()->string()
+            );
+            $sanitized_file_name = FileSanitizer::sanitizeFileName($title);
+
+            $templatePath = $httpWrapper->post()->retrieve(
+                self::POST_VAR_FILE_TEMPLATE_SETTING,
+                $this->refinery->kindlyTo()->string()
+            );
 
             $this->storage_service->createNewFileFromTemplate(
                 $sanitized_file_name,
-                $_POST[self::POST_VAR_FILE_TEMPLATE_SETTING],
+                $templatePath,
                 $a_new_object->getId()
             );
         }

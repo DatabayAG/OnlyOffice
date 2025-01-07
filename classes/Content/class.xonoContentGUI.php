@@ -1,5 +1,7 @@
 <?php
 
+use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Refinery\Factory;
 use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\DIC\OnlyOffice\DIC\DICInterface;
 use srag\DIC\OnlyOffice\DICStatic;
@@ -26,6 +28,8 @@ class xonoContentGUI extends xonoAbstractGUI
     public const CMD_SHOW_VERSIONS = 'showVersions';
     public const CMD_DOWNLOAD = 'downloadFileVersion';
     public const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
+    private Factory $refinery;
+    private WrapperFactory $httpWrapper;
 
     public function __construct(
         Container $dic,
@@ -33,6 +37,9 @@ class xonoContentGUI extends xonoAbstractGUI
         int $object_id
     ) {
         global $DIC;
+
+        $this->refinery = $DIC->refinery();
+        $this->httpWrapper = $DIC->http()->wrapper();
 
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
@@ -139,9 +146,30 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function downloadFileVersion()
     {
-        $path = $_GET['path'];
-        $name = $_GET['name'];
-        $mime_type = $_GET['mime'];
+        $path = $this->httpWrapper->query()->retrieve(
+            "path",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $name = $this->httpWrapper->query()->retrieve(
+            "name",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $mime_type = $this->httpWrapper->query()->retrieve(
+            "mime",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
         ilFileDelivery::deliverFileAttached($path, $name, $mime_type);
         exit;
     }

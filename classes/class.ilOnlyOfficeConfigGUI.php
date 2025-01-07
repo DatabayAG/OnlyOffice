@@ -2,6 +2,8 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Refinery\Factory;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileTemplate;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
@@ -34,10 +36,14 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     protected StorageService $storage_service;
     private ilPlugin $pl;
     private $tpl;
+    private Factory $refinery;
+    private WrapperFactory $httpWrapper;
 
     public function __construct()
     {
         global $DIC;
+        $this->refinery = $DIC->refinery();
+        $this->httpWrapper = $DIC->http()->wrapper();
 
         $this->storage_service = new StorageService(
             self::dic()->dic(),
@@ -185,7 +191,24 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         $form = new ilPropertyFormGUI();
         $form->setTarget("_top");
-        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($_GET["ootarget"]) . "&prevExtension=" . urlencode($_GET["ooextension"]));
+
+        $ooTarget = $this->httpWrapper->query()->retrieve(
+            "ootarget",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $ooExtension = $this->httpWrapper->query()->retrieve(
+            "ooextension",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($ooTarget) . "&prevExtension=" . urlencode($ooExtension));
 
         // title
         $ti = new ilTextInputGUI(self::plugin()->translate("table_title", self::LANG_MODULE), "title");
@@ -257,7 +280,17 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             return;
         }
 
-        $path = $this->storage_service->createFileTemplate($result, $_POST["title"], $_POST["desc"]);
+        $title = $this->httpWrapper->post()->retrieve(
+            "title",
+            $this->refinery->kindlyTo()->string()
+        );
+
+        $description = $this->httpWrapper->post()->retrieve(
+            "desc",
+            $this->refinery->kindlyTo()->string()
+        );
+
+        $path = $this->storage_service->createFileTemplate($result, $title, $description);
 
         // Return if file extension not recognized by OnlyOffice
         if (empty($path)) {
@@ -276,8 +309,21 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
-        $target = $_GET["ootarget"];
-        $extension = $_GET["ooextension"];
+        $target = $this->httpWrapper->query()->retrieve(
+            "ootarget",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $extension = $this->httpWrapper->query()->retrieve(
+            "ooextension",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
 
         $template = $this->storage_service->fetchTemplate($target, $extension);
 
@@ -297,10 +343,31 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function saveEditTemplate(): void
     {
-        $target = $_POST["title"];
-        $description = $_POST["desc"];
-        $prevTitle = $_GET["prevTitle"];
-        $prevExtension = $_GET["prevExtension"];
+        $target = $this->httpWrapper->post()->retrieve(
+            "title",
+            $this->refinery->kindlyTo()->string()
+        );
+        $description = $this->httpWrapper->post()->retrieve(
+            "desc",
+            $this->refinery->kindlyTo()->string()
+        );
+
+        $prevTitle = $this->httpWrapper->query()->retrieve(
+            "prevTitle",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $prevExtension = $this->httpWrapper->query()->retrieve(
+            "prevExtension",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
 
         $form = $this->initCreateTemplateForm(true);
 
@@ -324,7 +391,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $result = end($results);
 
             // Return if file extension not whitelisted by ILIAS instance
-            if (!ilFileUtils::hasValidExtension($result->getName())) {
+            if (!ilFileUtils::getValidFilename($result->getName())) {
                 // Fix bug where previous title and name don't get saved into the form action
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
@@ -332,8 +399,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $target,
+                    "desc" => $description,
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
@@ -351,8 +418,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_unrecognised_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $target,
+                    "desc" => $description,
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
@@ -361,7 +428,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             }
 
             $success = $this->storage_service->deleteFileTemplate($target, $prevExtension);
-            $path = $this->storage_service->createFileTemplate($result, $_POST["title"], $_POST["desc"]);
+            $path = $this->storage_service->createFileTemplate($result, $target, $description);
         }
 
         $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_edited"), true);
@@ -378,7 +445,15 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $conf->setFormAction(self::dic()->ctrl()->getFormAction($this));
         $conf->setHeaderText(self::plugin()->translate('config_template_delete'));
 
-        $conf->addItem('tableview', 1, $_GET["ootarget"]);
+        $ooTarget = $this->httpWrapper->query()->retrieve(
+            "ootarget",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $conf->addItem('tableview', 1, $ooTarget);
 
         $conf->setConfirm(self::dic()->language()->txt('delete'), self::CMD_DELETE_TEMPLATE);
         $conf->setCancel(self::dic()->language()->txt('cancel'), self::CMD_TEMPLATES);
@@ -388,8 +463,21 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function deleteTemplate(): void
     {
-        $target = $_GET["ootarget"];
-        $extension = $_GET["ooextension"];
+        $target = $this->httpWrapper->query()->retrieve(
+            "ootarget",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
+
+        $extension = $this->httpWrapper->query()->retrieve(
+            "ooextension",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->string(),
+                $this->refinery->always("")
+            ])
+        );
 
         $success = $this->storage_service->deleteFileTemplate($target, $extension);
 
