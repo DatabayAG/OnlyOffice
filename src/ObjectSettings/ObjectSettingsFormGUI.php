@@ -168,8 +168,8 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
                 $this->refinery->kindlyTo()->string()
             );
 
-            $start_time = new ilDateTime(date('Ymdhis', $startTime), IL_CAL_DATETIME);
-            $end_time = new ilDateTime(date('Ymdhis', $endTime), IL_CAL_DATETIME);
+            $start_time = new ilDateTime(date('Ymdhis', strtotime($startTime)), IL_CAL_DATETIME);
+            $end_time = new ilDateTime(date('Ymdhis', strtotime($endTime)), IL_CAL_DATETIME);
 
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 global $DIC;
