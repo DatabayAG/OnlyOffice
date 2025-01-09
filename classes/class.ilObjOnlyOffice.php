@@ -2,6 +2,8 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\FileUpload\Exception\IllegalStateException;
+use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Refinery\Factory;
 use srag\DIC\OnlyOffice\DICTrait;
@@ -24,6 +26,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     private $tpl;
     private Factory $refinery;
     private WrapperFactory $httpWrapper;
+    private FileUpload $upload;
 
     public function __construct(int $a_ref_id = 0)
     {
@@ -33,6 +36,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $this->refinery = $DIC->refinery();
         $this->httpWrapper = $DIC->http()->wrapper();
+        $this->upload = $DIC->upload();
 
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
@@ -89,7 +93,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             'title',
             $this->refinery->byTrying([
                 $this->refinery->kindlyTo()->string(),
-                $this->refinery->always(null)
+                $this->refinery->always("")
             ])
         );
 
@@ -148,8 +152,19 @@ class ilObjOnlyOffice extends ilObjectPlugin
             ])
         );
 
-        if ($title === null) {
-            $title = explode('.', $_POST[ilObjOnlyOfficeGUI::POST_VAR_FILE]['name'])[0];
+        if ($title === "" && $this->upload->hasUploads()) {
+            if (!$this->upload->hasBeenProcessed()) {
+                try {
+                    $this->upload->process();
+                } catch (IllegalStateException $e) {
+                }
+            }
+
+            if ($this->upload->hasBeenProcessed()) {
+                $uploadResults = $this->upload->getResults();
+                $file = $uploadResults[array_key_first($uploadResults)];
+                $title = explode('.', $file->getName())[0];
+            }
         }
 
         if ($start_time !== "") {
@@ -223,7 +238,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             'title',
             $this->refinery->byTrying([
                 $this->refinery->kindlyTo()->string(),
-                $this->refinery->always(null)
+                $this->refinery->always("")
             ])
         );
 

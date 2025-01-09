@@ -381,10 +381,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             return;
         }
 
-        $uploaded_file = $_FILES["file"]["name"];
-
         // If no file is uploaded, merely change title and description
-        if (empty($uploaded_file)) {
+        if (!self::dic()->upload()->hasUploads()) {
             // Dont delete previous template
             $this->storage_service->modifyFileTemplate($prevTitle, $prevExtension, $target, $description);
         } else {
