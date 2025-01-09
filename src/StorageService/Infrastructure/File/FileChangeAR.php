@@ -7,27 +7,20 @@ use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 /**
- * Class FileChangeAR
  * Stores the changes between file versions
  * such that they can easily be passed back
  * to the OnlyOffice Server
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Sophie Pfister <sophie@fluxlabs.ch>
  */
 class FileChangeAR extends ActiveRecord
 {
-    const TABLE_NAME = 'xono_file_change';
+    public const TABLE_NAME = 'xono_file_change';
 
-    /**
-     * @return string
-     */
     public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
 
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_is_primary   true
@@ -36,34 +29,29 @@ class FileChangeAR extends ActiveRecord
     protected ?int $change_id;
 
     /**
-     * @var UUID
      * @con_has_field true
      * @con_fieldtype text
      * @con_length    256
      */
     protected UUID $file_uuid;
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      */
     protected int $version;
 
     /**
-     * @var string
      * @con_has_field true
      * @con_fieldtype clob
      */
     protected string $changes_object_string;
     /**
-     * @var string
      * @con_has_field true
      * @con_fieldtype text
      * @con_length    64
      */
     protected string $server_version;
     /**
-     * @var string
      * @con_has_field true
      * @con_fieldtype text
      * @con_length    256
@@ -75,7 +63,7 @@ class FileChangeAR extends ActiveRecord
         $this->change_id = $change_id;
     }
 
-    public function getChangeId() : int
+    public function getChangeId(): int
     {
         return $this->change_id;
     }
@@ -85,7 +73,7 @@ class FileChangeAR extends ActiveRecord
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid() : UUID
+    public function getFileUuid(): UUID
     {
         return $this->file_uuid;
     }
@@ -95,7 +83,7 @@ class FileChangeAR extends ActiveRecord
         $this->version = $version;
     }
 
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -105,7 +93,7 @@ class FileChangeAR extends ActiveRecord
         $this->changes_object_string = $changesObjectString;
     }
 
-    public function getChangesObjectString() : string
+    public function getChangesObjectString(): string
     {
         return $this->changes_object_string;
     }
@@ -115,7 +103,7 @@ class FileChangeAR extends ActiveRecord
         $this->server_version = $serverVersion;
     }
 
-    public function getServerVersion() : string
+    public function getServerVersion(): string
     {
         return $this->server_version;
     }
@@ -125,15 +113,11 @@ class FileChangeAR extends ActiveRecord
         $this->changes_url = $changesUrl;
     }
 
-    public function getChangesUrl() : string
+    public function getChangesUrl(): string
     {
         return $this->changes_url;
     }
 
-    /**
-     * @param $field_name
-     * @return string|null
-     */
     public function sleep($field_name): ?string
     {
         switch ($field_name) {
@@ -145,8 +129,6 @@ class FileChangeAR extends ActiveRecord
     }
 
     /**
-     * @param $field_name
-     * @param $field_value
      * @throws Exception
      */
     public function wakeUp($field_name, $field_value)

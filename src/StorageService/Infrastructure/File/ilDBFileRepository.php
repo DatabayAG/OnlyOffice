@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\File;
 
-/**
- * Class ilDBFileRepository
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class ilDBFileRepository implements FileRepository
 {
     public function create(UUID $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type): void
@@ -23,16 +18,16 @@ class ilDBFileRepository implements FileRepository
         $file_AR->create();
     }
 
-    public function getFile(int $obj_id) : ?File
+    public function getFile(int $obj_id): ?File
     {
         $file_ar = FileAR::where(['obj_id' => $obj_id])->first();
-        if(is_null($file_ar)) {
+        if (is_null($file_ar)) {
             return null;
         }
         return $this->buildFileFromAR($file_ar);
     }
 
-    protected function buildFileFromAR(FileAR $ar) : File
+    protected function buildFileFromAR(FileAR $ar): File
     {
         $uuid = $ar->getUUID();
         $obj_id = $ar->getObjId();
@@ -43,7 +38,7 @@ class ilDBFileRepository implements FileRepository
 
     }
 
-    public function getAR(int $file_id) : \ActiveRecord
+    public function getAR(int $file_id): \ActiveRecord
     {
         return FileAR::where(['obj_id' => $file_id])->first();
     }
@@ -51,7 +46,7 @@ class ilDBFileRepository implements FileRepository
     public function getAllFiles(): array
     {
         $ars = FileAR::get();
-        $result = array();
+        $result = [];
         /** @var FileAR $ar */
         foreach ($ars as $ar) {
             array_push($result, $this->buildFileFromAR($ar));

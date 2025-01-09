@@ -5,11 +5,6 @@ namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
 
-/**
- * Class ilDBFIleChangeRepository
- * @author  Sophie Pfister <sophie@fluxlabs.ch>
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- */
 class ilDBFileChangeRepository implements FileChangeRepository
 {
     public function create(
@@ -18,24 +13,23 @@ class ilDBFileChangeRepository implements FileChangeRepository
         string $changesObjectString,
         string $serverVersion,
         string $changesUrl
-    ): void
-    {
+    ): void {
         $file_change_AR = new FileChangeAR();
         $file_change_AR->setFileUuid($file_uuid);
         $file_change_AR->setVersion($version);
         $file_change_AR->setChangesObjectString($changesObjectString);
-        if(! $serverVersion)
+        if (!$serverVersion) {
             $file_change_AR->setServerVersion(self::DEFAULT_SERVER_VERSION);
-        else
+        } else {
             $file_change_AR->setServerVersion($serverVersion);
+        }
         $file_change_AR->setChangesUrl($changesUrl);
         $file_change_AR->create();
     }
 
-
-    public function getAllChanges(string $uuid) : array
+    public function getAllChanges(string $uuid): array
     {
-        $result = array();
+        $result = [];
         $allChanges = FileChangeAR::where(['file_uuid' => $uuid])->orderBy('version', 'asc')->get();
         foreach ($allChanges as $change) {
             $fc = $this->buildFileChangeFromAR($change);
@@ -44,7 +38,7 @@ class ilDBFileChangeRepository implements FileChangeRepository
         return $result;
     }
 
-    protected function buildFileChangeFromAR(FileChangeAR $fc_ar) : FileChange
+    protected function buildFileChangeFromAR(FileChangeAR $fc_ar): FileChange
     {
         $change_id = $fc_ar->getChangeId();
         $file_uuid = $fc_ar->getFileUuid();
@@ -55,7 +49,7 @@ class ilDBFileChangeRepository implements FileChangeRepository
         return new FileChange($change_id, $file_uuid, $version, $changesObjectString, $serverVersion, $changesUrl);
     }
 
-    public function getChange(string $uuid, int $version) : FileChange
+    public function getChange(string $uuid, int $version): FileChange
     {
         /** @var FileChangeAR $file_change_ar */
         $file_change_ar = FileChangeAR::where(['file_uuid' => $uuid, 'version' => $version])->first();

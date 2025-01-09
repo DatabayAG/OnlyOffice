@@ -5,14 +5,11 @@ namespace srag\Plugins\OnlyOffice\CryptoService;
 require_once 'libs/composer/vendor/autoload.php';
 
 /**
- * Class JWTService
  * Encodes a given payload using a given key to a JsonWebToken or
  * decodes a given token using a given key.
- *
- * @author Sophie Pfister <sophie@fluxlabs.ch>
  */
-class JwtService {
-
+class JwtService
+{
     public static function jwtEncode($payload, $key): string
     {
         $header = [
@@ -45,17 +42,17 @@ class JwtService {
         return self::base64UrlDecode($split[1]);
     }
 
-    protected static function calculateHash($encHeader, $encPayload, $key) :string
+    protected static function calculateHash($encHeader, $encPayload, $key): string
     {
         return hash_hmac("sha256", "$encHeader.$encPayload", $key, true);
     }
 
-    protected static function base64UrlEncode($str) :string
+    protected static function base64UrlEncode($str): string
     {
         return str_replace("/", "_", str_replace("+", "-", trim(base64_encode($str), "=")));
     }
 
-    protected static function base64UrlDecode($payload) :string
+    protected static function base64UrlDecode($payload): string
     {
         $b64 = str_replace("_", "/", str_replace("-", "+", $payload));
         switch (strlen($b64) % 4) {

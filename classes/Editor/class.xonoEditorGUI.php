@@ -20,14 +20,13 @@ use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
-
     use OnlyOfficeTrait;
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
-    const CMD_EDIT = "editFile";
-    const CMD_STANDARD = "editFile";
-    const BASE_URL = ILIAS_HTTP_PATH;
+    public const CMD_EDIT = "editFile";
+    public const CMD_STANDARD = "editFile";
+    public const BASE_URL = ILIAS_HTTP_PATH;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
 
@@ -61,7 +60,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         );
     }
 
-    public final function getType() : string
+    final public function getType(): string
     {
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
@@ -95,7 +94,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $latest_version = null;
         $all_versions = null;
 
-        if(!is_null($file)) {
+        if (!is_null($file)) {
             $all_versions = $this->storage_service->getAllVersions($this->file_id);
             $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
         }
@@ -105,8 +104,8 @@ class xonoEditorGUI extends xonoAbstractGUI
         $withinPotentialTimelimit = true;
 
         if (!is_null($object_settings)) {
-            if(ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
-                 $withinPotentialTimelimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
+            if (ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
+                $withinPotentialTimelimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
                 $tpl->setVariable('IS_LIMITED', $object_settings->isLimitedPeriod());
                 $tpl->setVariable('WITHIN_POTENTIAL_TIME_LIMIT', $withinPotentialTimelimit);
                 if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
@@ -124,7 +123,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $tpl->setVariable('SCRIPT_SRC', $this->onlyoffice_url . '/web-apps/apps/api/documents/api.js');
         $tpl->setVariable('RETURN', $this->generateReturnUrl());
 
-        if(!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
+        if (!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
             $tpl->setVariable('FILE_TITLE', $file->getTitle());
             $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
             $tpl->setVariable('LATEST', $latest_version->getVersion());
@@ -141,16 +140,16 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Builds and returns the config array as string
      */
-    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit) : string
+    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): string
     {
-        $as_array = array(); // Config Array
+        $as_array = []; // Config Array
         $extension = pathinfo($fileVersion->getUrl(), PATHINFO_EXTENSION);
 
         // general config
         $as_array['documentType'] = File::determineDocType($extension);
 
         // document config
-        $document = array(); // SubArray "document"
+        $document = []; // SubArray "document"
         $document['fileType'] = $file->getFileType();
         $document['key'] = $this->generateDocumentKey($fileVersion);
         $document['title'] = $file->getTitle();
@@ -158,23 +157,26 @@ class xonoEditorGUI extends xonoAbstractGUI
         $as_array['document'] = $document;
 
         // editor config
-        $editor = array(); // SubArray "editor"
-        $editor['callbackUrl'] = $this->generateCallbackUrl($file->getUuid(),
-            $file->getObjId(), $extension);
+        $editor = []; // SubArray "editor"
+        $editor['callbackUrl'] = $this->generateCallbackUrl(
+            $file->getUuid(),
+            $file->getObjId(),
+            $extension
+        );
         $editor['user'] = $this->buildUserArray($this->dic->user()->getId());
         $editor['mode'] = $this->determineAccessRights($withinPotentialTimeLimit);
         $editor['lang'] = $this->dic->user()->getLanguage();
-        $editor['customization']= array(
+        $editor['customization'] = [
             "plugins" => false,
-            "forcesave" => true);
+            "forcesave" => true];
         $as_array['editorConfig'] = $editor;
 
         // events config
-        $as_array['events'] = array("onRequestHistory" => "#!!onRequestHistory!!#",
+        $as_array['events'] = ["onRequestHistory" => "#!!onRequestHistory!!#",
                                     "onRequestHistoryData" => "#!!onRequestHistoryData!!#",
                                     "onDocumentStateChange" => "#!!onDocumentStateChange!!#",
                                     "onAppReady" => "#!!onAppReady!!#"
-        );
+        ];
 
         // add token
         $token = JwtService::jwtEncode($as_array, $this->onlyoffice_key);
@@ -191,22 +193,22 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Builds and returns an array containing the version history of a file as string
      */
-    protected function history(FileVersion $latestVersion, array $all_versions) : string
+    protected function history(FileVersion $latestVersion, array $all_versions): string
     {
         $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid()->asString());
-        $history_array = array();
+        $history_array = [];
 
         // add all versions to history
         foreach ($all_versions as $version) {
             $v = $version->getVersion();
-            $info_array = array(
+            $info_array = [
                 "changes" => '#!!JSON.parse("' . $all_changes[$v]->getChangesObjectString() . '")!!#',
                 "created" => rtrim($version->getCreatedAt()->__toString(), '<br>'),
                 "key" => $this->generateDocumentKey($version),
                 "serverVersion" => $all_changes[$v]->getServerVersion(),
                 "user" => $this->buildUserArray($version->getUserId()),
                 "version" => $version->getVersion()
-            );
+            ];
             $history_array[] = $info_array;
         }
 
@@ -225,11 +227,11 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Builds and returns an array containing information about all file versions (as string)
      */
-    protected function historyData(array $allVersions) : string
+    protected function historyData(array $allVersions): string
     {
-        $result = array();
+        $result = [];
         foreach ($allVersions as $version) {
-            $data_array = array();
+            $data_array = [];
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->asString();
 
@@ -255,25 +257,22 @@ class xonoEditorGUI extends xonoAbstractGUI
         return json_encode($result);
     }
 
-
     /* --- Helper Methods --- */
     /**
      * Generates the URL for the return button
-     * @return string
      * @throws ilCtrlException
      */
-    protected function generateReturnUrl() : string
+    protected function generateReturnUrl(): string
     {
         $content_gui = new xonoContentGUI($this->dic, $this->plugin, $this->file_id);
         return $this->dic->ctrl()->getLinkTarget($content_gui, xonoContentGUI::CMD_SHOW_VERSIONS);
 
     }
 
-
     /**
      * generates the callback URL for the only office document server
      */
-    protected function generateCallbackUrl(UUID $file_uuid, int $file_id, string $extension) : string
+    protected function generateCallbackUrl(UUID $file_uuid, int $file_id, string $extension): string
     {
         $path = 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/save.php?' .
             '&uuid=' . $file_uuid->asString() .
@@ -283,16 +282,18 @@ class xonoEditorGUI extends xonoAbstractGUI
         return self::BASE_URL . '/' . $path;
     }
 
-    protected function generateDocumentKey(FileVersion $fv) : string
+    protected function generateDocumentKey(FileVersion $fv): string
     {
         return $fv->getFileUuid()->asString() . '-' . $fv->getVersion();
     }
 
-    protected function buildPreviousArray(FileVersion $version) : array
+    protected function buildPreviousArray(FileVersion $version): array
     {
-        $result = array();
-        $previous = $this->storage_service->getPreviousVersion($version->getFileUuid()->asString(),
-            $version->getVersion());
+        $result = [];
+        $previous = $this->storage_service->getPreviousVersion(
+            $version->getFileUuid()->asString(),
+            $version->getVersion()
+        );
         $key = $previous->getFileUuid()->asString() . '-' . $previous->getVersion();
         $result['key'] = $key;
         $url = self::BASE_URL . ltrim(WebAccessService::getWACUrl($previous->getUrl()), '.');
@@ -300,34 +301,36 @@ class xonoEditorGUI extends xonoAbstractGUI
         return $result;
     }
 
-    protected function buildUserArray(int $user_id) : array
+    protected function buildUserArray(int $user_id): array
     {
         $user = new ilObjUser($user_id);
-        return array("id" => $user_id, "name" => $user->getPublicName());
+        return ["id" => $user_id, "name" => $user->getPublicName()];
     }
 
     /**
      * Determines access rights based on object settings and RBAC
      */
-    protected function determineAccessRights(bool $withinPotentialTimeLimit): string {
+    protected function determineAccessRights(bool $withinPotentialTimeLimit): string
+    {
         if (
             (
-                self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() 
-                && 
+                self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
+                &&
                 $withinPotentialTimeLimit
-            ) 
-            || ilObjOnlyOfficeAccess::hasEditFileAccess()
             )
+            || ilObjOnlyOfficeAccess::hasEditFileAccess()
+        ) {
             return "edit";
-        else
+        } else {
             return "view";
+        }
     }
 
     /**
      * Get DIC interface
      * @throws DICException
      */
-    protected static final function dic() : DICInterface
+    final protected static function dic(): DICInterface
     {
         return DICStatic::dic();
     }

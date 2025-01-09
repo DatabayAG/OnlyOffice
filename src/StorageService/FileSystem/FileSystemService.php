@@ -12,23 +12,12 @@ use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Filesystem\Stream\Streams;
 use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
 
-/**
- * Class FileSystemService
- * @package srag\Plugins\OnlyOffice\StorageService\FileSystem
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- *          Sophie Pfister <sophie@fluxlabs.ch>
- */
 class FileSystemService
 {
-
-    const BASE_PATH = '/only_office/';
-    const BASE_TEMPLATE_PATH = '/only_office/templates/';
+    public const BASE_PATH = '/only_office/';
+    public const BASE_TEMPLATE_PATH = '/only_office/templates/';
     protected Container $dic;
 
-    /**
-     * FileRepository constructor.
-     * @param Container $dic
-     */
     public function __construct(Container $dic)
     {
         $this->dic = $dic;
@@ -42,7 +31,7 @@ class FileSystemService
         int $obj_id,
         string $file_id,
         string $file_name = FileVersion::FIRST_VERSION
-    ) : string {
+    ): string {
         $ext = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
         $file_name .= '.' . $ext;
 
@@ -63,7 +52,7 @@ class FileSystemService
         string $uuid,
         int $version,
         string $extension
-    ) : string {
+    ): string {
         $path = $this->createAndGetPath($obj_id, $uuid) . $version . '.' . $extension;
         $this->dic->logger()->root()->info('Storing as: ' . $path);
         $stream = Streams::ofString($content);
@@ -76,7 +65,7 @@ class FileSystemService
      * Store a template from the config form
      * @throws IOException
      */
-    public function storeTemplate(UploadResult $upload_result, string $type, string $title, string $description, string $extension) : string
+    public function storeTemplate(UploadResult $upload_result, string $type, string $title, string $description, string $extension): string
     {
         // Define path and create it if it does not exist
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
@@ -140,7 +129,7 @@ class FileSystemService
     public function fetchTemplates(string $type): array
     {
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
-        $converted_files = array();
+        $converted_files = [];
 
         if ($this->dic->filesystem()->web()->hasDir($path)) {
             $files = $this->dic->filesystem()->web()->listContents($path);
@@ -177,7 +166,8 @@ class FileSystemService
         return $converted_files;
     }
 
-    public function deleteTemplate(string $target, string $extension, string $type) : bool {
+    public function deleteTemplate(string $target, string $extension, string $type): bool
+    {
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
         $file_name = $target . "." . $extension;
         $full_path = $path . $file_name;
@@ -193,7 +183,7 @@ class FileSystemService
         return false;
     }
 
-    public function modifyTemplate(string $type, string $prevTitle, string $extension, string $title, string $description) : bool
+    public function modifyTemplate(string $type, string $prevTitle, string $extension, string $title, string $description): bool
     {
         $path = self::BASE_TEMPLATE_PATH . $type . "/";
         $old_file_name = $prevTitle . "." . $extension;
@@ -220,7 +210,7 @@ class FileSystemService
      * Store a draft
      * @throws IOException
      */
-    public function storeDraft(string $name, string $extension, int $obj_id, string $new_file_id) : string
+    public function storeDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
     {
         $path = $this->createAndGetPath($obj_id, $new_file_id);
 
@@ -246,7 +236,7 @@ class FileSystemService
      * Store a draft
      * @throws IOException
      */
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id) : string
+    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
     {
         $extension = pathinfo($template_path, PATHINFO_EXTENSION);
         $name = pathinfo($template_path, PATHINFO_FILENAME);
@@ -266,8 +256,7 @@ class FileSystemService
         return $path;
     }
 
-
-    public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension) : string
+    public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
     {
         $path = $this->createAndGetPath($obj_id, $uuid, true) . $version . '.' . $extension;
         $stream = Streams::ofString($content);
@@ -276,22 +265,27 @@ class FileSystemService
         return $path;
     }
 
-    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id) : string
+    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id): string
     {
         $parent_path = $parent_version->getUrl();
         $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath($file_id, $uuid,
-                false) . $parent_version->getVersion() . '.' . $extension;;
+        $child_path = $this->createAndGetPath(
+            $file_id,
+            $uuid,
+            false
+        ) . $parent_version->getVersion() . '.' . $extension;
+        ;
         $web = $this->dic->filesystem()->web();
         $web->copy($parent_path, $child_path);
         return $child_path;
     }
 
-    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id) : string
+    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): string
     {
         $parent_path = $parent_change->getChangesUrl();
         $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;;
+        $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;
+        ;
         $web = $this->dic->filesystem()->web();
         $web->copy($parent_path, $child_path);
         return $child_path;
@@ -308,7 +302,7 @@ class FileSystemService
     /**
      * @throws IOException
      */
-    protected function createAndGetPath(int $file_id, string $uuid, bool $isChange = false) : string
+    protected function createAndGetPath(int $file_id, string $uuid, bool $isChange = false): string
     {
         if (!$isChange) {
             $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR;

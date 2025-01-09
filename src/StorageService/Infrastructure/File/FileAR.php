@@ -6,22 +6,15 @@ use ActiveRecord;
 use Exception;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
-/**
- * Class FileAR
- * @package srag\Plugins\OnlyOffice\StorageService\Infrastructure\File
- * @author  Theodor Truffer <theo@fluxlabs.ch>
- */
 class FileAR extends ActiveRecord
 {
-
-    const TABLE_NAME = 'xono_file';
+    public const TABLE_NAME = 'xono_file';
     public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;
     }
 
     /**
-     * @var UUID
      * @con_has_field    true
      * @con_fieldtype    text
      * @con_length       256
@@ -31,7 +24,6 @@ class FileAR extends ActiveRecord
     protected UUID $uuid;
 
     /**
-     * @var int
      * @con_has_field    true
      * @con_fieldtype    integer
      * @con_length       8
@@ -40,7 +32,6 @@ class FileAR extends ActiveRecord
     protected ?int $obj_id;
 
     /**
-     * @var String
      * @db_has_field        true
      * @db_fieldtype        text
      * @con_is_notnull      true
@@ -49,7 +40,6 @@ class FileAR extends ActiveRecord
     protected string $title;
 
     /**
-     * @var String
      * @db_has_field        true
      * @db_fieldtype        text
      * @con_is_notnull      true
@@ -58,14 +48,13 @@ class FileAR extends ActiveRecord
     protected string $file_type;
 
     /**
-     * @var string
      * @db_has_field        true
      * @db_fieldtype        text
      * @db_length           256
      */
     protected string $mime_type;
 
-    public function getUUID() : UUID
+    public function getUUID(): UUID
     {
         return $this->uuid;
     }
@@ -75,7 +64,7 @@ class FileAR extends ActiveRecord
         $this->uuid = $uuid;
     }
 
-    public function getId() : UUID
+    public function getId(): UUID
     {
         return $this->id;
     }
@@ -85,7 +74,7 @@ class FileAR extends ActiveRecord
         $this->id = $id;
     }
 
-    public function getObjId() : int
+    public function getObjId(): int
     {
         return $this->obj_id;
     }
@@ -95,7 +84,7 @@ class FileAR extends ActiveRecord
         $this->obj_id = $obj_id;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -105,7 +94,7 @@ class FileAR extends ActiveRecord
         $this->title = $title;
     }
 
-    public function getFileType() : string
+    public function getFileType(): string
     {
         return $this->file_type;
     }
@@ -115,7 +104,8 @@ class FileAR extends ActiveRecord
         $this->file_type = $file_type;
     }
 
-    public function getMimeType(): string {
+    public function getMimeType(): string
+    {
         return $this->mime_type;
     }
 
@@ -135,8 +125,6 @@ class FileAR extends ActiveRecord
     }
 
     /**
-     * @param $field_name
-     * @param $field_value
      * @throws Exception
      */
     public function wakeUp($field_name, $field_value): ?UUID
