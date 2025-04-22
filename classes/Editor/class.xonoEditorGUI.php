@@ -303,6 +303,9 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function buildUserArray(int $user_id): array
     {
+        if (!ilObjUser::userExists([$user_id])) {
+            return ["id" => $user_id, "name" => "(deleted)"];
+        }
         $user = new ilObjUser($user_id);
         return ["id" => $user_id, "name" => $user->getPublicName()];
     }
