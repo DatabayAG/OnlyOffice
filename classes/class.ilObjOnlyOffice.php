@@ -48,7 +48,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     protected function beforeCreate(): bool
     {
-        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
+        if (isset($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) ?? false) {
             $start_time =  new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START])), IL_CAL_DATETIME);
             $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
@@ -71,7 +71,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $online = $_POST[ilObjOnlyOfficeGUI::POST_VAR_ONLINE];
         $allow_edit = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT];
         $open_settings = $_POST[ilObjOnlyOfficeGUI::POST_VAR_OPEN_SETTING];
-        $limited_period = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED];
+        $limited_period = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED] ?? null;
         $start_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START];
         $end_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END];
 
@@ -115,13 +115,13 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $start_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START];
         $end_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END];
 
-        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED] && !is_null($start_time)) {
+        if (isset($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) && !is_null($start_time)) {
             $raw_start_time = new ilDateTime(date('Ymdhis', strtotime($start_time)), IL_CAL_DATETIME);
             $formatted_start_time = new ilDateTime($raw_start_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setStartTime($formatted_start_time->get(IL_CAL_DATETIME));
         }
 
-        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED] && !is_null($end_time)) {
+        if (isset($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) && !is_null($end_time)) {
             $raw_end_time = new ilDateTime(date('Ymdhis', strtotime($end_time)), IL_CAL_DATETIME);
             $formatted_end_time = new ilDateTime($raw_end_time->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC), IL_CAL_DATETIME);
             $this->object_settings->setEndTime($formatted_end_time->get(IL_CAL_DATETIME));

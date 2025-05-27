@@ -198,7 +198,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         $form = new ilPropertyFormGUI();
         $form->setTarget("_top");
-        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($_GET["ootarget"]) . "&prevExtension=" . urlencode($_GET["ooextension"]));
+        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($_GET["ootarget"] ?? '') . "&prevExtension=" . urlencode($_GET["ooextension"] ?? ""));
 
         // title
         $ti = new ilTextInputGUI(self::plugin()->translate("table_title", self::LANG_MODULE), "title");
@@ -342,11 +342,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_invalid_extension"), true);
+                $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $_POST["title"] ?? "",
+                    "desc" => $_POST["desc"] ?? "",
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
@@ -364,8 +364,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $_POST["title"] ?? "",
+                    "desc" => $_POST["desc"] ?? "",
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
