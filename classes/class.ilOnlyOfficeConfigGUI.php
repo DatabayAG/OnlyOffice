@@ -262,9 +262,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $results = self::dic()->upload()->getResults();
         $result = end($results);
 
+        global $DIC;
+        $fileServiceSettings = $DIC->fileServiceSettings();
+        $extension = pathinfo($result->getName(), PATHINFO_EXTENSION);
+
         // Return if file extension not whitelisted by ILIAS instance
-        if ( str_contains("sec", !ilFileUtils::getSafeFilename($result->getName())) === true) {
-            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_configuration_saved"), true);
+        if (!in_array($extension, $fileServiceSettings->getWhiteListedSuffixes(), true) || in_array($extension, $fileServiceSettings->getBlackListedSuffixes(), true)) {
+            $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
@@ -337,7 +341,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $result = end($results);
 
             // Return if file extension not whitelisted by ILIAS instance
-            if (!ilFileUtils::hasValidExtension($result->getName())) {
+            if (!ilFileUtils::getValidFilename($result->getName())) {
                 // Fix bug where previous title and name don't get saved into the form action
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
