@@ -148,7 +148,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
             return false;
         }
 
-        if ($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) {
+        if (isset($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED]) ?? false) {
 
             $start_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_START] )), IL_CAL_DATETIME);
             $end_time = new ilDateTime(date('Ymdhis', strtotime($_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END])), IL_CAL_DATETIME);

@@ -198,7 +198,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         $form = new ilPropertyFormGUI();
         $form->setTarget("_top");
-        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($_GET["ootarget"]) . "&prevExtension=" . urlencode($_GET["ooextension"]));
+        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($_GET["ootarget"] ?? '') . "&prevExtension=" . urlencode($_GET["ooextension"] ?? ""));
 
         // title
         $ti = new ilTextInputGUI(self::plugin()->translate("table_title", self::LANG_MODULE), "title");
@@ -262,9 +262,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $results = self::dic()->upload()->getResults();
         $result = end($results);
 
+        global $DIC;
+        $fileServiceSettings = $DIC->fileServiceSettings();
+        $extension = pathinfo($result->getName(), PATHINFO_EXTENSION);
+
         // Return if file extension not whitelisted by ILIAS instance
-        if ( str_contains("sec", !ilFileUtils::getSafeFilename($result->getName())) === true) {
-            $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_configuration_saved"), true);
+        if (!in_array($extension, $fileServiceSettings->getWhiteListedSuffixes(), true) || in_array($extension, $fileServiceSettings->getBlackListedSuffixes(), true)) {
+            $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
             $form->setValuesByPost();
             self::output()->output($form);
             return;
@@ -337,16 +341,16 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $result = end($results);
 
             // Return if file extension not whitelisted by ILIAS instance
-            if (!ilFileUtils::hasValidExtension($result->getName())) {
+            if (!ilFileUtils::getValidFilename($result->getName())) {
                 // Fix bug where previous title and name don't get saved into the form action
                 $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
                 $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
                 $form->setFormAction($adjustedUrl);
-                $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_invalid_extension"), true);
+                $this->tpl->setOnScreenMessage('failure', $this->pl->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $_POST["title"] ?? "",
+                    "desc" => $_POST["desc"] ?? "",
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
@@ -364,8 +368,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure',$this->pl->txt("config_template_unrecognised_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
                 $value_array = [
-                    "title" => $_POST["title"],
-                    "desc" => $_POST["desc"],
+                    "title" => $_POST["title"] ?? "",
+                    "desc" => $_POST["desc"] ?? "",
                     "file" => $template->getPath()
                 ];
                 $form->setValuesByArray($value_array);
