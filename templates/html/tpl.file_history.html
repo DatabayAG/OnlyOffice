@@ -20,42 +20,22 @@
         <th class="tblheader">{DOWNLOAD}</th>
         </thead>
         <tbody id="table_body">
+        <!-- BEGIN table_row -->
+        <tr class='tblrow2'>
+            <td class='std'>{TABLE_ROW_VERSION}</td>
+            <td class='std'>{TABLE_ROW_CREATED_AT}</td>
+            <td class='std'>{TABLE_ROW_USER}</td>
+            <td class='std small'>
+                <a href='{TABLE_ROW_DOWNLOAD_URL}'>
+                    <button class='btn btn-default'><i class='fa fa-download'></i></button>
+                </a>
+            </td>
+        </tr>
+        <!-- END table_row -->
         </tbody>
     </table>
 </div>
-
-
 </body>
-
-<script type="text/javascript">
-
-  function renderBody() {
-    const url_array = JSON.parse('{URL}');
-    const base_url = '{BASE_URL}';
-    const data = JSON.parse('{TBL_DATA}');
-    let table = "";
-    let limit = Math.min(data.length, {LIMIT})
-    for (let i = 0; i < limit ; i++) {
-      var rowData = data[i];
-      var version = rowData.version;
-      var url = url_array[version];
-      if (i % 2 === 1)
-        table += "<tr class='tblrow1'>";
-      else // i % 2 == 0
-        table += "<tr class='tblrow2'>";
-
-      table += "<td class='std'>" + version + "</td>";
-      table += "<td class='std'>" + rowData.createdAt + "</td>";
-      table += "<td class='std'>" + rowData.user + "</td>";
-      table += "<td class='std small'> " +
-        "<a href='" + url + "'>" +
-        "<button class='btn btn-default'><i class=\"fa fa-download\"></i></button" +
-        "></a>";
-      table += "</tr>";
-    }
-    document.getElementById("table_body").innerHTML = table;
-  }
-</script>
 
 
 
