@@ -1,12 +1,16 @@
 <?php
 
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
+use ILIAS\DI\Container;
+use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Refinery\Factory;
 use srag\DIC\OnlyOffice\DIC\DICInterface;
 use srag\DIC\OnlyOffice\DICStatic;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use srag\Plugins\OnlyOffice\InfoService\InfoService;
+use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
+use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\Plugins\OnlyOffice\Utils\DateFetcher;
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 
@@ -32,7 +36,8 @@ class xonoContentGUI extends xonoAbstractGUI
     const CMD_SHOW_VERSIONS = 'showVersions';
     const CMD_DOWNLOAD = 'downloadFileVersion';
     const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
-
+    private Factory $refinery;
+    private WrapperFactory $httpWrapper;
 
     public function __construct(
         \ILIAS\DI\Container $dic,
@@ -40,6 +45,10 @@ class xonoContentGUI extends xonoAbstractGUI
         int $object_id
     ) {
         global $DIC;
+
+        $this->refinery = $DIC->refinery();
+        $this->httpWrapper = $DIC->http()->wrapper();
+
 
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
@@ -95,51 +104,50 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function showVersions()
     {
+        /** @var FileVersion[] $fileVersions */
         $fileVersions = $this->storage_service->getAllVersions($this->file_id);
         $file = $this->storage_service->getFile($this->file_id);
         if(is_null($file)) {
             $this->dic->ui()->mainTemplate()->setContent("");
             return;
         }
-        $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
-        $fileName = rtrim($file->getTitle(), '.' . $ext);
-        $json = json_encode($fileVersions);
-        // Insert properly converted datetime
-        $json_decoded = json_decode($json);
-        $i = 0;
-
-
-
-
-        foreach ($fileVersions as $fileVersion) {
-            $json_decoded[$i]->createdAt = $fileVersion->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
-            $i++;
-        }
-        $json = json_encode($json_decoded);
-
-        $url = $this->getDownloadUrlArray($fileVersions, $fileName, $ext);
 
         $this->tpl->setOnScreenMessage('info',$this->plugin->txt("xono_reload_info"), true);
 
         $tpl = $this->plugin->getTemplate('html/tpl.file_history.html');
-        $tpl->setVariable('FORWARD', $this->buttonTarget());
-        $tpl->setVariable('BUTTON', $this->buttonName());
-        $tpl->setVariable('TBL_DATA', $json);
-        $tpl->setVariable('BASE_URL', self::BASE_URL);
-        $tpl->setVariable('URL', json_encode($url));
-        $tpl->setVariable('FILENAME', $fileName);
-        $tpl->setVariable('EXTENSION', $ext);
         $tpl->setVariable('VERSION', $this->plugin->txt('xono_version'));
         $tpl->setVariable('CREATED', $this->plugin->txt('xono_date'));
         $tpl->setVariable('EDITOR', $this->plugin->txt('xono_editor'));
         $tpl->setVariable('DOWNLOAD', $this->plugin->txt('xono_download'));
-        $tpl->setVariable('LIMIT', InfoService::getNumberOfVersions());
+        $tpl->setVariable('FORWARD', $this->buttonTarget());
+        $tpl->setVariable('BUTTON', $this->buttonName());
+
+        $limit = InfoService::getNumberOfVersions();
+        $fileVersionsAdded = 0;
+        foreach ($fileVersions as $fileVersion) {
+            if ($fileVersionsAdded >= $limit) {
+                break;
+            }
+            $user = new ilObjUser($fileVersion->getUserId());
+            $tpl->setVariable('TABLE_ROW_VERSION', $fileVersion->getVersion());
+            $tpl->setVariable('TABLE_ROW_CREATED_AT', $fileVersion->getCreatedAt()->get(
+                IL_CAL_FKT_DATE,
+                'd.m.Y H:i',
+                self::dic()->user()->getTimeZone())
+            );
+            $tpl->setVariable('TABLE_ROW_USER', $user->getPublicName());
+            $this->dic->ctrl()->setParameter($this, "version", $fileVersion->getVersion());
+            $tpl->setVariable('TABLE_ROW_DOWNLOAD_URL', $this->dic->ctrl()->getLinkTarget($this, self::CMD_DOWNLOAD));
+            $fileVersionsAdded++;
+            $tpl->setCurrentBlock("table_row");
+            $tpl->parseCurrentBlock("table_row");
+        }
 
         if (DateFetcher::editingPeriodIsFetchable($file->getObjId())) {
             $editing_period = DateFetcher::fetchEditingPeriod($file->getObjId());
             $tpl->setVariable('EDITING_PERIOD', sprintf("<p>%s: %s</p>", $this->plugin->txt('editing_period'), $editing_period));
         }
-        //$tpl->setVariable('RELOAD_INFO', );
+
         $content = $tpl->get();
         $this->dic->ui()->mainTemplate()->setContent($content);
     }
@@ -149,10 +157,42 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function downloadFileVersion()
     {
-        $path = $_GET['path'];
-        $name = $_GET['name'];
-        $mime_type = $_GET['mime'];
-        ilFileDelivery::deliverFileAttached($path, $name, $mime_type);
+        $requestedVersion = $this->httpWrapper->query()->retrieve(
+            "version",
+            $this->refinery->byTrying([
+                $this->refinery->kindlyTo()->int(),
+                $this->refinery->always(null)
+            ])
+        );
+
+        if ($requestedVersion === null) {
+            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+        }
+
+        /** @var FileVersion $version */
+        $fileVersion = null;
+        foreach ($this->storage_service->getAllVersions($this->file_id) as $version) {
+            if ($version->getVersion() === $requestedVersion) {
+                $fileVersion = $version;
+                break;
+            }
+        }
+
+        $file = $this->storage_service->getFile($this->file_id);
+
+        if (!$fileVersion || !$file) {
+            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+
+        }
+
+        $path = ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $fileVersion->getUrl();
+        $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
+        $fileName = rtrim($file->getTitle(), '.' . $ext);
+        ilFileDelivery::deliverFileAttached(
+            $path,
+            "{$fileName}_V{$fileVersion->getVersion()}.$ext",
+            $file->getMimeType()
+        );
         exit;
     }
 
@@ -161,10 +201,10 @@ class xonoContentGUI extends xonoAbstractGUI
      * @return string
      */
     protected function buttonName()
-    {  
+    {
         //
         //todo if works place this to ilObjOnlyOfficeAccess
-        
+
         $allowEdit = false;
 
         //ILIAS RBAC EDIT_FILE Access is granted
@@ -172,7 +212,7 @@ class xonoContentGUI extends xonoAbstractGUI
             $allowEdit = true;
         }
 
-        //setting ALLOW_EDIT is checked 
+        //setting ALLOW_EDIT is checked
         //setting EDITING_PERIOD is not configured
         if(
             self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
@@ -182,7 +222,7 @@ class xonoContentGUI extends xonoAbstractGUI
             $allowEdit = true;
         }
 
-        //setting ALLOW_EDIT is checked 
+        //setting ALLOW_EDIT is checked
         //setting EDITING_PERIOD is configured
         //current time is within configured EDITING_PERIOD
         if(
@@ -196,7 +236,7 @@ class xonoContentGUI extends xonoAbstractGUI
         }
 
         ////
-        
+
 
 
         if ($allowEdit === true)
@@ -213,30 +253,6 @@ class xonoContentGUI extends xonoAbstractGUI
     protected function buttonTarget()
     {
         return $this->dic->ctrl()->getLinkTargetByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-    }
-
-    /**
-     * generates and returns the URL that is used to download the file
-     */
-    protected function getDownloadUrlArray(array $fileVersions, string $filename, string $extension) : array
-    {
-        $file = $this->storage_service->getFile($this->file_id);
-        if(is_null($file)) {
-            return [];
-        }
-
-        $result = array();
-        foreach ($fileVersions as $fv) {
-            $url = ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $fv->getUrl();
-            $version = $fv->getVersion();
-            $name = $filename . '_V' . $version . '.' . $extension;
-            $this->dic->ctrl()->setParameter($this, 'path', $url);
-            $this->dic->ctrl()->setParameter($this, 'name', $name);
-            $this->dic->ctrl()->setParameter($this, 'mime', $file->getMimeType());
-            $path = $this->dic->ctrl()->getLinkTarget($this, self::CMD_DOWNLOAD);
-            $result[$version] = '/' . $path;
-        }
-        return $result;
     }
 
     /**
