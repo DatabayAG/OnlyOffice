@@ -114,13 +114,11 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 self::dic()->ctrl()->forwardCommand($xonoContentGUI);
                 break;
             case strtolower(xonoEditorGUI::class):
-                if (!(
-                    ilObjOnlyOfficeAccess::hasReadAccess()
-                    && (
-                        self::onlyOffice()->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()
-                        || ilObjOnlyOfficeAccess::hasWriteAccess()
-                    )
-                )) {
+                if (
+                    !ilObjOnlyOfficeAccess::hasReadAccess()
+                    && !self::onlyOffice()->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()
+                    && !ilObjOnlyOfficeAccess::hasWriteAccess()
+                ) {
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
 
