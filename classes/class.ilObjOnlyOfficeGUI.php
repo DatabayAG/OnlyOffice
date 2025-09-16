@@ -116,8 +116,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             case strtolower(xonoEditorGUI::class):
                 if (
                     !ilObjOnlyOfficeAccess::hasReadAccess()
-                    && !self::onlyOffice()->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()
-                    && !ilObjOnlyOfficeAccess::hasWriteAccess()
                 ) {
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
