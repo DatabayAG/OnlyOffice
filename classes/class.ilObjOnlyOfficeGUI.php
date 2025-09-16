@@ -105,10 +105,25 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         switch (strtolower($next_class)) {
             case strtolower(xonoContentGUI::class):
+                if (
+                    !ilObjOnlyOfficeAccess::hasReadAccess()
+                ) {
+                    ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
+                }
                 $xonoContentGUI = new xonoContentGUI(self::dic()->dic(), $this->plugin, $this->object_id);
                 self::dic()->ctrl()->forwardCommand($xonoContentGUI);
                 break;
             case strtolower(xonoEditorGUI::class):
+                if (!(
+                    ilObjOnlyOfficeAccess::hasReadAccess()
+                    && (
+                        self::onlyOffice()->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()
+                        || ilObjOnlyOfficeAccess::hasWriteAccess()
+                    )
+                )) {
+                    ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
+                }
+
                 $xonoEditorGUI = new xonoEditorGUI(self::dic()->dic(), $this->plugin, $this->obj_id);
                 self::dic()->ctrl()->forwardCommand($xonoEditorGUI);
                 break;
