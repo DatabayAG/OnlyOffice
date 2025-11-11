@@ -5,7 +5,7 @@ namespace ILIAS\Plugin\OnlyOffice;
 use ILIAS\Plugin\OnlyOffice\Config\Repository as ConfigRepository;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
+
 
 final class Repository
 {

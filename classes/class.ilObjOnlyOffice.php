@@ -44,7 +44,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
-        $this->tpl = $DIC["tpl"];
+        $this->tpl = $DIC->ui()->mainTemplate();
         $this->repo = Repository::getInstance();
     }
 

@@ -4,7 +4,7 @@ namespace ILIAS\Plugin\OnlyOffice\Utils;
 
 use ilDateTime;
 use ILIAS\Plugin\OnlyOffice\Repository;
-use srag\DIC\OnlyOffice\DICTrait;
+
 use ilTimeZone;
 
 class DateFetcher

@@ -44,7 +44,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
-        $this->tpl = $DIC["tpl"];
+        $this->tpl = $DIC->ui()->mainTemplate();
         $this->repo = Repository::getInstance();
 
         $this->afterConstructor();

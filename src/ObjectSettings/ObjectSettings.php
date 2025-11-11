@@ -6,7 +6,7 @@ use ilDateTime;
 use ActiveRecord;
 use arConnector;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
+
 
 class ObjectSettings extends ActiveRecord
 {

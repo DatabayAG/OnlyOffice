@@ -5,7 +5,7 @@ namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 use ilOnlyOfficePlugin;
 use ilObjOnlyOffice;
 use ilObjOnlyOfficeGUI;
-use srag\DIC\OnlyOffice\DICTrait;
+
 
 final class Factory
 {

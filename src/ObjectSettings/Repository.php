@@ -4,7 +4,7 @@ namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
 use ILIAS\DI\Container;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
+
 
 final class Repository
 {
