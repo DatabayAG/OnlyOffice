@@ -2,14 +2,12 @@
 
 namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficePlugin;
 use srag\DIC\OnlyOffice\DICTrait;
 
 final class Repository
 {
     use DICTrait;
-    use OnlyOfficeTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;

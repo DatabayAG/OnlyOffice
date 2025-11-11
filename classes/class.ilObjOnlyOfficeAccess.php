@@ -1,13 +1,13 @@
 <?php
 
 require_once __DIR__ . "/../vendor/autoload.php";
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
+
+use ILIAS\Plugin\OnlyOffice\Repository;
 use srag\DIC\OnlyOffice\DICTrait;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
     use DICTrait;
-    use OnlyOfficeTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
@@ -83,7 +83,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 
     public static function _isOffline(?int $a_obj_id): bool
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($a_obj_id));
+        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById(intval($a_obj_id));
 
         if ($object_settings !== null) {
             return (!$object_settings->isOnline());

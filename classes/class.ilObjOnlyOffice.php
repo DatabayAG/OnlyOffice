@@ -5,10 +5,10 @@ require_once __DIR__ . "/../vendor/autoload.php";
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
 use srag\DIC\OnlyOffice\DICTrait;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -17,7 +17,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 class ilObjOnlyOffice extends ilObjectPlugin
 {
     use DICTrait;
-    use OnlyOfficeTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
@@ -27,6 +26,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     private Factory $refinery;
     private WrapperFactory $httpWrapper;
     private FileUpload $upload;
+    private Repository $repo;
 
     public function __construct(int $a_ref_id = 0)
     {
@@ -43,6 +43,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         /** @var $plugin ilOnlyOfficePlugin */
         $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
         $this->tpl = $DIC["tpl"];
+        $this->repo = Repository::getInstance();
     }
 
     final public function initType(): void
@@ -186,12 +187,12 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setOnline($online);
         $this->object_settings->setOpen($open_settings);
         $this->object_settings->setLimitedPeriod($limited_period);
-        self::onlyOffice()->objectSettings()->storeObjectSettings($this->object_settings);
+        $this->repo->objectSettings()->storeObjectSettings($this->object_settings);
     }
 
     public function doRead(): void
     {
-        $this->object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($this->id));
+        $this->object_settings = $this->repo->objectSettings()->getObjectSettingsById(intval($this->id));
     }
 
     /**
@@ -281,13 +282,13 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setOpen($open_settings);
         $this->object_settings->setOnline($online);
         $this->object_settings->setLimitedPeriod($edit_limited);
-        self::onlyOffice()->objectSettings()->storeObjectSettings($this->object_settings);
+        $this->repo->objectSettings()->storeObjectSettings($this->object_settings);
     }
 
     public function doDelete(): void
     {
         if ($this->object_settings !== null) {
-            self::onlyOffice()->objectSettings()->deleteObjectSettings($this->object_settings);
+            $this->repo->objectSettings()->deleteObjectSettings($this->object_settings);
         }
         $storage = new StorageService(
             self::dic()->dic(),
@@ -304,9 +305,9 @@ class ilObjOnlyOffice extends ilObjectPlugin
         int $a_target_id,
         ?int $a_copy_id = null
     ): void {
-        $new_obj->object_settings = self::onlyOffice()->objectSettings()->cloneObjectSettings($this->object_settings);
+        $new_obj->object_settings = $this->repo->objectSettings()->cloneObjectSettings($this->object_settings);
         $new_obj->object_settings->setObjId($new_obj->id);
-        self::onlyOffice()->objectSettings()->storeObjectSettings($new_obj->object_settings);
+        $this->repo->objectSettings()->storeObjectSettings($new_obj->object_settings);
         $storage = new StorageService(
             self::dic()->dic(),
             new ilDBFileVersionRepository(),

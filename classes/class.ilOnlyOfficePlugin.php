@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -15,13 +14,13 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    use OnlyOfficeTrait;
 
     public const PLUGIN_ID = "xono";
     public const PLUGIN_NAME = "OnlyOffice";
     public const PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
+    private Repository $repo;
 
     public static function getInstance(): self
     {
@@ -46,6 +45,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     ) {
         global $DIC;
         parent::__construct($db, $component_repository, $id);
+        $this->repo = Repository::getInstance();
         $this->db = $DIC->database();
     }
 
@@ -56,7 +56,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected function deleteData(): void
     {
-        self::onlyOffice()->dropTables();
+        $this->repo->dropTables();
     }
 
     protected function shouldUseOneUpdateStepOnly(): bool

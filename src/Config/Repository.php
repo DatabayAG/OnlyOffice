@@ -2,7 +2,6 @@
 
 namespace ILIAS\Plugin\OnlyOffice\Config;
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficePlugin;
 use srag\ActiveRecordConfig\OnlyOffice\Config\AbstractFactory;
 use srag\ActiveRecordConfig\OnlyOffice\Config\AbstractRepository;
@@ -10,7 +9,6 @@ use srag\ActiveRecordConfig\OnlyOffice\Config\Config;
 
 final class Repository extends AbstractRepository
 {
-    use OnlyOfficeTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;

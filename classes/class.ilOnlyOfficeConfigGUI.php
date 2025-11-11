@@ -3,13 +3,13 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
 
 /**
@@ -18,7 +18,6 @@ use srag\DIC\OnlyOffice\DICTrait;
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
     use DICTrait;
-    use OnlyOfficeTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public const CMD_CONFIGURE = "configure";
     public const CMD_TEMPLATES = "configureTemplates";
@@ -38,6 +37,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private $tpl;
     private Factory $refinery;
     private WrapperFactory $httpWrapper;
+    private Repository $repo;
 
     public function __construct()
     {
@@ -57,6 +57,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         /** @var $plugin ilOnlyOfficePlugin */
         $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
         $this->tpl = $DIC["tpl"];
+        $this->repo = Repository::getInstance();
     }
 
     public function performCommand(string $cmd): void
@@ -111,7 +112,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
         self::dic()->tabs()->activateSubTab(self::TAB_SUB_CONFIGURATION);
 
-        $form = self::onlyOffice()->config()->factory()->newFormInstance($this);
+        $form = $this->repo->config()->factory()->newFormInstance($this);
 
         self::output()->output($form);
     }
@@ -244,7 +245,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
 
-        $form = self::onlyOffice()->config()->factory()->newFormInstance($this);
+        $form = $this->repo->config()->factory()->newFormInstance($this);
 
         if (!$form->storeForm()) {
             self::output()->output($form);

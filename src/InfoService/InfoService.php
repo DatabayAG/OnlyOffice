@@ -2,33 +2,32 @@
 
 namespace ILIAS\Plugin\OnlyOffice\InfoService;
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Repository;
 
 /**
  * Used to access information using OnlyOfficeTrait.
  */
 class InfoService
 {
-    use OnlyOfficeTrait;
 
     public static function getOpenSetting(int $file_id): string
     {
-        return self::onlyOffice()->objectSettings()->getObjectSettingsById($file_id)->getOpen();
+        return Repository::getInstance()->objectSettings()->getObjectSettingsById($file_id)->getOpen();
     }
 
     final public static function getOnlyOfficeUrl(): string
     {
-        return self::onlyOffice()->config()->getValue("onlyoffice_url");
+        return Repository::getInstance()->config()->getValue("onlyoffice_url");
     }
 
     final public static function getSecret(): string
     {
-        return self::onlyOffice()->config()->getValue("onlyoffice_secret");
+        return Repository::getInstance()->config()->getValue("onlyoffice_secret");
     }
 
     final public static function getNumberOfVersions(): int
     {
-        return self::onlyOffice()->config()->getValue("number_of_versions");
+        return Repository::getInstance()->config()->getValue("number_of_versions");
     }
 
 }

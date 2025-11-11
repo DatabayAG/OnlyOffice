@@ -3,7 +3,6 @@
 namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
 use ilDateTime;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ActiveRecord;
 use arConnector;
 use ilOnlyOfficePlugin;
@@ -12,7 +11,6 @@ use srag\DIC\OnlyOffice\DICTrait;
 class ObjectSettings extends ActiveRecord
 {
     use DICTrait;
-    use OnlyOfficeTrait;
 
     public const TABLE_NAME = "rep_robj_xono_set";
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;

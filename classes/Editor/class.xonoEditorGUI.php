@@ -1,6 +1,7 @@
 <?php
 
 use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use srag\DIC\OnlyOffice\Exception\DICException;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
@@ -16,11 +17,9 @@ use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
-    use OnlyOfficeTrait;
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
@@ -29,6 +28,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     public const BASE_URL = ILIAS_HTTP_PATH;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
+    private Repository $repo;
 
     /**
      * @throws DICException
@@ -44,6 +44,8 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->onlyoffice_key = InfoService::getSecret();
 
         $this->file_id = $object_id;
+        $this->repo = Repository::getInstance();
+
         $this->afterConstructor();
     }
 
@@ -88,7 +90,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function editFile(): void
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id);
+        $object_settings = $this->repo->objectSettings()->getObjectSettingsById($this->file_id);
 
         $file = $this->storage_service->getFile($this->file_id);
         $latest_version = null;
@@ -317,7 +319,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     {
         if (
             (
-                self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
+                $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
                 &&
                 $withinPotentialTimeLimit
             )

@@ -5,12 +5,12 @@ use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettingsFormGUI;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
 use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 
@@ -28,7 +28,6 @@ use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
     use DICTrait;
-    use OnlyOfficeTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
@@ -79,6 +78,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      * @var ilOnlyOfficePlugin|ilPlugin|null
      */
     protected ?ilPlugin $plugin = null;
+    private Repository $repo;
 
     protected function afterConstructor(): void
     {
@@ -88,6 +88,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
+
+        $this->repo = Repository::getInstance();
     }
 
     final public function getType(): string
@@ -129,7 +131,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                     case self::CMD_MANAGE_CONTENTS:
                         // Read commands
                         if (!ilObjOnlyOfficeAccess::hasReadAccess() &&
-                            !self::onlyOffice()->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
+                            !$this->repo->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                         }
                         $open_setting = InfoService::getOpenSetting($this->obj_id);

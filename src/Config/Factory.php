@@ -2,14 +2,12 @@
 
 namespace ILIAS\Plugin\OnlyOffice\Config;
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficeConfigGUI;
 use ilOnlyOfficePlugin;
 use srag\ActiveRecordConfig\OnlyOffice\Config\AbstractFactory;
 
 final class Factory extends AbstractFactory
 {
-    use OnlyOfficeTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Factory $instance = null;
 

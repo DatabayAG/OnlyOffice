@@ -19,11 +19,9 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeReposit
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class StorageService
 {
-    use OnlyOfficeTrait;
 
     protected Container $dic;
     protected FileVersionRepository $file_version_repository;

@@ -2,7 +2,6 @@
 
 namespace ILIAS\Plugin\OnlyOffice\Config;
 
-use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficeConfigGUI;
 use ilOnlyOfficePlugin;
 use ilTextInputGUI;
@@ -10,8 +9,6 @@ use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
 
 class ConfigFormGUI extends PropertyFormGUI
 {
-    use OnlyOfficeTrait;
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     public const KEY_ONLYOFFICE_URL = "onlyoffice_url";
@@ -19,9 +16,11 @@ class ConfigFormGUI extends PropertyFormGUI
     public const KEY_NUM_VERSIONS = "number_of_versions";
 
     public const LANG_MODULE = ilOnlyOfficeConfigGUI::LANG_MODULE;
+    private \ILIAS\Plugin\OnlyOffice\Repository $repo;
 
     public function __construct(ilOnlyOfficeConfigGUI $parent)
     {
+        $this->repo = \ILIAS\Plugin\OnlyOffice\Repository::getInstance();
         parent::__construct($parent);
     }
 
@@ -29,7 +28,7 @@ class ConfigFormGUI extends PropertyFormGUI
     {
         switch ($key) {
             default:
-                return self::onlyOffice()->config()->getValue($key);
+                return $this->repo->config()->getValue($key);
         }
     }
 
@@ -71,13 +70,13 @@ class ConfigFormGUI extends PropertyFormGUI
             // If less than 1 version should be loaded from storage, a default value (10) is stored
             case self::KEY_NUM_VERSIONS:
                 if ($value < 1) {
-                    self::onlyOffice()->config()->setValue($key, 10);
+                    $this->repo->config()->setValue($key, 10);
                 } else {
-                    self::onlyOffice()->config()->setValue($key, $value);
+                    $this->repo->config()->setValue($key, $value);
                 }
                 break;
             default:
-                self::onlyOffice()->config()->setValue($key, $value);
+                $this->repo->config()->setValue($key, $value);
                 break;
         }
     }
