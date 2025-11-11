@@ -2,15 +2,16 @@
 
 namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
+use ILIAS\DI\Container;
 use ilOnlyOfficePlugin;
 use srag\DIC\OnlyOffice\DICTrait;
 
 final class Repository
 {
-    use DICTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
+    private Container $dic;
 
     public static function getInstance(): self
     {
@@ -23,7 +24,8 @@ final class Repository
 
     private function __construct()
     {
-
+        global $DIC;
+         $this->dic = $DIC;
     }
 
     public function cloneObjectSettings(ObjectSettings $object_settings): ObjectSettings
@@ -38,7 +40,7 @@ final class Repository
 
     public function dropTables(): void/*:void*/
     {
-        self::dic()->database()->dropTable(ObjectSettings::TABLE_NAME, false);
+        $this->dic->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
 
     public function factory(): Factory

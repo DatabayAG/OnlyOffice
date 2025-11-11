@@ -55,7 +55,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -73,7 +73,7 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     public function executeCommand(): void
     {
-        self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 

@@ -2,12 +2,12 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\DI\Container;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
-use srag\DIC\OnlyOffice\DICTrait;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
@@ -16,7 +16,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 
 class ilObjOnlyOffice extends ilObjectPlugin
 {
-    use DICTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
@@ -28,12 +27,15 @@ class ilObjOnlyOffice extends ilObjectPlugin
     private FileUpload $upload;
     private Repository $repo;
 
+    private Container $dic;
+
     public function __construct(int $a_ref_id = 0)
     {
         global $DIC;
 
         parent::__construct($a_ref_id);
 
+        $this->dic = $DIC;
         $this->refinery = $DIC->refinery();
         $this->httpWrapper = $DIC->http()->wrapper();
         $this->upload = $DIC->upload();
@@ -76,7 +78,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             $end_time = new ilDateTime(date('Ymdhis', strtotime($endTime)), IL_CAL_DATETIME);
             if ($start_time->getUnixTime() >= $end_time->getUnixTime()) {
                 $this->tpl->setOnScreenMessage('failure', $this->pl->txt("settings_time_greater_than"), true);
-                self::dic()->ctrl()->redirectByClass("ilRepositoryGUI");
+                $this->dic->ctrl()->redirectByClass("ilRepositoryGUI");
                 return false;
             }
         }
@@ -291,7 +293,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             $this->repo->objectSettings()->deleteObjectSettings($this->object_settings);
         }
         $storage = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -309,7 +311,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $new_obj->object_settings->setObjId($new_obj->id);
         $this->repo->objectSettings()->storeObjectSettings($new_obj->object_settings);
         $storage = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()

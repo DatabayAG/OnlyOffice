@@ -9,7 +9,6 @@ use ilTimeZone;
 
 class DateFetcher
 {
-    use DICTrait;
 
     public static function editingPeriodIsFetchable($obj_id): bool
     {
@@ -22,11 +21,13 @@ class DateFetcher
 
     public static function fetchEditingPeriod($obj_id): string
     {
+        global $DIC;
+
         $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         $converted_start_time = new ilDateTime($object_settings->getStartTime(), IL_CAL_DATETIME, ilTimeZone::UTC);
-        $converted_start_time = $converted_start_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
+        $converted_start_time = $converted_start_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
         $converted_end_time = new ilDateTime($object_settings->getEndTime(), IL_CAL_DATETIME, ilTimeZone::UTC);
-        $converted_end_time = $converted_end_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
+        $converted_end_time = $converted_end_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
         return sprintf("%s - %s", $converted_start_time, $converted_end_time);
     }
 

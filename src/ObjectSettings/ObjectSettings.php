@@ -10,8 +10,6 @@ use srag\DIC\OnlyOffice\DICTrait;
 
 class ObjectSettings extends ActiveRecord
 {
-    use DICTrait;
-
     public const TABLE_NAME = "rep_robj_xono_set";
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 

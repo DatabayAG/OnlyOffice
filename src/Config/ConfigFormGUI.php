@@ -15,7 +15,6 @@ class ConfigFormGUI extends PropertyFormGUI
     public const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
     public const KEY_NUM_VERSIONS = "number_of_versions";
 
-    public const LANG_MODULE = ilOnlyOfficeConfigGUI::LANG_MODULE;
     private \ILIAS\Plugin\OnlyOffice\Repository $repo;
 
     public function __construct(ilOnlyOfficeConfigGUI $parent)

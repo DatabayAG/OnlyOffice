@@ -9,7 +9,6 @@ use srag\DIC\OnlyOffice\DICTrait;
 
 final class Factory
 {
-    use DICTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Factory $instance = null;

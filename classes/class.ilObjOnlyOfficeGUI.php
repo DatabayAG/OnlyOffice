@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . "/../vendor/autoload.php";
+
+use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
@@ -11,7 +13,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRe
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
-use srag\DIC\OnlyOffice\DICTrait;
 use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 
 /**
@@ -27,7 +28,6 @@ use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
-    use DICTrait;
 
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
@@ -42,8 +42,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public const CMD_CANCEL = 'cancel';
     public const CMD_SHOW_INFO = 'infoScreen';
     public const CMD_TEMPLATE = 'createFromTemplate';
-    public const LANG_MODULE_OBJECT = "object";
-    public const LANG_MODULE_SETTINGS = "settings";
 
     public const TAB_PERMISSIONS = "perm_settings";
     public const TAB_SETTINGS = "settings";
@@ -79,17 +77,21 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     protected ?ilPlugin $plugin = null;
     private Repository $repo;
+    private Container $dic;
 
     protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
 
+        global $DIC;
+
         $this->repo = Repository::getInstance();
+        $this->dic = $DIC;
     }
 
     final public function getType(): string
@@ -102,8 +104,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function performCommand(string $cmd): void
     {
-        self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
-        $next_class = self::dic()->ctrl()->getNextClass($this);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $next_class = $this->dic->ctrl()->getNextClass($this);
 
         switch (strtolower($next_class)) {
             case strtolower(xonoContentGUI::class):
@@ -112,8 +114,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 ) {
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
-                $xonoContentGUI = new xonoContentGUI(self::dic()->dic(), $this->plugin, $this->object_id);
-                self::dic()->ctrl()->forwardCommand($xonoContentGUI);
+                $xonoContentGUI = new xonoContentGUI($this->dic, $this->plugin, $this->object_id);
+                $this->dic->ctrl()->forwardCommand($xonoContentGUI);
                 break;
             case strtolower(xonoEditorGUI::class):
                 if (
@@ -122,8 +124,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
 
-                $xonoEditorGUI = new xonoEditorGUI(self::dic()->dic(), $this->plugin, $this->obj_id);
-                self::dic()->ctrl()->forwardCommand($xonoEditorGUI);
+                $xonoEditorGUI = new xonoEditorGUI($this->dic, $this->plugin, $this->obj_id);
+                $this->dic->ctrl()->forwardCommand($xonoEditorGUI);
                 break;
             default:
                 switch ($cmd) {
@@ -145,17 +147,17 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                                 $file_version = $this->storage_service->getLatestVersion($file->getUuid());
                                 $ext = pathinfo($file_version->getUrl(), PATHINFO_EXTENSION);
                                 $filename = rtrim($file->getTitle(), '.' . $ext);
-                                self::dic()->ctrl()->setParameterByClass(
+                                $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
                                     'path',
                                     ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $file_version->getUrl()
                                 );
-                                self::dic()->ctrl()->setParameterByClass(
+                                $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
                                     'name',
                                     $filename . '_V' . $file_version->getVersion() . '.' . $file->getFileType()
                                 );
-                                self::dic()->ctrl()->setParameterByClass(
+                                $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
                                     'mime',
                                     $file->getMimeType()
@@ -168,11 +170,11 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                                 $next_cmd = xonoContentGUI::CMD_SHOW_VERSIONS;
                         }
 
-                        self::dic()->ctrl()->redirectByClass(xonoContentGUI::class, $next_cmd);
+                        $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, $next_cmd);
                         break;
 
                     case self::CMD_SHOW_VERSIONS:
-                        self::dic()->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+                        $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
                         break;
 
                     case self::CMD_SETTINGS:
@@ -196,17 +198,17 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     protected function show(string $html): void
     {
-        if (!self::dic()->ctrl()->isAsynch()) {
-            self::dic()->ui()->mainTemplate()->setTitle($this->object->getTitle());
+        if (!$this->dic->ctrl()->isAsynch()) {
+            $this->dic->ui()->mainTemplate()->setTitle($this->object->getTitle());
 
-            self::dic()->ui()->mainTemplate()->setDescription($this->object->getDescription());
+            $this->dic->ui()->mainTemplate()->setDescription($this->object->getDescription());
 
             if (!$this->object->isOnline()) {
-                self::dic()->ui()->mainTemplate()->setAlertProperties([
+                $this->dic->ui()->mainTemplate()->setAlertProperties([
                     [
                         "alert" => true,
-                        "property" => self::plugin()->translate("status", self::LANG_MODULE_OBJECT),
-                        "value" => self::plugin()->translate("offline", self::LANG_MODULE_OBJECT)
+                        "property" => $this->plugin->txt("object_status"),
+                        "value" => $this->plugin->txt("object_offline")
                     ]
                 ]);
             }
@@ -232,7 +234,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $ti = new ilTextInputGUI($this->lng->txt("title"), "title");
         $ti->setSize(min(40, ilObject::TITLE_LENGTH));
         $ti->setMaxLength(ilObject::TITLE_LENGTH);
-        $ti->setInfo(self::plugin()->translate("create_title_info"));
+        $ti->setInfo($this->plugin->txt("object_create_title_info"));
         $ti->setRequired(true);
         $ti->setMaxLength(100);
         $form->addItem($ti);
@@ -245,15 +247,15 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         // file
         $file_settings = new ilRadioGroupInputGUI(
-            self::plugin()->translate('form_input_file'),
+            $this->plugin->txt('form_input_file'),
             self::POST_VAR_FILE_SETTING
         );
 
         // file upload option
-        $file_input = new ilFileInputGUI(self::plugin()->translate('form_input_file'), self::POST_VAR_FILE);
+        $file_input = new ilFileInputGUI($this->plugin->txt('form_input_file'), self::POST_VAR_FILE);
         $file_input->setRequired(true);
 
-        $file_settings_upload_option = new ilRadioOption(self::plugin()->translate('form_input_upload_file'), self::OPTION_SETTING_UPLOAD);
+        $file_settings_upload_option = new ilRadioOption($this->plugin->txt('form_input_upload_file'), self::OPTION_SETTING_UPLOAD);
         $file_settings_upload_option->addSubItem($file_input);
         $file_settings->addOption($file_settings_upload_option);
 
@@ -262,12 +264,12 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             "",
             self::POST_VAR_FILE_CREATION_SETTING
         );
-        $file_creation_settings->addOption(new ilRadioOption(self::plugin()->translate('form_input_create_file_text'), "text"));
-        $file_creation_settings->addOption(new ilRadioOption(self::plugin()->translate('form_input_create_file_table'), "table"));
-        $file_creation_settings->addOption(new ilRadioOption(self::plugin()->translate('form_input_create_file_presentation'), "presentation"));
+        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_text'), "text"));
+        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_table'), "table"));
+        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_presentation'), "presentation"));
         $file_creation_settings->setRequired(true);
 
-        $file_settings_create_option = new ilRadioOption(self::plugin()->translate('form_input_create_file'), self::OPTION_SETTING_CREATE);
+        $file_settings_create_option = new ilRadioOption($this->plugin->txt('form_input_create_file'), self::OPTION_SETTING_CREATE);
         $file_settings_create_option->addSubItem($file_creation_settings);
         $file_settings->addOption($file_settings_create_option);
 
@@ -285,7 +287,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         foreach ($templates as $template) {
             $type_translation = sprintf("form_template_%s", $template->getType());
             $description = empty($template->getDescription()) ? "-" : $template->getDescription();
-            $option = new ilRadioOption(sprintf("%s %s", $template->getTitle(), self::plugin()->translate($type_translation)), $template->getPath());
+            $option = new ilRadioOption(sprintf("%s %s", $template->getTitle(), $this->plugin->txt($type_translation)), $template->getPath());
             if (!empty($template->getDescription())) {
                 $option->setInfo($template->getDescription());
             }
@@ -294,13 +296,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         $template_settings->setRequired(true);
 
-        $file_settings_template_option = new ilRadioOption(self::plugin()->translate('form_input_template'), self::OPTION_SETTING_TEMPLATE);
+        $file_settings_template_option = new ilRadioOption($this->plugin->txt('form_input_template'), self::OPTION_SETTING_TEMPLATE);
         $file_settings_template_option->addSubItem($template_settings);
 
         if (count($templates) >= 1) {
             $file_settings->addOption($file_settings_template_option);
         } else {
-            $file_settings->setInfo(self::plugin()->translate('form_input_template_no_templates'));
+            $file_settings->setInfo($this->plugin->txt('form_input_template_no_templates'));
         }
 
         $file_settings->setValue("ilias");
@@ -309,36 +311,31 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         // online checkbox
         $online = new ilCheckboxInputGUI(
-            self::plugin()->translate('online', ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS),
+            $this->plugin->txt('settings_online'),
             self::POST_VAR_ONLINE
         );
         $form->addItem($online);
 
         // Users are allowed to edit checkbox
-        $edit = new ilCheckboxInputGUI(self::plugin()->translate(
-            'allow_edit',
-            ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS
+        $edit = new ilCheckboxInputGUI($this->plugin->txt(
+            'settings_allow_edit'
         ), self::POST_VAR_EDIT);
-        $edit->setInfo(self::plugin()->translate(
-            'allow_edit_info',
-            ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS
+        $edit->setInfo($this->plugin->txt(
+            'settings_allow_edit_info'
         ));
         $edit->setChecked(true);
 
-        $lim_period = new ilCheckboxInputGUI(self::plugin()->translate(
-            'allow_edit_limited',
-            ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS
+        $lim_period = new ilCheckboxInputGUI($this->plugin->txt(
+            'settings_allow_edit_limited'
         ), self::POST_VAR_EDIT_LIMITED);
 
-        $start_date_time = new ilDateTimeInputGUI(self::plugin()->translate(
-            'allow_edit_limited_start',
-            ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS
+        $start_date_time = new ilDateTimeInputGUI($this->plugin->txt(
+            'settings_allow_edit_limited_start'
         ), self::POST_VAR_EDIT_LIMITED_START);
         $start_date_time->setShowTime(true);
         $start_date_time->setRequired(true);
-        $end_date_time = new ilDateTimeInputGUI(self::plugin()->translate(
-            'allow_edit_limited_end',
-            ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS
+        $end_date_time = new ilDateTimeInputGUI($this->plugin->txt(
+            'settings_allow_edit_limited_end'
         ), self::POST_VAR_EDIT_LIMITED_END);
         $end_date_time->setShowTime(true);
         $end_date_time->setRequired(true);
@@ -351,20 +348,17 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         // Settings for opening a file
         $opening_setting = new ilRadioGroupInputGUI(
-            self::plugin()->translate("form_open_setting"),
+            $this->plugin->txt("object_form_open_setting"),
             self::POST_VAR_OPEN_SETTING
         );
-        $opening_setting->addOption(new ilRadioOption(self::plugin()->translate(
-            "open_setting_editor",
-            self::LANG_MODULE_SETTINGS
+        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
+            "settings_open_setting_editor"
         ), "editor"));
-        $opening_setting->addOption(new ilRadioOption(self::plugin()->translate(
-            "open_setting_ilias",
-            self::LANG_MODULE_SETTINGS
+        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
+            "settings_open_setting_ilias"
         ), "ilias"));
-        $opening_setting->addOption(new ilRadioOption(self::plugin()->translate(
-            "open_setting_download",
-            self::LANG_MODULE_SETTINGS
+        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
+            "settings_open_setting_download"
         ), "download"));
         $opening_setting->setValue("editor");
         $opening_setting->setRequired(true);
@@ -398,10 +392,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         // Handle file upload, otherwise create new document
         if ($fileSetting === self::OPTION_SETTING_UPLOAD) {
-            if (!self::dic()->upload()->hasBeenProcessed()) {
-                self::dic()->upload()->process();
+            if (!$this->dic->upload()->hasBeenProcessed()) {
+                $this->dic->upload()->process();
             }
-            $results = self::dic()->upload()->getResults();
+            $results = $this->dic->upload()->getResults();
             $result = end($results);
             $this->storage_service->createNewFileFromUpload($result, $a_new_object->getId());
 
@@ -452,7 +446,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     protected function settings(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_SETTINGS);
+        $this->dic->tabs()->activateTab(self::TAB_SETTINGS);
 
         $form = $this->getSettingsForm();
 
@@ -461,7 +455,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     protected function settingsStore(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_SETTINGS);
+        $this->dic->tabs()->activateTab(self::TAB_SETTINGS);
 
         $form = $this->getSettingsForm();
 
@@ -472,31 +466,31 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("saved"), true);
 
-        self::dic()->ctrl()->redirect($this, self::CMD_SETTINGS);
+        $this->dic->ctrl()->redirect($this, self::CMD_SETTINGS);
     }
 
     protected function setTabs(): void
     {
-        self::dic()->tabs()->addTab(
+        $this->dic->tabs()->addTab(
             self::TAB_SHOW_CONTENTS,
-            self::plugin()->translate("show_contents", self::LANG_MODULE_OBJECT),
-            self::dic()->ctrl()
+            $this->plugin->txt("object_show_contents"),
+            $this->dic->ctrl()
                                                                                       ->getLinkTarget(
                                                                                           $this,
                                                                                           self::CMD_SHOW_VERSIONS
                                                                                       )
         );
-        self::dic()->tabs()->addTab(
+        $this->dic->tabs()->addTab(
             self::TAB_INFO,
-            self::plugin()->translate("tab_info", self::LANG_MODULE_OBJECT),
-            self::dic()->ctrl()->getLinkTarget($this, self::CMD_SHOW_INFO)
+            $this->plugin->txt("object_tab_info"),
+            $this->dic->ctrl()->getLinkTarget($this, self::CMD_SHOW_INFO)
         );
 
         if (ilObjOnlyOfficeAccess::hasWriteAccess()) {
-            self::dic()->tabs()->addTab(
+            $this->dic->tabs()->addTab(
                 self::TAB_SETTINGS,
-                self::plugin()->translate("settings", self::LANG_MODULE_SETTINGS),
-                self::dic()->ctrl()
+                $this->plugin->txt("settings_settings"),
+                $this->dic->ctrl()
                                                                                        ->getLinkTarget(
                                                                                            $this,
                                                                                            self::CMD_SETTINGS
@@ -505,10 +499,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
 
         if (ilObjOnlyOfficeAccess::hasEditPermissionAccess()) {
-            self::dic()->tabs()->addTab(
+            $this->dic->tabs()->addTab(
                 self::TAB_PERMISSIONS,
-                self::plugin()->translate(self::TAB_PERMISSIONS, "", [], false),
-                self::dic()->ctrl()
+                $this->lng->txt(self::TAB_PERMISSIONS),
+                $this->dic->ctrl()
                                                                                      ->getLinkTargetByClass([
                                                                                          self::class,
                                                                                          ilPermissionGUI::class
@@ -516,7 +510,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             );
         }
 
-        //self::dic()->tabs()->manual_activation = true; // Show all tabs as links when no activation
+        //$this->dic->tabs()->manual_activation = true; // Show all tabs as links when no activation
     }
 
     public static function getStartCmd(): string

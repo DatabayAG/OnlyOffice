@@ -1,8 +1,9 @@
 <?php
 
 require_once __DIR__ . "/../vendor/autoload.php";
+
+use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use srag\DIC\OnlyOffice\DICTrait;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
@@ -10,17 +11,19 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
-    use DICTrait;
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     //protected $settings = false;
     //protected $versions = true;
     //protected $available = false;
 
+    private Container $dic;
+
     public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
     {
         parent::__construct($a_context);
+        global $DIC;
+        $this->dic = $DIC;
     }
 
     public function getGuiClass(): string
@@ -82,7 +85,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
     public function getProperties(): array
     {
         $storage = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -97,8 +100,8 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         if (ilObjOnlyOfficeAccess::_isOffline($this->obj_id)) {
             array_push($props, [
                 "alert" => true,
-                "property" => self::plugin()->translate("status", ilObjOnlyOfficeGUI::LANG_MODULE_OBJECT),
-                "value" => self::plugin()->translate("offline", ilObjOnlyOfficeGUI::LANG_MODULE_OBJECT)
+                "property" => $this->plugin->txt("object_status"),
+                "value" => $this->plugin->txt("object_offline")
             ]);
         }
 
@@ -114,9 +117,9 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
             $props[] = [
                 "alert" => false,
                 'newline' => true,
-                "property" => self::plugin()->translate('last_edit'),
+                "property" => $this->plugin->txt('last_edit'),
                 // ToDo: Evtl. Datumformat noch nach Kundenwunsch anpassen
-                "value" => $last_version->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone()),
+                "value" => $last_version->getCreatedAt()->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $this->dic->user()->getTimeZone()),
                 'propertyNameVisible' => true
             ];
         }
@@ -126,7 +129,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
             $props[] = [
                 "alert" => false,
                 'newline' => true,
-                "property" => self::plugin()->translate('editing_period'),
+                "property" => $this->plugin->txt('editing_period'),
                 "value" => $editing_time,
                 'propertyNameVisible' => true
             ];

@@ -21,7 +21,6 @@ use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
 class ObjectSettingsFormGUI extends PropertyFormGUI
 {
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    public const LANG_MODULE = ilObjOnlyOfficeGUI::LANG_MODULE_SETTINGS;
     protected ilObjOnlyOffice $object;
     private ilPlugin $pl;
     private WrapperFactory $httpWrapper;
@@ -57,12 +56,12 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
     {
         $this->addCommandButton(
             ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE,
-            self::plugin()->translate("save", self::LANG_MODULE)
+            $this->pl->txt("settings_save")
         );
 
         $this->addCommandButton(
             ilObjOnlyOfficeGUI::CMD_MANAGE_CONTENTS,
-            self::plugin()->translate("cancel", self::LANG_MODULE)
+            $this->pl->txt("settings_cancel")
         );
     }
 
@@ -127,7 +126,7 @@ class ObjectSettingsFormGUI extends PropertyFormGUI
 
     protected function initTitle(): void
     {
-        $this->setTitle(self::plugin()->translate("settings", self::LANG_MODULE));
+        $this->setTitle($this->pl->txt("settings_settings"));
     }
 
     protected function storeValue(string $key, $value): void

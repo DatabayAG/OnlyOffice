@@ -2,14 +2,15 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Repository;
-use srag\DIC\OnlyOffice\DICTrait;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-    use DICTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
+
+    private Container $dic;
 
     public static function getInstance(): self
     {
@@ -23,6 +24,8 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public function __construct()
     {
         parent::__construct();
+        global $DIC;
+        $this->dic = $DIC;
     }
 
     public function _checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
@@ -36,24 +39,24 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         }
 
         if ($a_user_id == null) {
-            $a_user_id = self::dic()->user()->getId();
+            $a_user_id = $this->dic->user()->getId();
         }
 
         switch ($a_permission) {
             case "visible":
             case "read":
-                return boolval((self::dic()->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id) && !self::_isOffline($a_obj_id))
-                    || self::dic()->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
+                return boolval(($this->dic->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id) && !self::_isOffline($a_obj_id))
+                    || $this->dic->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
 
             case "delete":
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, "delete", "", $a_ref_id)
-                    || self::dic()->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
+                return boolval($this->dic->access()->checkAccessOfUser($a_user_id, "delete", "", $a_ref_id)
+                    || $this->dic->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
             case "editFile":
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, "rep_robj_xono_perm_editFile", "", $a_ref_id));
+                return boolval($this->dic->access()->checkAccessOfUser($a_user_id, "rep_robj_xono_perm_editFile", "", $a_ref_id));
             case "write":
             case "edit_permission":
             default:
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id));
+                return boolval($this->dic->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id));
         }
     }
 
@@ -73,11 +76,11 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
 
         if (is_object($class)) {
-            self::dic()->ctrl()->clearParameters($class);
-            self::dic()->ctrl()->redirect($class, $cmd);
+            $DIC->ctrl()->clearParameters($class);
+            $DIC->ctrl()->redirect($class, $cmd);
         } else {
-            self::dic()->ctrl()->clearParametersByClass($class);
-            self::dic()->ctrl()->redirectByClass($class, $cmd);
+            $DIC->ctrl()->clearParametersByClass($class);
+            $DIC->ctrl()->redirectByClass($class, $cmd);
         }
     }
 

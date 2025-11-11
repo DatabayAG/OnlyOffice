@@ -54,7 +54,7 @@ class xonoContentGUI extends xonoAbstractGUI
     {
 
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -68,9 +68,9 @@ class xonoContentGUI extends xonoAbstractGUI
 
     public function executeCommand()
     {
-        self::dic()->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
+        $this->dic->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
 
-        self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 
@@ -126,7 +126,7 @@ class xonoContentGUI extends xonoAbstractGUI
             $tpl->setVariable('TABLE_ROW_CREATED_AT', $fileVersion->getCreatedAt()->get(
                 IL_CAL_FKT_DATE,
                 'd.m.Y H:i',
-                self::dic()->user()->getTimeZone())
+                $this->dic->user()->getTimeZone())
             );
             $tpl->setVariable('TABLE_ROW_USER', $user->getPublicName());
             $this->dic->ctrl()->setParameter($this, "version", $fileVersion->getVersion());

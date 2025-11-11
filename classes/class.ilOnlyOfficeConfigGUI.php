@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
@@ -10,14 +11,12 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use srag\DIC\OnlyOffice\DICTrait;
 
 /**
  * @ilCtrl_IsCalledBy  ilOnlyOfficeConfigGUI: ilObjComponentSettingsGUI
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
-    use DICTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public const CMD_CONFIGURE = "configure";
     public const CMD_TEMPLATES = "configureTemplates";
@@ -28,7 +27,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     public const CMD_UPDATE_CONFIGURE = "updateConfigure";
     public const CMD_UPDATE_TEMPLATES = "updateTemplates";
     public const CMD_CONFIRM_DELETE = "confirmDelete";
-    public const LANG_MODULE = "config";
     public const TAB_CONFIGURATION = "configuration";
     public const TAB_SUB_CONFIGURATION = "subConfiguration";
     public const TAB_SUB_TEMPLATES = "templates";
@@ -38,15 +36,17 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private Factory $refinery;
     private WrapperFactory $httpWrapper;
     private Repository $repo;
+    private Container $dic;
 
     public function __construct()
     {
         global $DIC;
         $this->refinery = $DIC->refinery();
         $this->httpWrapper = $DIC->http()->wrapper();
+        $this->dic = $DIC;
 
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -64,11 +64,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         $this->setTabs();
 
-        $next_class = self::dic()->ctrl()->getNextClass($this);
+        $next_class = $this->dic->ctrl()->getNextClass($this);
 
         switch (strtolower($next_class)) {
             default:
-                $cmd = self::dic()->ctrl()->getCmd();
+                $cmd = $this->dic->ctrl()->getCmd();
 
                 switch ($cmd) {
                     case self::CMD_CONFIGURE:
@@ -95,22 +95,22 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function setTabs(): void
     {
-        self::dic()->tabs()->addTab(self::TAB_CONFIGURATION, self::plugin()->translate("configuration", self::LANG_MODULE), self::dic()->ctrl()
+        $this->dic->tabs()->addTab(self::TAB_CONFIGURATION, $this->pl->txt("config_configuration"), $this->dic->ctrl()
             ->getLinkTargetByClass(self::class, self::CMD_CONFIGURE));
 
-        self::dic()->tabs()->addSubTab(self::TAB_SUB_CONFIGURATION, self::plugin()->translate("tab_general", self::LANG_MODULE), self::dic()->ctrl()
+        $this->dic->tabs()->addSubTab(self::TAB_SUB_CONFIGURATION, $this->pl->txt("config_tab_general"), $this->dic->ctrl()
             ->getLinkTargetByClass(self::class, self::CMD_CONFIGURE));
 
-        self::dic()->tabs()->addSubTab(self::TAB_SUB_TEMPLATES, self::plugin()->translate("tab_templates", self::LANG_MODULE), self::dic()->ctrl()
+        $this->dic->tabs()->addSubTab(self::TAB_SUB_TEMPLATES, $this->pl->txt("config_tab_templates"), $this->dic->ctrl()
             ->getLinkTargetByClass(self::class, self::CMD_TEMPLATES));
 
-        self::dic()->locator()->addItem(ilOnlyOfficePlugin::PLUGIN_NAME, self::dic()->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
+        $this->dic->locator()->addItem(ilOnlyOfficePlugin::PLUGIN_NAME, $this->dic->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
     }
 
     protected function configure(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
-        self::dic()->tabs()->activateSubTab(self::TAB_SUB_CONFIGURATION);
+        $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
+        $this->dic->tabs()->activateSubTab(self::TAB_SUB_CONFIGURATION);
 
         $form = $this->repo->config()->factory()->newFormInstance($this);
 
@@ -119,14 +119,14 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function configureTemplates(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
-        self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
+        $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
+        $this->dic->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
         global $ilToolbar;
 
         $ilToolbar->addButton(
-            self::plugin()->translate("create_template", self::LANG_MODULE),
-            self::dic()->ctrl()->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
+            $this->pl->txt("config_create_template"),
+            $this->dic->ctrl()->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
         );
 
         $tpl = self::plugin()->template("html/tpl.config_create_template.html");
@@ -137,36 +137,36 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $templates = array_merge($text_templates, $table_templates, $presentation_templates);
 
         if (count($templates) >= 1) {
-            $tpl->setVariable('TYPE_HEADER', self::plugin()->translate("table_type", self::LANG_MODULE));
-            $tpl->setVariable('TITLE_HEADER', self::plugin()->translate("table_title", self::LANG_MODULE));
-            $tpl->setVariable('DESCRIPTION_HEADER', self::plugin()->translate("table_description", self::LANG_MODULE));
-            $tpl->setVariable('EXTENSION_HEADER', self::plugin()->translate("table_extension", self::LANG_MODULE));
-            $tpl->setVariable('SETTINGS_HEADER', self::plugin()->translate("table_settings", self::LANG_MODULE));
+            $tpl->setVariable('TYPE_HEADER', $this->pl->txt("config_table_type"));
+            $tpl->setVariable('TITLE_HEADER', $this->pl->txt("config_table_title"));
+            $tpl->setVariable('DESCRIPTION_HEADER', $this->pl->txt("config_table_description"));
+            $tpl->setVariable('EXTENSION_HEADER', $this->pl->txt("config_table_extension"));
+            $tpl->setVariable('SETTINGS_HEADER', $this->pl->txt("config_table_settings"));
         }
 
         /** @var FileTemplate $template */
         foreach ($templates as $template) {
             $tpl->setCurrentBlock("entry");
             $tpl->setVariable('TITLE', $template->getTitle());
-            $tpl->setVariable('TYPE', self::plugin()->translate("form_input_create_file_" . $template->getType()));
+            $tpl->setVariable('TYPE', $this->pl->txt("form_input_create_file_" . $template->getType()));
             $tpl->setVariable('DESCRIPTION', empty($template->getDescription()) ? "-" : $template->getDescription());
             $tpl->setVariable('EXTENSION', $template->getExtension());
             $ctrlFormat = "%s&ootarget=%s&ooextension=%s";
 
             $ilSelect = new ilAdvancedSelectionListGUI();
-            $ilSelect->setListTitle(self::plugin()->translate("table_options", self::LANG_MODULE));
+            $ilSelect->setListTitle($this->pl->txt("config_table_options"));
             $ilSelect->addItem(
-                self::plugin()->translate("table_edit", self::LANG_MODULE),
+                $this->pl->txt("config_table_edit"),
                 "",
-                self::dic()->ctrl()->getLinkTargetByClass(
+                $this->dic->ctrl()->getLinkTargetByClass(
                     self::class,
                     sprintf($ctrlFormat, self::CMD_EDIT_TEMPLATE, urlencode($template->getTitle()), urlencode($template->getExtension()))
                 )
             );
             $ilSelect->addItem(
-                self::plugin()->translate("table_delete", self::LANG_MODULE),
+                $this->pl->txt("config_table_delete"),
                 "",
-                self::dic()->ctrl()->getLinkTargetByClass(
+                $this->dic->ctrl()->getLinkTargetByClass(
                     self::class,
                     sprintf($ctrlFormat, self::CMD_CONFIRM_DELETE, urlencode($template->getTitle()), urlencode($template->getExtension()))
                 )
@@ -181,8 +181,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function createTemplate(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
-        self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
+        $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
+        $this->dic->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
         $form = $this->initCreateTemplateForm()->getHTML();
         self::output()->output($form);
@@ -209,41 +209,41 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             ])
         );
 
-        $form->setFormAction(self::dic()->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($ooTarget) . "&prevExtension=" . urlencode($ooExtension));
+        $form->setFormAction($this->dic->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($ooTarget) . "&prevExtension=" . urlencode($ooExtension));
 
         // title
-        $ti = new ilTextInputGUI(self::plugin()->translate("table_title", self::LANG_MODULE), "title");
+        $ti = new ilTextInputGUI($this->pl->txt("config_table_title"), "title");
         $ti->setSize(min(40, ilObject::TITLE_LENGTH));
         $ti->setMaxLength(ilObject::TITLE_LENGTH);
         $form->addItem($ti);
 
         // description
-        $ta = new ilTextAreaInputGUI(self::plugin()->translate("table_description", self::LANG_MODULE), "desc");
+        $ta = new ilTextAreaInputGUI($this->pl->txt("config_table_description"), "desc");
         $ta->setCols(40);
         $ta->setRows(2);
         $form->addItem($ta);
 
         // file upload option
-        $file_input = new ilFileInputGUI(self::plugin()->translate("form_input_file"), "file");
+        $file_input = new ilFileInputGUI($this->pl->txt("form_input_file"), "file");
         $file_input->setRequired(!$edit);
         $form->addItem($file_input);
 
         if ($edit) {
-            $form->setTitle(self::plugin()->translate("edit_template", self::LANG_MODULE));
-            $form->addCommandButton(self::CMD_SAVE_EDIT_TEMPLATE, self::plugin()->translate("settings_save"));
+            $form->setTitle($this->pl->txt("config_edit_template"));
+            $form->addCommandButton(self::CMD_SAVE_EDIT_TEMPLATE, $this->pl->txt("config_save"));
         } else {
-            $form->setTitle(self::plugin()->translate("create_template", self::LANG_MODULE));
-            $form->addCommandButton(self::CMD_UPDATE_TEMPLATES, self::plugin()->translate("settings_save"));
+            $form->setTitle($this->pl->txt("config_create_template"));
+            $form->addCommandButton(self::CMD_UPDATE_TEMPLATES, $this->pl->txt("config_save"));
         }
 
-        $form->addCommandButton(self::CMD_TEMPLATES, self::plugin()->translate("settings_cancel"));
+        $form->addCommandButton(self::CMD_TEMPLATES, $this->pl->txt("config_cancel"));
 
         return $form;
     }
 
     protected function updateConfigure(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
+        $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
 
         $form = $this->repo->config()->factory()->newFormInstance($this);
 
@@ -253,7 +253,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             return;
         }
         $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_configuration_saved"), true);
-        self::dic()->ctrl()->redirect($this, self::CMD_CONFIGURE);
+        $this->dic->ctrl()->redirect($this, self::CMD_CONFIGURE);
     }
 
     protected function updateTemplates(): void
@@ -266,11 +266,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             return;
         }
 
-        if (!self::dic()->upload()->hasBeenProcessed()) {
-            self::dic()->upload()->process();
+        if (!$this->dic->upload()->hasBeenProcessed()) {
+            $this->dic->upload()->process();
         }
 
-        $results = self::dic()->upload()->getResults();
+        $results = $this->dic->upload()->getResults();
         $result = end($results);
 
         global $DIC;
@@ -306,13 +306,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         }
 
         $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_saved"), true);
-        self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
+        $this->dic->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
     protected function editTemplate(): void
     {
-        self::dic()->tabs()->activateTab(self::TAB_CONFIGURATION);
-        self::dic()->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
+        $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
+        $this->dic->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
         $target = $this->httpWrapper->query()->retrieve(
             "ootarget",
@@ -383,14 +383,14 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         }
 
         // If no file is uploaded, merely change title and description
-        if (!self::dic()->upload()->hasUploads()) {
+        if (!$this->dic->upload()->hasUploads()) {
             // Dont delete previous template
             $this->storage_service->modifyFileTemplate($prevTitle, $prevExtension, $target, $description);
         } else {
-            if (!self::dic()->upload()->hasBeenProcessed()) {
-                self::dic()->upload()->process();
+            if (!$this->dic->upload()->hasBeenProcessed()) {
+                $this->dic->upload()->process();
             }
-            $results = self::dic()->upload()->getResults();
+            $results = $this->dic->upload()->getResults();
             $result = end($results);
 
             // Return if file extension not whitelisted by ILIAS instance
@@ -436,16 +436,16 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_edited"), true);
 
-        self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
+        $this->dic->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 
     public function confirmDelete(): void
     {
-        self::dic()->ctrl()->saveParameter($this, "ootarget");
-        self::dic()->ctrl()->saveParameter($this, "ooextension");
+        $this->dic->ctrl()->saveParameter($this, "ootarget");
+        $this->dic->ctrl()->saveParameter($this, "ooextension");
 
         $conf = new ilConfirmationGUI();
-        $conf->setFormAction(self::dic()->ctrl()->getFormAction($this));
+        $conf->setFormAction($this->dic->ctrl()->getFormAction($this));
         $conf->setHeaderText(self::plugin()->translate('config_template_delete'));
 
         $ooTarget = $this->httpWrapper->query()->retrieve(
@@ -458,8 +458,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $conf->addItem('tableview', 1, $ooTarget);
 
-        $conf->setConfirm(self::dic()->language()->txt('delete'), self::CMD_DELETE_TEMPLATE);
-        $conf->setCancel(self::dic()->language()->txt('cancel'), self::CMD_TEMPLATES);
+        $conf->setConfirm($this->dic->language()->txt('delete'), self::CMD_DELETE_TEMPLATE);
+        $conf->setCancel($this->dic->language()->txt('cancel'), self::CMD_TEMPLATES);
 
         self::output()->output($conf->getHTML());
     }
@@ -488,6 +488,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->tpl->setOnScreenMessage('success', $this->pl->txt("config_template_deleted"), true);
         }
 
-        self::dic()->ctrl()->redirect($this, self::CMD_TEMPLATES);
+        $this->dic->ctrl()->redirect($this, self::CMD_TEMPLATES);
     }
 }
