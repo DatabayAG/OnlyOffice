@@ -10,8 +10,9 @@ xono_new#:#Create OnlyOffice
 xono_read#:#Read
 xono_visible#:#visible
 xono_write#:#Edit
-xono_edit_button#:#Edit File
-xono_view_button#:#View File
+xono_copy#:#Copy
+xono_edit_button#:#Edit the latest version in OnlyOffice
+xono_view_button#:#Show latest version in OnlyOffice
 xono_back_button#:#Back to ILIAS
 xono_version#:#Version
 xono_date#:#Date
@@ -64,7 +65,7 @@ form_template_presentation#:#(Type: Presentation)
 form_input_template#:#Create from Template
 form_input_template_no_templates#:#Add a template in the plugin configuration to create a new file from a template.
 object_tab_info#:#Information
-xono_reload_info#:#Are you returning from ONLYOFFICE editor and cannot see your newly created file version?<br>Please wait 10s and press F5.
+xono_reload_info#:#OnlyOffice creates a new version as soon as everyone has left the document and 10 seconds have elapsed. You can then reload this page and see the new version.
 create_title_info#:#If no title is specified, the title of the uploaded file is taken.
 config_number_of_versions#:#Max. Number of Versions
 config_tab_general#:#General

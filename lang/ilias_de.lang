@@ -10,6 +10,7 @@ xono_new#:#OnlyOffice anlegen
 xono_read#:#Lesen
 xono_visible#:#Sichtbar
 xono_write#:#Bearbeiten
+xono_copy#:#Kopieren
 xono_edit_button#:#Aktuellste Version in OnlyOffice bearbeiten
 xono_view_button#:#Aktuellste Version in OnlyOffice anzeigen
 xono_back_button#:#Zurück zu ILIAS
@@ -23,7 +24,7 @@ create_from_template_info#:#Verwende Template aus der Plugin-Konfiguration
 filetype_word#:#Text
 filetype_excel#:#Tabelle
 filetype_ppt#:#Präsentation
-form_open_editor#:#Im ONLYOFFICE online Editor öffnen
+form_open_editor#:#Im ONLYOFFICE Online Editor öffnen
 form_open_download#:#Datei herunterladen
 form_open_ilias#:#Versionsverlauf auf ILIAS anzeigen
 form_open_setting#:#Wie soll die Datei geöffnet werden?
