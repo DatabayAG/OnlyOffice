@@ -76,7 +76,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $end_time = $_POST[ilObjOnlyOfficeGUI::POST_VAR_EDIT_LIMITED_END];
 
         if ($title == null) {
-            $title = explode('.', $_POST[ilObjOnlyOfficeGUI::POST_VAR_FILE]['name'])[0];
+            $title = isset($_POST[ilObjOnlyOfficeGUI::POST_VAR_FILE]['name']) ? $_POST[ilObjOnlyOfficeGUI::POST_VAR_FILE]['name'] : '';
             $_POST['title'] = $title;
         }
 
