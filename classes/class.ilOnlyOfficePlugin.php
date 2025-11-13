@@ -3,7 +3,6 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\RemovePluginDataConfirm\OnlyOffice\RepositoryObjectPluginUninstallTrait;
 use srag\Plugins\OnlyOffice\StorageService\StorageService;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -16,7 +15,6 @@ use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    use RepositoryObjectPluginUninstallTrait;
     use OnlyOfficeTrait;
 
     public const PLUGIN_ID = "xono";
@@ -73,13 +71,18 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return false;
     }
 
-    protected function uninstallCustom(): void
+    protected function beforeUninstallCustom(): bool
     {
         require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
         $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
         ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);
 
+        return parent::beforeUninstallCustom();
+    }
+
+    protected function uninstallCustom(): void
+    {
         // Delete all file data
         global $DIC;
         $all_files = FileAR::get();
