@@ -1,5 +1,7 @@
 <#1>
 <?php
+/** @var ilDBInterface $ilDB */
+
 \srag\Plugins\OnlyOffice\Repository::getInstance()->installTables();
 ?>
 <#2>
@@ -24,7 +26,7 @@
 <#6>
 <#7>
 <?php
-require_once("./Services/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
+require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
 $xono_type_id = ilDBUpdateNewObjectType::addNewType(ilOnlyOfficePlugin::PLUGIN_ID, 'Plugin OnlyOffice');
 
 //Adding a new Permission rep_robj_xono_editFile ("editFile")
