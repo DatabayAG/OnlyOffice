@@ -4,7 +4,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
-use ILIAS\Plugin\OnlyOffice\Config\ConfigFormGUI;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
@@ -111,17 +111,17 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $locator->addItem(ilOnlyOfficePlugin::PLUGIN_NAME, $this->dic->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
     }
 
-    protected function configure(?ConfigFormGUI $form = null): void
+    protected function configure(?PluginConfigForm $form = null): void
     {
         $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
         $this->dic->tabs()->activateSubTab(self::TAB_SUB_CONFIGURATION);
 
         if (!$form) {
-            $form = new ConfigFormGUI();
+            $form = new PluginConfigForm();
             $form->setValuesByArray([
-                ConfigFormGUI::KEY_ONLYOFFICE_URL => $this->plugin->settings->get(ConfigFormGUI::KEY_ONLYOFFICE_URL),
-                ConfigFormGUI::KEY_ONLYOFFICE_SECRET => $this->plugin->settings->get(ConfigFormGUI::KEY_ONLYOFFICE_SECRET),
-                ConfigFormGUI::KEY_NUM_VERSIONS => (int) $this->plugin->settings->get(ConfigFormGUI::KEY_NUM_VERSIONS, 10),
+                PluginConfigForm::KEY_ONLYOFFICE_URL => $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL),
+                PluginConfigForm::KEY_ONLYOFFICE_SECRET => $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET),
+                PluginConfigForm::KEY_NUM_VERSIONS => (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, 10),
             ], true);
         }
 
@@ -256,7 +256,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     {
         $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
 
-        $form = new ConfigFormGUI($this);
+        $form = new PluginConfigForm($this);
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
@@ -266,16 +266,16 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $form->setValuesByPost();
 
         $this->plugin->settings->set(
-            ConfigFormGUI::KEY_ONLYOFFICE_URL,
-            $form->getInput(ConfigFormGUI::KEY_ONLYOFFICE_URL)
+            PluginConfigForm::KEY_ONLYOFFICE_URL,
+            $form->getInput(PluginConfigForm::KEY_ONLYOFFICE_URL)
         );
         $this->plugin->settings->set(
-            ConfigFormGUI::KEY_ONLYOFFICE_SECRET,
-            $form->getInput(ConfigFormGUI::KEY_ONLYOFFICE_SECRET)
+            PluginConfigForm::KEY_ONLYOFFICE_SECRET,
+            $form->getInput(PluginConfigForm::KEY_ONLYOFFICE_SECRET)
         );
         $this->plugin->settings->set(
-            ConfigFormGUI::KEY_NUM_VERSIONS,
-            (string) $form->getInput(ConfigFormGUI::KEY_NUM_VERSIONS)
+            PluginConfigForm::KEY_NUM_VERSIONS,
+            (string) $form->getInput(PluginConfigForm::KEY_NUM_VERSIONS)
         );
 
         $this->tpl->setOnScreenMessage(

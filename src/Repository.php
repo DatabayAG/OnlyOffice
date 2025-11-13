@@ -2,7 +2,6 @@
 
 namespace ILIAS\Plugin\OnlyOffice;
 
-use ILIAS\Plugin\OnlyOffice\Config\Repository as ConfigRepository;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
 use ilOnlyOfficePlugin;
 
@@ -26,20 +25,13 @@ final class Repository
 
     }
 
-    public function config(): ConfigRepository
-    {
-        return ConfigRepository::getInstance();
-    }
-
     public function dropTables(): void
     {
-        $this->config()->dropTables();
         $this->objectSettings()->dropTables();
     }
 
     public function installTables(): void
     {
-        $this->config()->installTables();
         $this->objectSettings()->installTables();
     }
 

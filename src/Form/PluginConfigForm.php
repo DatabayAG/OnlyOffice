@@ -1,6 +1,6 @@
 <?php
 
-namespace ILIAS\Plugin\OnlyOffice\Config;
+namespace ILIAS\Plugin\OnlyOffice\Form;
 
 use ilNumberInputGUI;
 use ilOnlyOfficeConfigGUI;
@@ -9,22 +9,18 @@ use ilPasswordInputGUI;
 use ilPropertyFormGUI;
 use ilTextInputGUI;
 
-class ConfigFormGUI extends ilPropertyFormGUI
+class PluginConfigForm extends ilPropertyFormGUI
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-
     public const KEY_ONLYOFFICE_URL = "onlyoffice_url";
     public const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
     public const KEY_NUM_VERSIONS = "number_of_versions";
 
-    private \ILIAS\Plugin\OnlyOffice\Repository $repo;
     private ilOnlyOfficePlugin $plugin;
 
     public function __construct()
     {
         parent::__construct();
         $this->plugin = ilOnlyOfficePlugin::getInstance();
-        $this->repo = \ILIAS\Plugin\OnlyOffice\Repository::getInstance();
 
         $this->setId("onlyoffice_config_form");
         $this->setTitle($this->plugin->txt("config_configuration"));
