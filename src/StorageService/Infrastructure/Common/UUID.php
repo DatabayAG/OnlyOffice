@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common;
 
 use Exception;
 use Ramsey\Uuid\Uuid as RamseyUuid;

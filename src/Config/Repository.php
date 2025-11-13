@@ -1,8 +1,8 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\Config;
+namespace ILIAS\Plugin\OnlyOffice\Config;
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficePlugin;
 use srag\ActiveRecordConfig\OnlyOffice\Config\AbstractFactory;
 use srag\ActiveRecordConfig\OnlyOffice\Config\AbstractRepository;

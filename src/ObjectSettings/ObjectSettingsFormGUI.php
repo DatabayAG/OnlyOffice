@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\ObjectSettings;
+namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
 use ilComponentFactory;
 use ilDateTime;

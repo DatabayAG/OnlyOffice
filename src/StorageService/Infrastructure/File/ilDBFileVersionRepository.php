@@ -1,13 +1,13 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use arException;
 use ilDateTime;
 use ilDateTimeException;
 use ilTimeZone;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 class ilDBFileVersionRepository implements FileVersionRepository
 {

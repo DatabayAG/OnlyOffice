@@ -1,10 +1,10 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice;
+namespace ILIAS\Plugin\OnlyOffice;
 
-use srag\Plugins\OnlyOffice\Config\Repository as ConfigRepository;
-use srag\Plugins\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Config\Repository as ConfigRepository;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficePlugin;
 use srag\DIC\OnlyOffice\DICTrait;
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\Utils;
+namespace ILIAS\Plugin\OnlyOffice\Utils;
 
-use srag\Plugins\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Repository;
 
 trait OnlyOfficeTrait
 {

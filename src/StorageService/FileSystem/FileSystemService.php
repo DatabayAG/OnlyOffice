@@ -1,16 +1,16 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\FileSystem;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\FileSystem;
 
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\FileNotFoundException;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Location;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileTemplate;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Filesystem\Stream\Streams;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 class FileSystemService
 {

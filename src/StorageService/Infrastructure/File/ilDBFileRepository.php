@@ -1,9 +1,9 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 
 class ilDBFileRepository implements FileRepository
 {

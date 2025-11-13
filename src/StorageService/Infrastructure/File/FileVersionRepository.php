@@ -1,10 +1,10 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ilDateTime;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 
 interface FileVersionRepository
 {

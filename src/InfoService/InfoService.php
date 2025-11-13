@@ -1,8 +1,8 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\InfoService;
+namespace ILIAS\Plugin\OnlyOffice\InfoService;
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 /**
  * Used to access information using OnlyOfficeTrait.

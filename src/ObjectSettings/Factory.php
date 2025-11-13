@@ -1,8 +1,8 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\ObjectSettings;
+namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use ilOnlyOfficePlugin;
 use ilObjOnlyOffice;
 use ilObjOnlyOfficeGUI;

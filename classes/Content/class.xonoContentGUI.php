@@ -5,14 +5,14 @@ use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Refinery\Factory;
 use srag\DIC\OnlyOffice\DIC\DICInterface;
 use srag\DIC\OnlyOffice\DICStatic;
-use srag\Plugins\OnlyOffice\InfoService\InfoService;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\Utils\DateFetcher;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class xonoContentGUI extends xonoAbstractGUI
 {

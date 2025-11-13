@@ -1,13 +1,13 @@
 <?php
 
 require_once __DIR__ . "/../vendor/autoload.php";
-use srag\Plugins\OnlyOffice\Utils\DateFetcher;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {

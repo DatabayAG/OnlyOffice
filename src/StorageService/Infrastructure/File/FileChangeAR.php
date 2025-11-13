@@ -1,10 +1,10 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
 use Exception;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 /**
  * Stores the changes between file versions

@@ -2,13 +2,13 @@
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 /**
  *         Sophie Pfister <sophie@fluxlabs.ch>

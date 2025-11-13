@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService;
+namespace ILIAS\Plugin\OnlyOffice\StorageService;
 
 use ilDateTime;
 use ilDateTimeException;
@@ -8,18 +8,18 @@ use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ilObjOnlyOfficeGUI;
-use srag\Plugins\OnlyOffice\StorageService\DTO\File;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileTemplate;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\FileSystem\FileSystemService;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class StorageService
 {

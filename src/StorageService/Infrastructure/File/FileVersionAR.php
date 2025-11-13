@@ -1,12 +1,12 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
 use ilDateTime;
 use ilDateTimeException;
 use ilTimeZone;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 class FileVersionAR extends ActiveRecord
 {

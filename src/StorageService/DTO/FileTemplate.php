@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\DTO;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
 class FileTemplate
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\CryptoService;
+namespace ILIAS\Plugin\OnlyOffice\CryptoService;
 
 
 /**

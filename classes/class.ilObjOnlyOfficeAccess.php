@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../vendor/autoload.php";
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 use srag\DIC\OnlyOffice\DICTrait;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess

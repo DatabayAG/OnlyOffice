@@ -2,21 +2,21 @@
 
 use ILIAS\DI\Container;
 use srag\DIC\OnlyOffice\Exception\DICException;
-use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
-use srag\Plugins\OnlyOffice\StorageService\DTO\File;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use srag\DIC\OnlyOffice\DIC\DICInterface;
 use srag\DIC\OnlyOffice\DICStatic;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\InfoService\InfoService;
-use srag\Plugins\OnlyOffice\CryptoService\JwtService;
-use srag\Plugins\OnlyOffice\CryptoService\WebAccessService;
-use srag\Plugins\OnlyOffice\Utils\DateFetcher;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
+use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
+use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
+use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {

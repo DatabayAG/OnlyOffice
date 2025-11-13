@@ -1,8 +1,8 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\DTO;
+namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 
 class FileChange
 {

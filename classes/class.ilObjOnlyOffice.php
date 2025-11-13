@@ -7,12 +7,12 @@ use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Refinery\Factory;
 use srag\DIC\OnlyOffice\DICTrait;
-use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 
 class ilObjOnlyOffice extends ilObjectPlugin
 {
