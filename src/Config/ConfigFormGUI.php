@@ -2,12 +2,14 @@
 
 namespace ILIAS\Plugin\OnlyOffice\Config;
 
+use ilNumberInputGUI;
 use ilOnlyOfficeConfigGUI;
 use ilOnlyOfficePlugin;
+use ilPasswordInputGUI;
+use ilPropertyFormGUI;
 use ilTextInputGUI;
-use srag\CustomInputGUIs\OnlyOffice\PropertyFormGUI\PropertyFormGUI;
 
-class ConfigFormGUI extends PropertyFormGUI
+class ConfigFormGUI extends ilPropertyFormGUI
 {
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
@@ -16,67 +18,46 @@ class ConfigFormGUI extends PropertyFormGUI
     public const KEY_NUM_VERSIONS = "number_of_versions";
 
     private \ILIAS\Plugin\OnlyOffice\Repository $repo;
+    private ilOnlyOfficePlugin $plugin;
 
-    public function __construct(ilOnlyOfficeConfigGUI $parent)
+    public function __construct()
     {
+        parent::__construct();
+        $this->plugin = ilOnlyOfficePlugin::getInstance();
         $this->repo = \ILIAS\Plugin\OnlyOffice\Repository::getInstance();
-        parent::__construct($parent);
-    }
 
-    protected function getValue(string $key)
-    {
-        switch ($key) {
-            default:
-                return $this->repo->config()->getValue($key);
-        }
-    }
+        $this->setId("onlyoffice_config_form");
+        $this->setTitle($this->plugin->txt("config_configuration"));
+        $this->setFormAction($this->ctrl->getFormActionByClass(
+            ilOnlyOfficeConfigGUI::class,
+            ilOnlyOfficeConfigGUI::CMD_CONFIGURE
+        ));
 
-    protected function initCommands(): void
-    {
-        $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_UPDATE_CONFIGURE, $this->txt("save"));
-    }
+        $url = new ilTextInputGUI(
+            $this->plugin->txt("config_onlyoffice_url"),
+            self::KEY_ONLYOFFICE_URL
+        );
+        $url->setRequired(true);
+        $this->addItem($url);
 
-    protected function initFields(): void
-    {
-        $this->fields = [
-            self::KEY_ONLYOFFICE_URL => [
-                self::PROPERTY_CLASS => ilTextInputGUI::class,
-                self::PROPERTY_REQUIRED => true
-            ],
-            self::KEY_ONLYOFFICE_SECRET => [
-                self::PROPERTY_CLASS => \ilPasswordInputGUI::class,
-                self::PROPERTY_REQUIRED => true
-            ],
-            self::KEY_NUM_VERSIONS => [
-                self::PROPERTY_CLASS => \ilNumberInputGUI::class
-            ]
-        ];
-    }
+        $secret = new ilPasswordInputGUI(
+            $this->plugin->txt("config_onlyoffice_secret"),
+            self::KEY_ONLYOFFICE_URL
+        );
+        $secret->setRequired(true);
+        $secret->setRetype(false);
+        $this->addItem($secret);
 
-    protected function initId(): void
-    {
+        $versions = new ilNumberInputGUI(
+            $this->plugin->txt("config_number_of_versions"),
+            self::KEY_NUM_VERSIONS
+        );
+        $versions->setRequired(true);
+        $this->addItem($versions);
 
-    }
-
-    protected function initTitle(): void
-    {
-        $this->setTitle($this->txt("configuration"));
-    }
-
-    protected function storeValue(string $key, $value): void
-    {
-        switch ($key) {
-            // If less than 1 version should be loaded from storage, a default value (10) is stored
-            case self::KEY_NUM_VERSIONS:
-                if ($value < 1) {
-                    $this->repo->config()->setValue($key, 10);
-                } else {
-                    $this->repo->config()->setValue($key, $value);
-                }
-                break;
-            default:
-                $this->repo->config()->setValue($key, $value);
-                break;
-        }
+        $this->addCommandButton(
+            ilOnlyOfficeConfigGUI::CMD_UPDATE_CONFIGURE,
+            $this->plugin->txt("config_save")
+        );
     }
 }

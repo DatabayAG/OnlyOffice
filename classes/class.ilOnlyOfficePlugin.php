@@ -22,6 +22,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected static ?ilOnlyOfficePlugin $instance = null;
     private Repository $repo;
+    public ilSetting $settings;
 
     public static function getInstance(): self
     {
@@ -47,6 +48,8 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         global $DIC;
         parent::__construct($db, $component_repository, $id);
         $this->repo = Repository::getInstance();
+        $this->settings = new ilSetting(self::PLUGIN_ID . "_config");
+
         $this->db = $DIC->database();
     }
 
