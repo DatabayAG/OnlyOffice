@@ -4,8 +4,6 @@ use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
-use srag\DIC\OnlyOffice\DIC\DICInterface;
-use srag\DIC\OnlyOffice\DICStatic;
 use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -243,15 +241,6 @@ class xonoContentGUI extends xonoAbstractGUI
     protected function buttonTarget()
     {
         return $this->dic->ctrl()->getLinkTargetByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-    }
-
-    /**
-     * Get DIC interface
-     * @return DICInterface DIC interface
-     */
-    final protected static function dic(): DICInterface
-    {
-        return DICStatic::dic();
     }
 
 }

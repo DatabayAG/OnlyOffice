@@ -2,14 +2,11 @@
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Repository;
-use srag\DIC\OnlyOffice\Exception\DICException;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use srag\DIC\OnlyOffice\DIC\DICInterface;
-use srag\DIC\OnlyOffice\DICStatic;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -30,9 +27,6 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected string $onlyoffice_key;
     private Repository $repo;
 
-    /**
-     * @throws DICException
-     */
     public function __construct(
         Container $dic,
         ilOnlyOfficePlugin $plugin,
@@ -49,9 +43,6 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->afterConstructor();
     }
 
-    /**
-     * @throws DICException
-     */
     protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
@@ -68,7 +59,6 @@ class xonoEditorGUI extends xonoAbstractGUI
     }
 
     /**
-     * @throws DICException
      * @throws ilCtrlException
      */
     public function executeCommand(): void
@@ -329,14 +319,5 @@ class xonoEditorGUI extends xonoAbstractGUI
         } else {
             return "view";
         }
-    }
-
-    /**
-     * Get DIC interface
-     * @throws DICException
-     */
-    final protected static function dic(): DICInterface
-    {
-        return DICStatic::dic();
     }
 }
