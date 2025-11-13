@@ -1,5 +1,7 @@
 <?php
 // Try to determine ILIAS-root
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+
 $directory = strstr($_SERVER['SCRIPT_FILENAME'], 'Customizing', true);
 if (is_file('path.txt')) {
     $directory = trim(file_get_contents('path.txt'));
@@ -21,7 +23,10 @@ if (($body_stream = file_get_contents("php://input")) === false) {
 $encrypted = json_decode($body_stream, true);
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/CryptoService/JwtService.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/InfoService/InfoService.php';
-$secret = \ILIAS\Plugin\OnlyOffice\InfoService\InfoService::getSecret();
+
+$plugin = ilOnlyOfficePlugin::getInstance();
+
+$secret = $plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
 $decrypted = \ILIAS\Plugin\OnlyOffice\CryptoService\JwtService::jwtDecode($encrypted['token'],
     $secret);
 //$DIC->logger()->root()->info($decrypted);

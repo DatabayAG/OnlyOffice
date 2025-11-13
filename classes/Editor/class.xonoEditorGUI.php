@@ -1,6 +1,7 @@
 <?php
 
 use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
@@ -34,8 +35,8 @@ class xonoEditorGUI extends xonoAbstractGUI
     ) {
         parent::__construct($dic, $plugin);
 
-        $this->onlyoffice_url = InfoService::getOnlyOfficeUrl();
-        $this->onlyoffice_key = InfoService::getSecret();
+        $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
+        $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
 
         $this->file_id = $object_id;
         $this->repo = Repository::getInstance();

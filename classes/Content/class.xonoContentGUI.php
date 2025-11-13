@@ -2,6 +2,7 @@
 
 use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
@@ -113,7 +114,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $tpl->setVariable('FORWARD', $this->buttonTarget());
         $tpl->setVariable('BUTTON', $this->buttonName());
 
-        $limit = InfoService::getNumberOfVersions();
+        $limit = (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, "10");
         $fileVersionsAdded = 0;
         foreach ($fileVersions as $fileVersion) {
             if ($fileVersionsAdded >= $limit) {

@@ -15,19 +15,4 @@ class InfoService
         return Repository::getInstance()->objectSettings()->getObjectSettingsById($file_id)->getOpen();
     }
 
-    final public static function getOnlyOfficeUrl(): string
-    {
-        return Repository::getInstance()->config()->getValue("onlyoffice_url");
-    }
-
-    final public static function getSecret(): string
-    {
-        return Repository::getInstance()->config()->getValue("onlyoffice_secret");
-    }
-
-    final public static function getNumberOfVersions(): int
-    {
-        return Repository::getInstance()->config()->getValue("number_of_versions");
-    }
-
 }
