@@ -75,7 +75,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected function uninstallCustom(): void
     {
-        require_once("./Services/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
+        require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
         $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
         ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);

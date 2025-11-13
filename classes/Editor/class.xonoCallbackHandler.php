@@ -1,7 +1,6 @@
 <?php
 
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/vendor/autoload.php';
-require_once 'libs/composer/vendor/autoload.php';
+require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
 use srag\Plugins\OnlyOffice\StorageService\StorageService;

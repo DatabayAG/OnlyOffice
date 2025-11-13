@@ -2,7 +2,6 @@
 
 namespace srag\Plugins\OnlyOffice\CryptoService;
 
-require_once 'libs/composer/vendor/autoload.php';
 
 /**
  * Encodes a given payload using a given key to a JsonWebToken or
