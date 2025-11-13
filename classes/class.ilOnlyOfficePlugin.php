@@ -54,13 +54,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return self::PLUGIN_NAME;
     }
 
-    public function updateLanguages(/*?array*/ $a_lang_keys = null): void
-    {
-        parent::updateLanguages($a_lang_keys);
-
-        $this->installRemovePluginDataConfirmLanguages();
-    }
-
     protected function deleteData(): void
     {
         self::onlyOffice()->dropTables();
