@@ -214,7 +214,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             }
         }
 
-        self::output()->output($html);
+        $this->tpl->setContent($html);
     }
 
     protected function initCreationForms(string $a_new_type): array
@@ -450,7 +450,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         $form = $this->getSettingsForm();
 
-        self::output()->output($form);
+        $this->tpl->setContent($form->getHTML());
     }
 
     protected function settingsStore(): void
@@ -460,7 +460,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $form = $this->getSettingsForm();
 
         if (!$form->storeForm()) {
-            self::output()->output($form);
+            $this->tpl->setContent($form->getHTML());
 
             return;
         }
