@@ -282,7 +282,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $path = $this->storage_service->createFileTemplate($result, $title, $description);
 
         // Return if file extension not recognized by OnlyOffice
-        if (empty($path)) {
+        if ($path === null) {
             $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
             $form->setValuesByPost();
             $this->tpl->setContent($form->getHTML());
@@ -438,7 +438,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $conf = new ilConfirmationGUI();
         $conf->setFormAction($this->dic->ctrl()->getFormAction($this));
-        $conf->setHeaderText(self::plugin()->translate('config_template_delete'));
+        $conf->setHeaderText($this->plugin->txt('config_template_delete'));
 
         $ooTarget = $this->httpWrapper->query()->retrieve(
             "ootarget",
