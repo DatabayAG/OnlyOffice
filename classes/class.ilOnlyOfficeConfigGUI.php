@@ -3,8 +3,11 @@
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
+use ILIAS\FileUpload\DTO\ProcessingStatus;
+use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
@@ -164,25 +167,26 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $tpl->setVariable('EXTENSION', $template->getExtension());
             $ctrlFormat = "%s&ootarget=%s&ooextension=%s";
 
-            $ilSelect = new ilAdvancedSelectionListGUI();
-            $ilSelect->setListTitle($this->plugin->txt("config_table_options"));
-            $ilSelect->addItem(
-                $this->plugin->txt("config_table_edit"),
-                "",
-                $this->dic->ctrl()->getLinkTargetByClass(
-                    self::class,
-                    sprintf($ctrlFormat, self::CMD_EDIT_TEMPLATE, urlencode($template->getTitle()), urlencode($template->getExtension()))
+            $uiFactory = $this->dic->ui()->factory();
+
+            $actions = $uiFactory->dropdown()->standard([
+                $uiFactory->link()->standard(
+                    $this->plugin->txt("config_table_edit"),
+                    $this->dic->ctrl()->getLinkTargetByClass(
+                        self::class,
+                        sprintf($ctrlFormat, self::CMD_EDIT_TEMPLATE, urlencode($template->getTitle()), urlencode($template->getExtension()))
+                    )
+                ),
+                $uiFactory->link()->standard(
+                    $this->plugin->txt("config_table_delete"),
+                    $this->dic->ctrl()->getLinkTargetByClass(
+                        self::class,
+                        sprintf($ctrlFormat, self::CMD_CONFIRM_DELETE, urlencode($template->getTitle()), urlencode($template->getExtension()))
+                    )
                 )
-            );
-            $ilSelect->addItem(
-                $this->plugin->txt("config_table_delete"),
-                "",
-                $this->dic->ctrl()->getLinkTargetByClass(
-                    self::class,
-                    sprintf($ctrlFormat, self::CMD_CONFIRM_DELETE, urlencode($template->getTitle()), urlencode($template->getExtension()))
-                )
-            );
-            $tpl->setVariable('SETTINGS', $ilSelect->getHTML());
+            ])->withLabel($this->plugin->txt("config_table_options"));
+
+            $tpl->setVariable('SETTINGS', $this->dic->ui()->renderer()->render($actions));
             $tpl->parseCurrentBlock();
         }
 
@@ -190,66 +194,15 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->tpl->setContent($content);
     }
 
-    protected function createTemplate(): void
+    protected function createTemplate(?TemplateForm $form = null): void
     {
         $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
         $this->dic->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
-        $form = $this->initCreateTemplateForm()->getHTML();
-        $this->tpl->setContent($form);
-    }
-
-    protected function initCreateTemplateForm(bool $edit = false): ilPropertyFormGUI
-    {
-        $form = new ilPropertyFormGUI();
-        $form->setTarget("_top");
-
-        $ooTarget = $this->httpWrapper->query()->retrieve(
-            "ootarget",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
-
-        $ooExtension = $this->httpWrapper->query()->retrieve(
-            "ooextension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
-
-        $form->setFormAction($this->dic->ctrl()->getFormAction($this) . "&prevTitle=" . urlencode($ooTarget) . "&prevExtension=" . urlencode($ooExtension));
-
-        // title
-        $ti = new ilTextInputGUI($this->plugin->txt("config_table_title"), "title");
-        $ti->setSize(min(40, ilObject::TITLE_LENGTH));
-        $ti->setMaxLength(ilObject::TITLE_LENGTH);
-        $form->addItem($ti);
-
-        // description
-        $ta = new ilTextAreaInputGUI($this->plugin->txt("config_table_description"), "desc");
-        $ta->setCols(40);
-        $ta->setRows(2);
-        $form->addItem($ta);
-
-        // file upload option
-        $file_input = new ilFileInputGUI($this->plugin->txt("form_input_file"), "file");
-        $file_input->setRequired(!$edit);
-        $form->addItem($file_input);
-
-        if ($edit) {
-            $form->setTitle($this->plugin->txt("config_edit_template"));
-            $form->addCommandButton(self::CMD_SAVE_EDIT_TEMPLATE, $this->plugin->txt("config_save"));
-        } else {
-            $form->setTitle($this->plugin->txt("config_create_template"));
-            $form->addCommandButton(self::CMD_UPDATE_TEMPLATES, $this->plugin->txt("config_save"));
+        if (!$form) {
+            $form = new TemplateForm();
         }
-
-        $form->addCommandButton(self::CMD_TEMPLATES, $this->plugin->txt("settings_cancel"));
-
-        return $form;
+        $this->tpl->setContent($form->getHTML());
     }
 
     protected function updateConfigure(): void
@@ -261,6 +214,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         if (!$form->checkInput()) {
             $form->setValuesByPost();
             $this->configure($form);
+            return;
         }
 
         $form->setValuesByPost();
@@ -288,11 +242,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function updateTemplates(): void
     {
-        $form = $this->initCreateTemplateForm();
+        $form = new TemplateForm();
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
-            $this->tpl->setContent($form->getHTML());
+            $this->createTemplate($form);
             return;
         }
 
@@ -369,7 +323,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 "file" => $template->getPath()
             ];
 
-            $form = $this->initCreateTemplateForm(true);
+            $form = new TemplateForm(true);
             $form->setValuesByArray($value_array);
             $this->tpl->setContent($form->getHTML());
         }
@@ -404,25 +358,33 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
 
 
-        $form = $this->initCreateTemplateForm(true);
+        $form = new TemplateForm(true);
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
-            $this->tpl->setContent($form);
+            $this->tpl->setContent($form->getHTML());
             return;
         }
 
+        if (!$this->dic->upload()->hasBeenProcessed()) {
+            $this->dic->upload()->process();
+        }
+
+        $hasUploads = false;
+        $results = $this->dic->upload()->getResults();
+        /**
+         * @var UploadResult $result
+         */
+        $result = end($results);
+        if ($result->getStatus()->getCode() !== ProcessingStatus::REJECTED) {
+            $hasUploads = true;
+        }
+
         // If no file is uploaded, merely change title and description
-        if (!$this->dic->upload()->hasUploads()) {
+        if (!$hasUploads) {
             // Dont delete previous template
             $this->storage_service->modifyFileTemplate($prevTitle, $prevExtension, $target, $description);
         } else {
-            if (!$this->dic->upload()->hasBeenProcessed()) {
-                $this->dic->upload()->process();
-            }
-            $results = $this->dic->upload()->getResults();
-            $result = end($results);
-
             // Return if file extension not whitelisted by ILIAS instance
             if (!ilFileUtils::getValidFilename($result->getName())) {
                 // Fix bug where previous title and name don't get saved into the form action
