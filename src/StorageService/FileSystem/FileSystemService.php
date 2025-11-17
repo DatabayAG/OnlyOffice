@@ -32,8 +32,11 @@ class FileSystemService
         UploadResult $upload_result,
         int $obj_id,
         string $file_id,
-        string $file_name = FileVersion::FIRST_VERSION
+        ?string $file_name = null
     ): string {
+        if ($file_name === null) {
+            $file_name = (string) FileVersion::FIRST_VERSION;
+        }
         $ext = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
         $file_name .= '.' . $ext;
 
