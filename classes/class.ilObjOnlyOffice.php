@@ -67,8 +67,30 @@ class ilObjOnlyOffice extends ilObjectPlugin
             return false;
         }
 
+        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        $titleAndDescription = $formData["title_and_description"];
+        $title = $titleAndDescription->getTitle();
+
+        /** @var FileSettingProperty $fileSetting */
+        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
         /** @var AllowEditProperty $allowEdit */
         $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
+
+        if ($fileSetting->getFileMode() === FileMode::CREATE && $title === "") {
+            $this->tpl->setOnScreenMessage(
+                'failure',
+                sprintf(
+                    $this->pl->txt("settings_file_mode_create_title_required"),
+                    $this->pl->txt("form_input_create_file")
+                ),
+                true
+            );
+            $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "ref_id", 1);
+            $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, ilObjOnlyOfficeGUI::class], "create");
+
+            return false;
+        }
 
         if (
             $allowEdit->isLimitedPeriod()

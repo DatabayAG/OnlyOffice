@@ -57,6 +57,7 @@ settings_number_of_versions#:#Max. Anzahl Versionen
 settings_start_time#:#Startzeit
 settings_end_time#:#Endzeit
 settings_time_greater_than#:#Die Startzeit des begrenzten Zeitraumes muss kleiner sein als die Endzeit. Bitte erneut versuchen.
+settings_file_mode_create_title_required#:#Ein Titel ist für den Modus <strong>%s</strong> erforderlich.
 rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
 form_input_file#:#Datei
 form_input_upload_file#:#Datei hochladen
