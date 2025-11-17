@@ -15,7 +15,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
-use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository;
@@ -128,7 +127,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                             !$this->repo->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                         }
-                        $open_setting = InfoService::getOpenSetting($this->obj_id);
+                        $open_setting = $this->object->object_settings->getOpen();
                         switch ($open_setting) {
                             case "download":
                                 $next_cmd = xonoContentGUI::CMD_DOWNLOAD;
