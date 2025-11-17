@@ -56,7 +56,7 @@ class PluginConfigForm extends ilPropertyFormGUI
 
         $secret = new ilPasswordInputGUI(
             $this->plugin->txt("config_onlyoffice_secret"),
-            self::KEY_ONLYOFFICE_URL
+            self::KEY_ONLYOFFICE_SECRET
         );
         $secret->setRequired(true);
         $secret->setRetype(false);
