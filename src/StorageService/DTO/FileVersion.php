@@ -21,7 +21,7 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
 use ilDateTime;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 
 class FileVersion implements \JsonSerializable
 {
@@ -30,9 +30,9 @@ class FileVersion implements \JsonSerializable
     protected ilDateTime $created_at;
     protected int $user_id;
     protected string $url;
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
 
-    public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, UUID $file_uuid)
+    public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, Uuid $file_uuid)
     {
         $this->version = $version;
         $this->created_at = $created_at;
@@ -81,12 +81,12 @@ class FileVersion implements \JsonSerializable
         $this->url = $url;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }
 
-    public function setFileUuid(UUID $uuid): void
+    public function setFileUuid(Uuid $uuid): void
     {
         $this->file_uuid = $uuid;
     }
@@ -101,7 +101,7 @@ class FileVersion implements \JsonSerializable
             'userId' => $this->user_id,
             'user' => $user->getPublicName(),
             'url' => $this->url,
-            'uuid' => $this->file_uuid->asString()
+            'uuid' => $this->file_uuid->toString()
         ];
     }
 

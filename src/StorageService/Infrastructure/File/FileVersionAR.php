@@ -24,7 +24,8 @@ use ActiveRecord;
 use ilDateTime;
 use ilDateTimeException;
 use ilTimeZone;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 class FileVersionAR extends ActiveRecord
 {
@@ -50,7 +51,7 @@ class FileVersionAR extends ActiveRecord
      * @con_length       256
      * @con_is_notnull   true
      */
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
     /**
      * @con_has_field    true
      * @con_fieldtype    integer
@@ -98,12 +99,12 @@ class FileVersionAR extends ActiveRecord
         $this->id = $id;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }
 
-    public function setFileUuid(UUID $file_uuid): void
+    public function setFileUuid(Uuid $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
@@ -143,7 +144,7 @@ class FileVersionAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'file_uuid':
-                return $this->file_uuid->asString();
+                return $this->file_uuid->toString();
             case 'created_at':
                 return $this->created_at->get(IL_CAL_FKT_DATE, 'Y-m-d H:i:s');
             default:
@@ -154,11 +155,11 @@ class FileVersionAR extends ActiveRecord
     /**
      * @throws ilDateTimeException
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): Uuid|ilDateTime|null
     {
         switch ($field_name) {
             case 'file_uuid':
-                return new UUID($field_value);
+                return (new UUIDFactory())->uuid4();
             case 'created_at':
                 return new ilDateTime($field_value, IL_CAL_DATE);
             default:

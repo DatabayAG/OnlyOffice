@@ -21,18 +21,18 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ilDateTime;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 
 interface FileVersionRepository
 {
-    public function create(UUID $file_uuid, int $user_id, ilDateTime $created_at, string $url, int $version = -1): int;
+    public function create(Uuid $file_uuid, int $user_id, ilDateTime $created_at, string $url, int $version = -1): int;
 
     public function getByObjectID(int $object_id): FileVersion;
 
-    public function getAllVersions(UUID $file_uuid): array;
+    public function getAllVersions(Uuid $file_uuid): array;
 
-    public function getLatestVersion(UUID $file_uuid): ?FileVersion;
+    public function getLatestVersion(Uuid $file_uuid): ?FileVersion;
 
     public function getPreviousVersion(string $uuid, int $version): FileVersion;
 }

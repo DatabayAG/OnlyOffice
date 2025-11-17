@@ -22,7 +22,8 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
 use Exception;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 class FileAR extends ActiveRecord
 {
@@ -39,7 +40,7 @@ class FileAR extends ActiveRecord
      * @con_is_unique    true
      * @con_is_notnull   true
      */
-    protected UUID $uuid;
+    protected Uuid $uuid;
 
     /**
      * @con_has_field    true
@@ -72,22 +73,22 @@ class FileAR extends ActiveRecord
      */
     protected string $mime_type;
 
-    public function getUUID(): UUID
+    public function getUUID(): Uuid
     {
         return $this->uuid;
     }
 
-    public function setUUID(UUID $uuid): void
+    public function setUUID(Uuid $uuid): void
     {
         $this->uuid = $uuid;
     }
 
-    public function getId(): UUID
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function setId(UUID $id): void
+    public function setId(Uuid $id): void
     {
         $this->id = $id;
     }
@@ -136,7 +137,7 @@ class FileAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'uuid':
-                return $this->uuid->asString();
+                return $this->uuid->toString();
             default:
                 return parent::sleep($field_name);
         }
@@ -145,11 +146,11 @@ class FileAR extends ActiveRecord
     /**
      * @throws Exception
      */
-    public function wakeUp($field_name, $field_value): ?UUID
+    public function wakeUp($field_name, $field_value): ?Uuid
     {
         switch ($field_name) {
             case 'uuid':
-                return new UUID($field_value);
+                return (new UUIDFactory())->uuid4();
             default:
                 return parent::wakeUp($field_name, $field_value);
         }

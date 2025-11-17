@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 interface FileChangeRepository
@@ -31,7 +31,7 @@ interface FileChangeRepository
      * @return mixed
      */
     public function create(
-        UUID $file_uuid,
+        Uuid $file_uuid,
         int $version,
         string $changesObjectString,
         string $serverVersion,

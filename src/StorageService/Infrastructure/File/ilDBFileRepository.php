@@ -20,12 +20,12 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 
 class ilDBFileRepository implements FileRepository
 {
-    public function create(UUID $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type): void
+    public function create(Uuid $file_uuid, int $obj_id, string $title, string $file_type, string $mime_type): void
     {
         $file_AR = new FileAR();
         $file_AR->setUUID($file_uuid);

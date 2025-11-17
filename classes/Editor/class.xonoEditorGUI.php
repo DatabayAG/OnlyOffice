@@ -24,7 +24,7 @@ use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
@@ -282,7 +282,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * generates the callback URL for the only office document server
      */
-    protected function generateCallbackUrl(UUID $file_uuid, int $file_id, string $extension): string
+    protected function generateCallbackUrl(Uuid $file_uuid, int $file_id, string $extension): string
     {
         $path = 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/save.php?' .
             '&uuid=' . $file_uuid->asString() .

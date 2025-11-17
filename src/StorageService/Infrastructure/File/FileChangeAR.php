@@ -22,7 +22,8 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
 use Exception;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 /**
  * Stores the changes between file versions
@@ -51,7 +52,7 @@ class FileChangeAR extends ActiveRecord
      * @con_fieldtype text
      * @con_length    256
      */
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
     /**
      * @con_has_field    true
      * @con_fieldtype    integer
@@ -86,12 +87,12 @@ class FileChangeAR extends ActiveRecord
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid): void
+    public function setFileUuid(Uuid $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }
@@ -140,7 +141,7 @@ class FileChangeAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'file_uuid':
-                return $this->file_uuid->asString();
+                return $this->file_uuid->toString();
             default:
                 return parent::sleep($field_name);
         }
@@ -149,11 +150,11 @@ class FileChangeAR extends ActiveRecord
     /**
      * @throws Exception
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): ?Uuid
     {
         switch ($field_name) {
             case 'file_uuid':
-                return new UUID($field_value);
+                return (new UUIDFactory())->uuid4();
             default:
                 return parent::wakeUp($field_name, $field_value);
         }

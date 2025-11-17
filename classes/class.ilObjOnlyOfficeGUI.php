@@ -33,7 +33,6 @@ use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -41,6 +40,7 @@ use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 /**
  * @ilCtrl_isCalledBy ilObjOnlyOfficeGUI: ilRepositoryGUI
@@ -82,6 +82,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     protected ?ilPlugin $plugin = null;
     private Repository $repo;
     private Container $dic;
+    private UUIDFactory $uuidFactory;
 
     protected function afterConstructor(): void
     {
@@ -89,6 +90,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         $this->repo = Repository::getInstance();
         $this->dic = $DIC;
+
+        $this->uuidFactory = new UUIDFactory();
 
         $this->storage_service = new StorageService(
             $this->dic,
@@ -239,11 +242,11 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         if ($result instanceof UploadResult && $result->isOK()) {
             $status = HandlerResult::STATUS_OK;
             $message = 'Upload ok';
-            $uuid = new UUID();
+            $uuid = $this->uuidFactory->uuid4();
 
             $tmpFilesystem = $this->dic->filesystem()->temp();
-            $tempName = $uuid->asString() . "/" . ilFileUtils::getValidFilename($result->getName());
-            $tmpFilesystem->createDir($uuid->asString());
+            $tempName = $uuid->toString() . "/" . ilFileUtils::getValidFilename($result->getName());
+            $tmpFilesystem->createDir($uuid->toString());
 
             $tmpFilesystem->put(
                 $tempName,

@@ -21,11 +21,11 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 
 class File
 {
-    protected UUID $uuid;
+    protected Uuid $uuid;
     protected int $obj_id;
     protected string $title;
     protected string $file_type;
@@ -42,7 +42,7 @@ class File
 
     }
 
-    public function __construct(UUID $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
+    public function __construct(Uuid $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
     {
         $this->uuid = $uuid;
         $this->title = $title;
@@ -51,7 +51,7 @@ class File
         $this->mime_type = $mime_type;
     }
 
-    public function getUuid(): UUID
+    public function getUuid(): Uuid
     {
         return $this->uuid;
     }
@@ -71,7 +71,7 @@ class File
         return $this->file_type;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->uuid;
     }

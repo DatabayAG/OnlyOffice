@@ -22,6 +22,7 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService;
 
 use ilDateTime;
 use ilDateTimeException;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
@@ -30,7 +31,7 @@ use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
@@ -45,6 +46,7 @@ class StorageService
     protected FileSystemService $file_system_service;
     protected FileRepository $file_repository;
     protected FileChangeRepository $file_change_repository;
+    private UUIDFactory $uuidFactory;
 
     public function __construct(
         Container $dic,
@@ -57,6 +59,7 @@ class StorageService
         $this->file_repository = $file_repository;
         $this->file_system_service = new FileSystemService($dic);
         $this->file_change_repository = $file_change_repository;
+        $this->uuidFactory = new UUIDFactory();
     }
 
     /**
@@ -65,8 +68,8 @@ class StorageService
     public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): File
     {
         // Create DB Entries for File & FileVersion
-        $new_file_id = new UUID();
-        $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->asString());
+        $new_file_id = $this->uuidFactory->uuid4();
+        $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $this->file_repository->create($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
         list($created_at, $version) = $this->createNewFile($new_file_id, $path);
@@ -79,12 +82,12 @@ class StorageService
 
     public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
     {
-        $new_file_id = new UUID();
+        $new_file_id = $this->uuidFactory->uuid4();
         $path = $this->createFileDraft(
             $title,
             $extension,
             $obj_id,
-            $new_file_id->asString()
+            $new_file_id->toString()
         );
 
         $extension = pathinfo($path, PATHINFO_EXTENSION);
@@ -101,14 +104,14 @@ class StorageService
 
     public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
     {
-        $new_file_id = new UUID();
+        $new_file_id = $this->uuidFactory;
         $extension = pathinfo($template_path, PATHINFO_EXTENSION);
 
         $path = $this->createFileFromTemplate(
             $title,
             $template_path,
             $obj_id,
-            $new_file_id->asString()
+            $new_file_id->toString()
         );
 
         // Create DB Entries for File & FileVersion
@@ -127,7 +130,7 @@ class StorageService
     public function updateFileFromUpload(
         string $file_content,
         int $file_id,
-        UUID $uuid,
+        Uuid $uuid,
         int $editor_id,
         string $file_extension,
         string $changes_object,
@@ -143,7 +146,7 @@ class StorageService
         $path = $this->file_system_service->storeNewVersionFromString(
             $file_content,
             $file_id,
-            $uuid->asString(),
+            $uuid->toString(),
             $version,
             $file_extension
         );
@@ -153,7 +156,7 @@ class StorageService
         $change_path = $this->file_system_service->storeChanges(
             $change_content,
             $file_id,
-            $uuid->asString(),
+            $uuid->toString(),
             $version,
             $change_extension
         );
@@ -227,7 +230,7 @@ class StorageService
     public function createClone(int $child_id, int $parent_id): void
     {
         // create new file
-        $uuid = new UUID();
+        $uuid = $this->uuidFactory->uuid4();
         $parent_file = $this->file_repository->getFile($parent_id);
         if (is_null($parent_file)) {
             return;
@@ -237,7 +240,7 @@ class StorageService
         // clone file versions
         $parent_file_versions = $this->file_version_repository->getAllVersions($parent_file->getFileUuid());
         foreach ($parent_file_versions as $version) {
-            $path = $this->file_system_service->storeVersionCopy($version, $uuid->asString(), $child_id);
+            $path = $this->file_system_service->storeVersionCopy($version, $uuid->toString(), $child_id);
             $created_at = new ilDateTime(time(), IL_CAL_UNIX);
             $this->file_version_repository->create(
                 $uuid,
@@ -249,9 +252,9 @@ class StorageService
         }
 
         // clone file changes
-        $parent_changes = $this->file_change_repository->getAllChanges($parent_file->getUuid()->asString());
+        $parent_changes = $this->file_change_repository->getAllChanges($parent_file->getUuid()->toString());
         foreach ($parent_changes as $changes) {
-            $path = $this->file_system_service->storeChangeCopy($changes, $uuid->asString(), $child_id);
+            $path = $this->file_system_service->storeChangeCopy($changes, $uuid->toString(), $child_id);
             $this->file_change_repository->create(
                 $uuid,
                 $changes->getVersion(),
@@ -278,11 +281,11 @@ class StorageService
         $this->dic->database()->query($query);
 
         // delete FileVersion entries
-        $query = 'DELETE FROM xono_file_version WHERE file_uuid="' . $uuid->asString() . '";';
+        $query = 'DELETE FROM xono_file_version WHERE file_uuid="' . $uuid->toString() . '";';
         $this->dic->database()->query($query);
 
         // delete FileChange entries
-        $query = 'DELETE FROM xono_file_change WHERE file_uuid="' . $uuid->asString() . '";';
+        $query = 'DELETE FROM xono_file_change WHERE file_uuid="' . $uuid->toString() . '";';
         $this->dic->database()->query($query);
 
     }
@@ -318,7 +321,7 @@ class StorageService
         return $this->file_repository->getFile($file_id);
     }
 
-    public function getLatestVersion(UUID $file_uuid): ?FileVersion
+    public function getLatestVersion(Uuid $file_uuid): ?FileVersion
     {
         return $this->file_version_repository->getLatestVersion($file_uuid);
     }
@@ -342,7 +345,7 @@ class StorageService
     /**
      * @throws ilDateTimeException
      */
-    private function createNewFile(UUID $new_file_id, string $path): array
+    private function createNewFile(Uuid $new_file_id, string $path): array
     {
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->file_version_repository->create(

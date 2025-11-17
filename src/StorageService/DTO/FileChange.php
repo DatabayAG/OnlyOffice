@@ -20,12 +20,12 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 
 class FileChange
 {
     protected int $change_id;
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
     protected int $version;
     protected string $changesObjectString;
     protected string $serverVersion;
@@ -33,7 +33,7 @@ class FileChange
 
     public function __construct(
         int $change_id,
-        UUID $file_uuid,
+        Uuid $file_uuid,
         int $version,
         string $changesObjectString,
         string $serverVersion,
@@ -57,12 +57,12 @@ class FileChange
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid): void
+    public function setFileUuid(Uuid $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }

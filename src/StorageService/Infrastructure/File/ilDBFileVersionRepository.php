@@ -25,7 +25,7 @@ use ilDateTime;
 use ilDateTimeException;
 use ilTimeZone;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
 
 class ilDBFileVersionRepository implements FileVersionRepository
 {
@@ -34,7 +34,7 @@ class ilDBFileVersionRepository implements FileVersionRepository
      * @throws ilDateTimeException
      */
     public function create(
-        UUID $file_uuid,
+        Uuid $file_uuid,
         int $user_id,
         ilDateTime $created_at,
         string $url,
@@ -58,10 +58,10 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $file_version_AR->getVersion();
     }
 
-    protected function determineVersion(UUID $file_uuid): int
+    protected function determineVersion(Uuid $file_uuid): int
     {
         /** @var FileVersionAR $latest_version */
-        $latest_version = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])->orderBy(
+        $latest_version = FileVersionAR::where(['file_uuid' => $file_uuid->toString()])->orderBy(
             'version',
             'desc'
         )->first();
@@ -75,10 +75,10 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $this->buildFileVersionFromAR($file_version_ar);
     }
 
-    public function getAllVersions(UUID $file_uuid): array
+    public function getAllVersions(Uuid $file_uuid): array
     {
         /** @var array $all_file_version_ar */
-        $all_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])
+        $all_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->toString()])
                                             ->orderBy('version', 'desc')
                                             ->get();
         $length = count($all_file_version_ar);
@@ -90,10 +90,10 @@ class ilDBFileVersionRepository implements FileVersionRepository
         return $result;
     }
 
-    public function getLatestVersion(UUID $file_uuid): ?FileVersion
+    public function getLatestVersion(Uuid $file_uuid): ?FileVersion
     {
         /** @var FileVersionAR $latest_file_version_ar */
-        $latest_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->asString()])
+        $latest_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->toString()])
                                                ->orderBy('version', 'desc')
                                                ->first();
         if (is_null($latest_file_version_ar)) {
