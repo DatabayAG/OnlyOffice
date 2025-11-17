@@ -33,9 +33,9 @@ final class Factory
         return $object_settings;
     }
 
-    public function newFormInstance(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object): ObjectSettingsFormGUI
+    public function newFormInstance(ilObjOnlyOfficeGUI $parent, ilObjOnlyOffice $object): ObjectSettingsForm
     {
-        $form = new ObjectSettingsFormGUI($parent, $object);
+        $form = new ObjectSettingsForm($parent, $object);
 
         return $form;
     }

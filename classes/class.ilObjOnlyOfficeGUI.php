@@ -4,16 +4,29 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
+use ILIAS\Filesystem\Stream\Streams;
+use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Exception\IllegalStateException;
-use ILIAS\HTTP\Wrapper\WrapperFactory;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettingsFormGUI;
+use ILIAS\FileUpload\Handler\BasicFileInfoResult;
+use ILIAS\FileUpload\Handler\BasicHandlerResult;
+use ILIAS\FileUpload\Handler\FileInfoResult;
+use ILIAS\FileUpload\Handler\HandlerResult;
+use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
+use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
+use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
+use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
+use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
+use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
-use ILIAS\Plugin\OnlyOffice\InfoService\InfoService;
+use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
+use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
 
 /**
  * @ilCtrl_isCalledBy ilObjOnlyOfficeGUI: ilRepositoryGUI
@@ -48,29 +61,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public const TAB_INFO = "info_short";
     public const TAB_SHOW_CONTENTS = "show_contents";
 
-    public const OPTION_SETTING_CREATE = "create_file";
-    public const OPTION_SETTING_UPLOAD = "upload_file";
-    public const OPTION_SETTING_TEMPLATE = "template_file";
 
-    public const POST_VAR_FILE = 'upload_files';
-    public const POST_VAR_FILE_SETTING = 'file_setting';
-    public const POST_VAR_FILE_CREATION_SETTING = 'file_creation_setting';
-    public const POST_VAR_FILE_TEMPLATE_SETTING = 'file_template_setting';
-    public const POST_VAR_OPEN_SETTING = 'open_setting';
-    public const POST_VAR_ONLINE = 'online';
-    public const POST_VAR_EDIT = 'allow_edit';
-    public const POST_VAR_EDIT_LIMITED = 'allow_edit_limited';
-    public const POST_VAR_EDIT_LIMITED_START = 'start_time';
-    public const POST_VAR_EDIT_LIMITED_END = 'end_time';
-    public const POST_VAR_CREATE = 'createFrom';
-
-    public const FILE_EXTENSIONS = [
-        "text" => "docx",
-        "table" => "xlsx",
-        "presentation" => "pptx"
-    ];
-
-    public ?ilObject $object = null;
+    public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
     /**
      * @var ilOnlyOfficePlugin|ilPlugin|null
@@ -81,17 +73,17 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     protected function afterConstructor(): void
     {
+        global $DIC;
+
+        $this->repo = Repository::getInstance();
+        $this->dic = $DIC;
+
         $this->storage_service = new StorageService(
             $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
-
-        global $DIC;
-
-        $this->repo = Repository::getInstance();
-        $this->dic = $DIC;
     }
 
     final public function getType(): string
@@ -217,220 +209,110 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $this->tpl->setContent($html);
     }
 
-    protected function initCreationForms(string $a_new_type): array
+    public function initCreateForm(string $a_new_type = null): StandardForm
     {
-        $forms = parent::initCreationForms($a_new_type);
-        return $forms;
+        return (new ObjectSettingsForm(null, true))->getForm();
     }
 
-    public function initCreateForm(string $a_new_type = null): ilPropertyFormGUI
+    public function uploadFile(): void
     {
-        $form = new ilPropertyFormGUI();
-        $form->setTarget("_top");
-        $form->setFormAction($this->ctrl->getFormAction($this, "save"));
-        $form->setTitle($this->txt("xono_new"));
-
-        // title
-        $ti = new ilTextInputGUI($this->lng->txt("title"), "title");
-        $ti->setSize(min(40, ilObject::TITLE_LENGTH));
-        $ti->setMaxLength(ilObject::TITLE_LENGTH);
-        $ti->setInfo($this->plugin->txt("object_create_title_info"));
-        $ti->setRequired(true);
-        $ti->setMaxLength(100);
-        $form->addItem($ti);
-
-        // description
-        $ta = new ilTextAreaInputGUI($this->lng->txt("description"), "desc");
-        $ta->setCols(40);
-        $ta->setRows(2);
-        $form->addItem($ta);
-
-        // file
-        $file_settings = new ilRadioGroupInputGUI(
-            $this->plugin->txt('form_input_file'),
-            self::POST_VAR_FILE_SETTING
-        );
-
-        // file upload option
-        $file_input = new ilFileInputGUI($this->plugin->txt('form_input_file'), self::POST_VAR_FILE);
-        $file_input->setRequired(true);
-
-        $file_settings_upload_option = new ilRadioOption($this->plugin->txt('form_input_upload_file'), self::OPTION_SETTING_UPLOAD);
-        $file_settings_upload_option->addSubItem($file_input);
-        $file_settings->addOption($file_settings_upload_option);
-
-        // file create option
-        $file_creation_settings = new ilRadioGroupInputGUI(
-            "",
-            self::POST_VAR_FILE_CREATION_SETTING
-        );
-        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_text'), "text"));
-        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_table'), "table"));
-        $file_creation_settings->addOption(new ilRadioOption($this->plugin->txt('form_input_create_file_presentation'), "presentation"));
-        $file_creation_settings->setRequired(true);
-
-        $file_settings_create_option = new ilRadioOption($this->plugin->txt('form_input_create_file'), self::OPTION_SETTING_CREATE);
-        $file_settings_create_option->addSubItem($file_creation_settings);
-        $file_settings->addOption($file_settings_create_option);
-
-        // file template option
-        $text_templates = $this->storage_service->fetchTemplates("text");
-        $table_templates = $this->storage_service->fetchTemplates("table");
-        $presentation_templates = $this->storage_service->fetchTemplates("presentation");
-        $templates = array_merge($text_templates, $table_templates, $presentation_templates);
-
-        $template_settings = new ilRadioGroupInputGUI(
-            "",
-            self::POST_VAR_FILE_TEMPLATE_SETTING
-        );
-
-        foreach ($templates as $template) {
-            $type_translation = sprintf("form_template_%s", $template->getType());
-            $description = empty($template->getDescription()) ? "-" : $template->getDescription();
-            $option = new ilRadioOption(sprintf("%s %s", $template->getTitle(), $this->plugin->txt($type_translation)), $template->getPath());
-            if (!empty($template->getDescription())) {
-                $option->setInfo($template->getDescription());
-            }
-            $template_settings->addOption($option);
+        if (!$this->dic->upload()->hasBeenProcessed()) {
+            $this->dic->upload()->process();
         }
+        $results = $this->dic->upload()->getResults();
+        /** @var UploadResult $result */
+        $result = end($results);
 
-        $template_settings->setRequired(true);
+        $tempName = "";
+        if ($result instanceof UploadResult && $result->isOK()) {
+            $status = HandlerResult::STATUS_OK;
+            $message = 'Upload ok';
+            $uuid = new UUID();
 
-        $file_settings_template_option = new ilRadioOption($this->plugin->txt('form_input_template'), self::OPTION_SETTING_TEMPLATE);
-        $file_settings_template_option->addSubItem($template_settings);
+            $tmpFilesystem = $this->dic->filesystem()->temp();
+            $tempName = $uuid->asString() . "/" . ilFileUtils::getValidFilename($result->getName());
+            $tmpFilesystem->createDir($uuid->asString());
 
-        if (count($templates) >= 1) {
-            $file_settings->addOption($file_settings_template_option);
+            $tmpFilesystem->put(
+                $tempName,
+                file_get_contents($result->getPath())
+            );
         } else {
-            $file_settings->setInfo($this->plugin->txt('form_input_template_no_templates'));
+            $status = HandlerResult::STATUS_FAILED;
+            $message = $result->getStatus()->getMessage();
         }
 
-        $file_settings->setValue("ilias");
-        $file_settings->setRequired(true);
-        $form->addItem($file_settings);
-
-        // online checkbox
-        $online = new ilCheckboxInputGUI(
-            $this->plugin->txt('settings_online'),
-            self::POST_VAR_ONLINE
+        $responseData =  new BasicHandlerResult(
+            UploadHandlerInterface::DEFAULT_FILE_ID_PARAMETER,
+            $status,
+            $tempName,
+            $message
         );
-        $form->addItem($online);
+        $content = json_encode($responseData, JSON_THROW_ON_ERROR);
 
-        // Users are allowed to edit checkbox
-        $edit = new ilCheckboxInputGUI($this->plugin->txt(
-            'settings_allow_edit'
-        ), self::POST_VAR_EDIT);
-        $edit->setInfo($this->plugin->txt(
-            'settings_allow_edit_info'
-        ));
-        $edit->setChecked(true);
-
-        $lim_period = new ilCheckboxInputGUI($this->plugin->txt(
-            'settings_allow_edit_limited'
-        ), self::POST_VAR_EDIT_LIMITED);
-
-        $start_date_time = new ilDateTimeInputGUI($this->plugin->txt(
-            'settings_allow_edit_limited_start'
-        ), self::POST_VAR_EDIT_LIMITED_START);
-        $start_date_time->setShowTime(true);
-        $start_date_time->setRequired(true);
-        $end_date_time = new ilDateTimeInputGUI($this->plugin->txt(
-            'settings_allow_edit_limited_end'
-        ), self::POST_VAR_EDIT_LIMITED_END);
-        $end_date_time->setShowTime(true);
-        $end_date_time->setRequired(true);
-
-        $lim_period->addSubItem($start_date_time);
-        $lim_period->addSubItem($end_date_time);
-
-        $edit->addSubItem($lim_period);
-        $form->addItem($edit);
-
-        // Settings for opening a file
-        $opening_setting = new ilRadioGroupInputGUI(
-            $this->plugin->txt("object_form_open_setting"),
-            self::POST_VAR_OPEN_SETTING
-        );
-        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
-            "settings_open_setting_editor"
-        ), "editor"));
-        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
-            "settings_open_setting_ilias"
-        ), "ilias"));
-        $opening_setting->addOption(new ilRadioOption($this->plugin->txt(
-            "settings_open_setting_download"
-        ), "download"));
-        $opening_setting->setValue("editor");
-        $opening_setting->setRequired(true);
-        $form->addItem($opening_setting);
-
-        // Buttons
-        $form->addCommandButton("save", $this->txt("xono_add"));
-        $form->addCommandButton("cancel", $this->lng->txt("cancel"));
-
-        return $form;
+        $response = $this->dic->http()->response()->withBody(Streams::ofString($content));
+        $this->dic->http()->saveResponse($response);
+        $this->dic->http()->sendResponse();
+        $this->dic->http()->close();
     }
 
     /**
-     * @param ilObject|ilObjOnlyOffice $a_new_object
      * @throws IllegalStateException
      * @throws IOException
      * @throws ilDateTimeException
      */
-    public function afterSave(/*ilObjOnlyOffice*/ ilObject $a_new_object): void
+    public function afterSave(ilObjOnlyOffice|ilObject $a_new_object): void
     {
         global $DIC;
-        $httpWrapper = $DIC->http()->wrapper();
 
-        $form = $this->initCreateForm($a_new_object->getType());
-        $form->checkInput();
+        $form = (new ObjectSettingsForm())->getForm()->withRequest($this->request);
 
-        $fileSetting = $httpWrapper->post()->retrieve(
-            self::POST_VAR_FILE_SETTING,
-            $this->refinery->kindlyTo()->string()
-        );
+        /** @var array{
+         *     title_and_description: ilObjectPropertyTitleAndDescription,
+         *     file_setting: FileSettingProperty,
+         *     online: bool,
+         *     allow_edit: AllowEditProperty,
+         *     open_setting: OpenSetting
+         * } $formData
+         */
+        $formData = $form->getData();
+
+        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        $titleAndDescription = $formData["title_and_description"];
+        $title = $titleAndDescription->getTitle();
+
+        /** @var FileSettingProperty $fileSetting */
+        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
 
         // Handle file upload, otherwise create new document
-        if ($fileSetting === self::OPTION_SETTING_UPLOAD) {
-            if (!$this->dic->upload()->hasBeenProcessed()) {
-                $this->dic->upload()->process();
+        if ($fileSetting->getFileMode() === FileMode::UPLOAD) {
+            $uploadResult = $fileSetting->getUploadResult();
+            if ($uploadResult) {
+                if (!$this->dic->upload()->hasBeenProcessed()) {
+                    $this->dic->upload()->process();
+                }
+                $this->storage_service->createNewFileFromUpload(
+                    $uploadResult,
+                    $a_new_object->getId()
+                );
+
+                if ($title === "") {
+                    $a_new_object->setTitle(pathinfo($uploadResult->getName(), PATHINFO_FILENAME));
+                    $a_new_object->update();
+                }
             }
-            $results = $this->dic->upload()->getResults();
-            $result = end($results);
-            $this->storage_service->createNewFileFromUpload($result, $a_new_object->getId());
+        } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
+            $fileCreationType = $fileSetting->getFileCreationType();
 
-            $title = $a_new_object->getTitle();
-            if ($title === "") {
-                $a_new_object->setTitle(explode(".", $result->getName())[0]);
-                $a_new_object->update();
-            }
-        } elseif ($fileSetting === self::OPTION_SETTING_CREATE) {
-            $title = $httpWrapper->post()->retrieve(
-                "title",
-                $this->refinery->kindlyTo()->string()
-            );
-
-            $sanitized_file_name = FileSanitizer::sanitizeFileName($title);
-
-            $template = $this->storage_service->createNewFileFromDraft(
-                $sanitized_file_name,
+             $this->storage_service->createNewFileFromDraft(
+                FileSanitizer::sanitizeFileName($title),
+                $fileCreationType->toDocumentType(),
                 $a_new_object->getId()
             );
-        } elseif ($fileSetting === self::OPTION_SETTING_TEMPLATE) {
-            $title = $httpWrapper->post()->retrieve(
-                "title",
-                $this->refinery->kindlyTo()->string()
-            );
-            $sanitized_file_name = FileSanitizer::sanitizeFileName($title);
-
-            $templatePath = $httpWrapper->post()->retrieve(
-                self::POST_VAR_FILE_TEMPLATE_SETTING,
-                $this->refinery->kindlyTo()->string()
-            );
-
+        } elseif ($fileSetting->getFileMode() === FileMode::TEMPLATE) {
             $this->storage_service->createNewFileFromTemplate(
-                $sanitized_file_name,
-                $templatePath,
+                FileSanitizer::sanitizeFileName($title),
+                $fileSetting->getFileTemplate(),
                 $a_new_object->getId()
             );
         }
@@ -438,32 +320,30 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         parent::afterSave($a_new_object);
     }
 
-    protected function getSettingsForm(): ObjectSettingsFormGUI
-    {
-        $form = new ObjectSettingsFormGUI($this, $this->object);
-        return $form;
-    }
-
-    protected function settings(): void
+    protected function settings(?StandardForm $form = null): void
     {
         $this->dic->tabs()->activateTab(self::TAB_SETTINGS);
 
-        $form = $this->getSettingsForm();
+        if (!$form) {
+            $form = (new ObjectSettingsForm($this->object->object_settings))->getForm();
+        }
 
-        $this->tpl->setContent($form->getHTML());
+        $this->tpl->setContent($this->ui_renderer->render($form));
     }
 
     protected function settingsStore(): void
     {
         $this->dic->tabs()->activateTab(self::TAB_SETTINGS);
 
-        $form = $this->getSettingsForm();
+        /** @var ?StandardForm $form */
+        $form = null;
+        $this->object->doUpdate($form);
 
-        if (!$form->storeForm()) {
-            $this->tpl->setContent($form->getHTML());
-
+        if ($form->getError()) {
+            $this->settings($form);
             return;
         }
+
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("saved"), true);
 
         $this->dic->ctrl()->redirect($this, self::CMD_SETTINGS);
@@ -475,10 +355,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             self::TAB_SHOW_CONTENTS,
             $this->plugin->txt("object_show_contents"),
             $this->dic->ctrl()
-                                                                                      ->getLinkTarget(
-                                                                                          $this,
-                                                                                          self::CMD_SHOW_VERSIONS
-                                                                                      )
+                ->getLinkTarget(
+                    $this,
+                    self::CMD_SHOW_VERSIONS
+                )
         );
         $this->dic->tabs()->addTab(
             self::TAB_INFO,
@@ -491,10 +371,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 self::TAB_SETTINGS,
                 $this->plugin->txt("settings_settings"),
                 $this->dic->ctrl()
-                                                                                       ->getLinkTarget(
-                                                                                           $this,
-                                                                                           self::CMD_SETTINGS
-                                                                                       )
+                    ->getLinkTarget(
+                        $this,
+                        self::CMD_SETTINGS
+                    )
             );
         }
 
@@ -503,10 +383,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 self::TAB_PERMISSIONS,
                 $this->lng->txt(self::TAB_PERMISSIONS),
                 $this->dic->ctrl()
-                                                                                     ->getLinkTargetByClass([
-                                                                                         self::class,
-                                                                                         ilPermissionGUI::class
-                                                                                     ], self::CMD_PERMISSIONS)
+                    ->getLinkTargetByClass([
+                        self::class,
+                        ilPermissionGUI::class
+                    ], self::CMD_PERMISSIONS)
             );
         }
 

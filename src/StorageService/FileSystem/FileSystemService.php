@@ -5,6 +5,7 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService\FileSystem;
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\FileNotFoundException;
 use ILIAS\Filesystem\Exception\IOException;
+use ILIAS\Filesystem\Stream\Stream;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Location;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
@@ -36,13 +37,11 @@ class FileSystemService
         $file_name .= '.' . $ext;
 
         $path = $this->createAndGetPath($obj_id, $file_id);
-        $this->dic->upload()->moveOneFileTo(
-            $upload_result,
-            $path,
-            Location::WEB,
-            $file_name
-        );
-        $path .= $file_name;
+
+        $filesystem = $this->dic->filesystem()->web();
+        $path = rtrim($path, "/") . '/' . ($file_name === "" ? $upload_result->getName() : $file_name);
+        $stream = fopen($upload_result->getPath(), 'rb');
+        $filesystem->writeStream($path, new Stream($stream));
         return $path;
     }
 

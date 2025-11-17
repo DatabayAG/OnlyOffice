@@ -60,12 +60,12 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromDraft(string $title, int $obj_id): File
+    public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
     {
         $new_file_id = new UUID();
         $path = $this->createFileDraft(
             $title,
-            ilObjOnlyOfficeGUI::FILE_EXTENSIONS[$_POST[ilObjOnlyOfficeGUI::POST_VAR_FILE_CREATION_SETTING]],
+            $extension,
             $obj_id,
             $new_file_id->asString()
         );
