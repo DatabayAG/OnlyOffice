@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Utils;
 
 use ilDateTime;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ilTimeZone;
 
@@ -39,6 +40,7 @@ class DateFetcher
     {
         global $DIC;
 
+        /** @var ObjectSettings $object_settings */
         $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         $converted_start_time = new ilDateTime($object_settings->getStartTime(), IL_CAL_DATETIME, ilTimeZone::UTC);
         $converted_start_time = $converted_start_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
@@ -49,6 +51,7 @@ class DateFetcher
 
     public static function isWithinPotentialTimeLimit($obj_id): bool
     {
+        /** @var ObjectSettings $object_settings */
         $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         $withinPotentialTimeLimit = true;
         if ($object_settings->isLimitedPeriod()) {

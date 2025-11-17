@@ -22,8 +22,10 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
 use ilDateTime;
 use ILIAS\Data\UUID\Uuid;
+use ilObjUser;
+use JsonSerializable;
 
-class FileVersion implements \JsonSerializable
+class FileVersion implements JsonSerializable
 {
     public const FIRST_VERSION = 1;
     protected int $version;
@@ -93,8 +95,7 @@ class FileVersion implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        global $DIC;
-        $user = new \ilObjUser($this->user_id);
+        $user = new ilObjUser($this->user_id);
         return [
             'version' => $this->version,
             'createdAt' => $this->created_at->get(1),

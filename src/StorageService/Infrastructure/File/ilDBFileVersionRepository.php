@@ -30,7 +30,6 @@ use ILIAS\Data\UUID\Uuid;
 class ilDBFileVersionRepository implements FileVersionRepository
 {
     /**
-     * @throws arException
      * @throws ilDateTimeException
      */
     public function create(
@@ -81,7 +80,6 @@ class ilDBFileVersionRepository implements FileVersionRepository
         $all_file_version_ar = FileVersionAR::where(['file_uuid' => $file_uuid->toString()])
                                             ->orderBy('version', 'desc')
                                             ->get();
-        $length = count($all_file_version_ar);
         $result = [];
         foreach ($all_file_version_ar as $fileVersionAr) {
             $fileVersion = $this->buildFileVersionFromAR($fileVersionAr);

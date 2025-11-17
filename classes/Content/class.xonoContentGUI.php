@@ -37,7 +37,7 @@ class xonoContentGUI extends xonoAbstractGUI
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
-    private $tpl;
+    private ilGlobalTemplateInterface $tpl;
 
     public const CMD_STANDARD = 'showVersions';
     public const CMD_SHOW_VERSIONS = 'showVersions';
@@ -65,7 +65,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $this->afterConstructor();
     }
 
-    protected function afterConstructor()/*: void*/
+    protected function afterConstructor(): void/*: void*/
     {
 
         $this->storage_service = new StorageService(
@@ -81,7 +81,7 @@ class xonoContentGUI extends xonoAbstractGUI
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
 
-    public function executeCommand()
+    public function executeCommand(): void
     {
         $this->dic->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
 
@@ -89,20 +89,18 @@ class xonoContentGUI extends xonoAbstractGUI
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 
-        switch (strtolower($next_class)) {
-            case strtolower(xonoEditorGUI::class):
-                $xono_editor = new xonoEditorGUI($this->dic, $this->plugin, $this->file_id);
-                $this->dic->ctrl()->forwardCommand($xono_editor);
-                break;
-            default:
-                switch ($cmd) {
-                    case self::CMD_EDIT:
-                        $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-                        break;
-                    default:
-                        $this->{$cmd}();
-                        break;
-                }
+        if (strtolower($next_class) === strtolower(xonoEditorGUI::class)) {
+            $xono_editor = new xonoEditorGUI($this->dic, $this->plugin, $this->file_id);
+            $this->dic->ctrl()->forwardCommand($xono_editor);
+        } else {
+            switch ($cmd) {
+                case self::CMD_EDIT:
+                    $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
+                    break;
+                default:
+                    $this->{$cmd}();
+                    break;
+            }
         }
     }
 
@@ -110,7 +108,7 @@ class xonoContentGUI extends xonoAbstractGUI
      * Fetches the information about all versions of a file from the database
      * Renders the GUI for content
      */
-    protected function showVersions()
+    protected function showVersions(): void
     {
         /** @var FileVersion[] $fileVersions */
         $fileVersions = $this->storage_service->getAllVersions($this->file_id);
@@ -166,7 +164,7 @@ class xonoContentGUI extends xonoAbstractGUI
     /**
      * Delivers a file version for download
      */
-    protected function downloadFileVersion()
+    protected function downloadFileVersion(): never
     {
         $requestedVersion = $this->httpWrapper->query()->retrieve(
             "version",
@@ -177,7 +175,7 @@ class xonoContentGUI extends xonoAbstractGUI
         );
 
         if ($requestedVersion === null) {
-            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+            $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
         /** @var FileVersion $version */
@@ -192,7 +190,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $file = $this->storage_service->getFile($this->file_id);
 
         if (!$fileVersion || !$file) {
-            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+            $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
 
         }
 
@@ -211,7 +209,7 @@ class xonoContentGUI extends xonoAbstractGUI
      * Determines the button name based on the object settings and RBAC
      * @return string
      */
-    protected function buttonName()
+    protected function buttonName(): string
     {
         //
         //todo if works place this to ilObjOnlyOfficeAccess
@@ -246,19 +244,17 @@ class xonoContentGUI extends xonoAbstractGUI
             $allowEdit = true;
         }
 
-        ////
-
         if ($allowEdit === true) {
             return $this->plugin->txt('xono_edit_button');
-        } else {
-            return $this->plugin->txt('xono_view_button');
         }
+
+        return $this->plugin->txt('xono_view_button');
     }
 
     /**
      * generates and returns the target URL for the button
      */
-    protected function buttonTarget()
+    protected function buttonTarget(): string
     {
         return $this->dic->ctrl()->getLinkTargetByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
     }

@@ -64,6 +64,7 @@ class StorageService
 
     /**
      * @throws IOException
+     * @throws ilDateTimeException
      */
     public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): File
     {
@@ -104,7 +105,7 @@ class StorageService
 
     public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
     {
-        $new_file_id = $this->uuidFactory;
+        $new_file_id = $this->uuidFactory->uuid4();
         $extension = pathinfo($template_path, PATHINFO_EXTENSION);
 
         $path = $this->createFileFromTemplate(
@@ -120,8 +121,7 @@ class StorageService
 
         // Create & Return FileVersion object
         $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
-        $file = new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        return $file;
+        return new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
     }
 
     /**
@@ -169,8 +169,7 @@ class StorageService
         );
 
         // Return FileVersion object
-        $fileVersion = new FileVersion($version, $created_at, $editor_id, $path, $uuid);
-        return $fileVersion;
+        return new FileVersion($version, $created_at, $editor_id, $path, $uuid);
     }
 
     /**
@@ -202,7 +201,7 @@ class StorageService
         return $this->file_system_service->storeDraft($name, $extension, $obj_id, $new_file_id);
     }
 
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id)
+    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
     {
         return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
     }
@@ -306,8 +305,7 @@ class StorageService
 
     public function getChangeUrl(string $uuid, int $version): string
     {
-        $file_change = $this->file_change_repository->getChange($uuid, $version);
-        return $file_change->getChangesUrl();
+        return $this->file_change_repository->getChange($uuid, $version)->getChangesUrl();
 
     }
 
@@ -362,7 +360,7 @@ class StorageService
                 "id" => $this->dic->user()->getId(),
                 "name" => $this->dic->user()->getFullname()
             ]
-        ]);
+        ], JSON_THROW_ON_ERROR);
         $this->file_change_repository->create(
             $new_file_id,
             $version,

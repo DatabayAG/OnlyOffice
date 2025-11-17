@@ -123,7 +123,6 @@ class ilObjOnlyOffice extends ilObjectPlugin
     }
 
     /**
-     * @throws ilDateTimeException
      */
     public function doCreate(bool $clone_mode = false): void
     {
@@ -153,12 +152,12 @@ class ilObjOnlyOffice extends ilObjectPlugin
         /** @var OpenSetting $openSetting */
         $openSetting = $formData[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
 
+        $uploadResult = $fileSetting->getUploadResult();
         if (
             $fileSetting->getFileMode() === FileMode::UPLOAD
             && $title === ""
-            && $fileSetting->getUploadResult()
+            && $uploadResult
         ) {
-            $uploadResult = $fileSetting->getUploadResult();
             $title = pathinfo($uploadResult->getName(), PATHINFO_FILENAME);
         }
 
@@ -188,11 +187,11 @@ class ilObjOnlyOffice extends ilObjectPlugin
     }
 
     /**
-     * @throws ilDateTimeException
      */
     public function doUpdate(?StandardForm &$form = null): void
     {
         if ($form === null) {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $form = (new ObjectSettingsForm($this->object_settings))
                 ->getForm()
                 ->withRequest($this->dic->http()->request());
@@ -245,9 +244,8 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     public function doDelete(): void
     {
-        if ($this->object_settings !== null) {
-            $this->repo->objectSettings()->deleteObjectSettings($this->object_settings);
-        }
+        $this->repo->objectSettings()->deleteObjectSettings($this->object_settings);
+
         $storage = new StorageService(
             $this->dic,
             new ilDBFileVersionRepository(),
@@ -258,6 +256,9 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     }
 
+    /**
+     * @param ilObjOnlyOffice $new_obj
+     */
     protected function doCloneObject(
         $new_obj,
         int $a_target_id,

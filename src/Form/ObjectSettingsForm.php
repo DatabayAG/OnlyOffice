@@ -59,7 +59,6 @@ class ObjectSettingsForm
     public const POST_VAR_EDIT_LIMITED_END = 'end_time';
     public const POST_VAR_CREATE = 'createFrom';
 
-    private WrapperFactory $httpWrapper;
     private ilOnlyOfficePlugin $plugin;
     private Container $dic;
     private Factory $uiFactory;
@@ -96,8 +95,6 @@ class ObjectSettingsForm
 
     private function buildForm(?ObjectSettings $objectSettings, bool $newObject): StandardForm
     {
-        $inputField = $this->uiFactory->input()->field();
-
         // file template option
         $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
         $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);

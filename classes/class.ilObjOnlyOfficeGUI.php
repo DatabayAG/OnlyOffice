@@ -77,9 +77,9 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
     /**
-     * @var ilOnlyOfficePlugin|ilPlugin|null
+     * @var ilPlugin|ilOnlyOfficePlugin|null
      */
-    protected ?ilPlugin $plugin = null;
+    protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
     private Repository $repo;
     private Container $dic;
     private UUIDFactory $uuidFactory;
@@ -224,7 +224,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $this->tpl->setContent($html);
     }
 
-    public function initCreateForm(string $a_new_type = null): StandardForm
+    public function initCreateForm(string $new_type = null): StandardForm
     {
         return (new ObjectSettingsForm(null, true))->getForm();
     }
@@ -274,12 +274,9 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     /**
      * @throws IllegalStateException
      * @throws IOException
-     * @throws ilDateTimeException
      */
-    public function afterSave(ilObjOnlyOffice|ilObject $a_new_object): void
+    public function afterSave(ilObjOnlyOffice|ilObject $new_object): void
     {
-        global $DIC;
-
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->request);
 
         /** @var array{
@@ -308,12 +305,12 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 }
                 $this->storage_service->createNewFileFromUpload(
                     $uploadResult,
-                    $a_new_object->getId()
+                    $new_object->getId()
                 );
 
                 if ($title === "") {
-                    $a_new_object->setTitle(pathinfo($uploadResult->getName(), PATHINFO_FILENAME));
-                    $a_new_object->update();
+                    $new_object->setTitle(pathinfo($uploadResult->getName(), PATHINFO_FILENAME));
+                    $new_object->update();
                 }
             }
         } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
@@ -322,17 +319,17 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $this->storage_service->createNewFileFromDraft(
                 FileSanitizer::sanitizeFileName($title),
                 $fileCreationType->toDocumentType(),
-                $a_new_object->getId()
+                $new_object->getId()
             );
         } elseif ($fileSetting->getFileMode() === FileMode::TEMPLATE) {
             $this->storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
                 $fileSetting->getFileTemplate(),
-                $a_new_object->getId()
+                $new_object->getId()
             );
         }
 
-        parent::afterSave($a_new_object);
+        parent::afterSave($new_object);
     }
 
     protected function settings(?StandardForm $form = null): void

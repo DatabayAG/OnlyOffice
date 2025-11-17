@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\CryptoService;
 
+use ilFileUtils;
 use ilWACSignedPath;
 use ilWebAccessChecker;
 use ilFileDelivery;
@@ -32,7 +33,7 @@ class WebAccessService
     public static function getWACUrl(string $url): string
     {
         ilWACSignedPath::setTokenMaxLifetimeInSeconds(ilWACSignedPath::MAX_LIFETIME);
-        $file_path = ilWACSignedPath::signFile(\ilFileUtils::getWebspaceDir() . $url);
+        $file_path = ilWACSignedPath::signFile(ilFileUtils::getWebspaceDir() . $url);
         $file_path .= '&' . ilWebAccessChecker::DISPOSITION . '=' . ilFileDelivery::DISP_ATTACHMENT;
         return $file_path;
 

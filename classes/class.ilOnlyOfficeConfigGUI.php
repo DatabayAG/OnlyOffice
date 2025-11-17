@@ -24,6 +24,7 @@ use ILIAS\DI\Container;
 use ILIAS\FileUpload\DTO\ProcessingStatus;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
@@ -142,7 +143,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $form->setValuesByArray([
                 PluginConfigForm::KEY_ONLYOFFICE_URL => $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL),
                 PluginConfigForm::KEY_ONLYOFFICE_SECRET => $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET),
-                PluginConfigForm::KEY_NUM_VERSIONS => (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, 10),
+                PluginConfigForm::KEY_NUM_VERSIONS => (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, "10"),
             ], true);
         }
 
@@ -163,9 +164,9 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $tpl = $this->plugin->getTemplate("html/tpl.config_create_template.html");
 
-        $text_templates = $this->storage_service->fetchTemplates("text");
-        $table_templates = $this->storage_service->fetchTemplates("table");
-        $presentation_templates = $this->storage_service->fetchTemplates("presentation");
+        $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
+        $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);
+        $presentation_templates = $this->storage_service->fetchTemplates(FileCreationType::PRESENTATION);
         $templates = array_merge($text_templates, $table_templates, $presentation_templates);
 
         if (count($templates) >= 1) {
@@ -405,8 +406,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             // Return if file extension not whitelisted by ILIAS instance
             if (!ilFileUtils::getValidFilename($result->getName())) {
                 // Fix bug where previous title and name don't get saved into the form action
-                $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
-                $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
+                $adjustedUrl = str_replace(
+                    ["prevTitle=", "prevExtension="],
+                    ["prevTitle=" . urlencode($prevTitle), "prevExtension=" . urlencode($prevExtension)],
+                    $form->getFormAction()
+                );
                 $form->setFormAction($adjustedUrl);
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_invalid_extension"), true);
                 $template = $this->storage_service->fetchTemplate($prevTitle, $prevExtension);
@@ -423,8 +427,11 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             // Return if file extension not recognized by OnlyOffice
             if (empty($path)) {
                 // Fix bug where previous title and name don't get saved into the form action
-                $adjustedUrl = str_replace("prevTitle=", "prevTitle=" . urlencode($prevTitle), $form->getFormAction());
-                $adjustedUrl = str_replace("prevExtension=", "prevExtension=" . urlencode($prevExtension), $adjustedUrl);
+                $adjustedUrl = str_replace(
+                    ["prevTitle=", "prevExtension="],
+                    ["prevTitle=" . urlencode($prevTitle), "prevExtension=" . urlencode($prevExtension)],
+                    $form->getFormAction()
+                );
                 $form->setFormAction($adjustedUrl);
 
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
@@ -439,8 +446,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 return;
             }
 
-            $success = $this->storage_service->deleteFileTemplate($target, $prevExtension);
-            $path = $this->storage_service->createFileTemplate($result, $target, $description);
+            $this->storage_service->deleteFileTemplate($target, $prevExtension);
+            $this->storage_service->createFileTemplate($result, $target, $description);
         }
 
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_edited"), true);

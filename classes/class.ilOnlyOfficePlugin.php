@@ -49,7 +49,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
             /** @var $component_factory ilComponentFactory */
             $component_factory = $DIC['component.factory'];
             /** @var $plugin ilOnlyOfficePlugin */
-            $plugin = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+            $plugin = $component_factory->getPlugin(self::PLUGIN_ID);
 
             static::$instance = $plugin;
         }
@@ -90,7 +90,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
         $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
-        ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);
+        ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
 
         return parent::beforeUninstallCustom();
     }

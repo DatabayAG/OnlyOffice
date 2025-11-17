@@ -32,10 +32,9 @@ class JwtService
             "alg" => "HS256",
             "typ" => "JWT"
         ];
-        $payload_string = json_encode($payload);
-        $payload_string = str_replace('"#!!', '"', $payload_string);
-        $payload_string = str_replace('!!#"', '"', $payload_string);
-        $encHeader = self::base64UrlEncode(json_encode($header));
+        $payload_string = json_encode($payload, JSON_THROW_ON_ERROR);
+        $payload_string = str_replace(['"#!!', '!!#"'], '"', $payload_string);
+        $encHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
         $encPayload = self::base64UrlEncode($payload_string);
         $hash = self::base64UrlEncode(self::calculateHash($encHeader, $encPayload, $key));
 
@@ -46,13 +45,13 @@ class JwtService
     {
 
         $split = explode(".", $token);
-        if (count($split) != 3) {
+        if (count($split) !== 3) {
             return "";
         }
 
         $hash = self::base64UrlEncode(self::calculateHash($split[0], $split[1], $key));
 
-        if (strcmp($hash, $split[2]) != 0) {
+        if (strcmp($hash, $split[2]) !== 0) {
             return "";
         }
         return self::base64UrlDecode($split[1]);
@@ -65,18 +64,18 @@ class JwtService
 
     protected static function base64UrlEncode($str): string
     {
-        return str_replace("/", "_", str_replace("+", "-", trim(base64_encode($str), "=")));
+        return str_replace(["+", "/"], ["-", "_"], trim(base64_encode($str), "="));
     }
 
     protected static function base64UrlDecode($payload): string
     {
-        $b64 = str_replace("_", "/", str_replace("-", "+", $payload));
+        $b64 = str_replace(["-", "_"], ["+", "/"], $payload);
         switch (strlen($b64) % 4) {
             case 2:
-                $b64 = $b64 . "==";
+                $b64 .= "==";
                 break;
             case 3:
-                $b64 = $b64 . "=";
+                $b64 .= "=";
                 break;
         }
         return base64_decode($b64);

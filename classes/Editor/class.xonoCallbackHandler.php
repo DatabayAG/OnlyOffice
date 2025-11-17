@@ -41,8 +41,8 @@ class xonoCallbackHandler
     protected Uuid $uuid;
     protected int $file_id;
     protected int $editor_id;
-    protected $file_extension;
-    protected $changes_object;
+    protected string $file_extension;
+    protected string $changes_object;
     protected string $serverVersion;
     protected string $change_data;
     protected string $change_extension;
@@ -66,7 +66,7 @@ class xonoCallbackHandler
         $this->editor_id = $data["users"][0];
         $this->serverVersion = $data["history"]["serverVersion"];
         $this->changeUrl = $data["changesurl"];
-        $this->changes_object = json_encode($data["history"]["changes"]);
+        $this->changes_object = json_encode($data["history"]["changes"], JSON_THROW_ON_ERROR);
         $this->file_extension = pathinfo($this->fileUrl, PATHINFO_EXTENSION);
         $this->change_extension = pathinfo($this->changeUrl, PATHINFO_EXTENSION);
         $this->fetchData();
@@ -105,7 +105,7 @@ class xonoCallbackHandler
                 $this->change_extension
             );
             return true;
-        } catch (Exception $e) {
+        } catch (ilDateTimeException) {
             return false;
         }
     }

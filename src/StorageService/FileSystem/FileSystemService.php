@@ -124,6 +124,7 @@ class FileSystemService
         $full_path = $path . $file_name;
 
         if ($this->dic->filesystem()->web()->has($full_path)) {
+            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $extension = pathinfo($full_path, PATHINFO_EXTENSION);
             $title = pathinfo($full_path, PATHINFO_FILENAME);
 
@@ -138,7 +139,7 @@ class FileSystemService
             try {
                 $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
                 $template->setDescription($description_stream->getContents());
-            } catch (FileNotFoundException $ex) {
+            } catch (FileNotFoundException) {
                 $template->setDescription("");
             }
 
@@ -213,10 +214,11 @@ class FileSystemService
         $new_file_name = $title . "." . $extension;
         $full_new_path = $path . $new_file_name;
 
-        if (!empty($title)) {
-            if ($this->dic->filesystem()->web()->has($full_old_path) && $full_old_path !== $full_new_path) {
-                $this->dic->filesystem()->web()->rename($full_old_path, $full_new_path);
-            }
+        if (
+            !empty($title)
+            && $this->dic->filesystem()->web()->has($full_old_path) && $full_old_path !== $full_new_path
+        ) {
+            $this->dic->filesystem()->web()->rename($full_old_path, $full_new_path);
         }
 
         if (!empty($description)) {
@@ -292,9 +294,8 @@ class FileSystemService
         $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
         $child_path = $this->createAndGetPath(
             $file_id,
-            $uuid,
-            false
-        ) . $parent_version->getVersion() . '.' . $extension;
+            $uuid
+            ) . $parent_version->getVersion() . '.' . $extension;
         ;
         $web = $this->dic->filesystem()->web();
         $web->copy($parent_path, $child_path);

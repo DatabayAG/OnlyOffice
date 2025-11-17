@@ -67,7 +67,7 @@ $file_versions = \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\Fil
 $table_to_update = \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::TABLE_NAME;
 foreach ($file_versions as $file_version) {
     $file_version->getCreatedAt()->increment(ilDateTime::HOUR, -2);
-    $file_uuid = $file_version->getFileUuid()->asString();
+    $file_uuid = $file_version->getFileUuid()->toString();
     $new_date_time = $file_version->getCreatedAt()->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC);
     $DIC->database()->manipulate(sprintf("UPDATE %s SET created_at = '%s' WHERE file_uuid = '%s'", $table_to_update, $new_date_time, $file_uuid));
 }

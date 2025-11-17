@@ -115,11 +115,11 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $props = [];
 
         if (ilObjOnlyOfficeAccess::_isOffline($this->obj_id)) {
-            array_push($props, [
+            $props[] = [
                 "alert" => true,
                 "property" => $this->plugin->txt("object_status"),
                 "value" => $this->plugin->txt("object_offline")
-            ]);
+            ];
         }
 
         $props[] = [
@@ -153,20 +153,6 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         }
 
         return $props;
-    }
-
-    public function insertCommands(
-        $a_use_asynch = false,
-        $a_get_asynch_commands = false,
-        $a_asynch_url = "",
-        $a_header_actions = false
-    ): string {
-        return parent::insertCommands(
-            $a_use_asynch,
-            $a_get_asynch_commands,
-            $a_asynch_url,
-            $a_header_actions
-        );
     }
 
     public function initType(): void

@@ -131,17 +131,16 @@ class ObjectSettings extends ActiveRecord
         }
     }
 
-    public function wakeUp(/*string*/ $field_name, $field_value)
+    /**
+     * @param string $field_name
+     */
+    public function wakeUp($field_name, $field_value): bool|int|null
     {
-        switch ($field_name) {
-            case "obj_id":
-                return intval($field_value);
-            case "is_online":
-            case "allow_edit":
-                return boolval($field_value);
-            default:
-                return null;
-        }
+        return match ($field_name) {
+            "obj_id" => (int) $field_value,
+            "is_online", "allow_edit" => (bool) $field_value,
+            default => null,
+        };
     }
 
     public function getObjId(): int

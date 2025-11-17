@@ -20,19 +20,23 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
+use ActiveRecord;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 
 interface FileRepository
 {
-    /**
-     * @return mixed
-     */
-    public function create(Uuid $file_uuid, int $obj_id, string $getName, string $file_type, string $mime_type): void;
+    public function create(
+        Uuid   $file_uuid,
+        int    $obj_id,
+        string $title,
+        string $file_type,
+        string $mime_type
+    ): void;
 
     public function getFile(int $obj_id): ?File;
 
-    public function getAR(int $file_id): \ActiveRecord;
+    public function getAR(int $file_id): ActiveRecord;
 
     public function getAllFiles();
 
