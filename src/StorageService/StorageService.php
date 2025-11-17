@@ -7,6 +7,7 @@ use ilDateTimeException;
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ilObjOnlyOfficeGUI;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
@@ -159,7 +160,7 @@ class StorageService
     public function createFileTemplate(UploadResult $upload_result, string $title, string $description): ?string
     {
         $extension = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
-        $type = File::determineDocType($extension, false);
+        $type = File::determineDocType($extension);
 
         // If file extension not supported/recongnized by OnlyOffice
         if (empty($type)) {
@@ -173,7 +174,7 @@ class StorageService
 
     public function deleteFileTemplate(string $target, string $extension): bool
     {
-        $type = File::determineDocType($extension, false);
+        $type = File::determineDocType($extension);
         return $this->file_system_service->deleteTemplate($target, $extension, $type);
     }
 
@@ -189,22 +190,21 @@ class StorageService
 
     public function modifyFileTemplate(string $prevTitle, string $prevExtension, string $title, string $description): bool
     {
-        $prevType = File::determineDocType($prevExtension, false);
+        $prevType = File::determineDocType($prevExtension);
         return $this->file_system_service->modifyTemplate($prevType, $prevTitle, $prevExtension, $title, $description);
     }
 
     /**
-     * @param string $type text, table or presentation
      * @return FileTemplate[]
      */
-    public function fetchTemplates(string $type): array
+    public function fetchTemplates(FileCreationType $type): array
     {
         return $this->file_system_service->fetchTemplates($type);
     }
 
     public function fetchTemplate(string $target, string $extension): FileTemplate
     {
-        $type = File::determineDocType($extension, false);
+        $type = File::determineDocType($extension);
         return $this->file_system_service->fetchTemplate($target, $extension, $type);
     }
 

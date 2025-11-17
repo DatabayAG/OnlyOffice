@@ -127,9 +127,9 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                             !$this->repo->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                         }
-                        $open_setting = $this->object->object_settings->getOpen();
-                        switch ($open_setting) {
-                            case "download":
+
+                        switch ($this->object->object_settings->getOpen()) {
+                            case OpenSetting::DOWNLOAD:
                                 $next_cmd = xonoContentGUI::CMD_DOWNLOAD;
                                 $file = $this->storage_service->getFile($this->obj_id);
                                 if (is_null($file)) {
@@ -154,7 +154,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                                     $file->getMimeType()
                                 );
                                 break;
-                            case "editor":
+                            case OpenSetting::EDITOR:
                                 $next_cmd = xonoContentGUI::CMD_EDIT;
                                 break;
                             default: // "ilias" / "0"

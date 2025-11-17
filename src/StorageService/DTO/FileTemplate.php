@@ -2,13 +2,15 @@
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+
 class FileTemplate
 {
     protected string $title;
     protected string $description;
     protected string $extension;
     protected string $path;
-    protected string $type;
+    protected FileCreationType $type;
 
     public function getTitle(): string
     {
@@ -50,12 +52,12 @@ class FileTemplate
         $this->path = $path;
     }
 
-    public function getType(): string
+    public function getType(): FileCreationType
     {
         return $this->type;
     }
 
-    public function setType(string $type): void
+    public function setType(FileCreationType $type): void
     {
         $this->type = $type;
     }

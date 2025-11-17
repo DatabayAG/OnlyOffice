@@ -138,7 +138,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $extension = pathinfo($fileVersion->getUrl(), PATHINFO_EXTENSION);
 
         // general config
-        $as_array['documentType'] = File::determineDocType($extension);
+        $as_array['documentType'] = File::determineDocType($extension)->getEditorType();
 
         // document config
         $document = []; // SubArray "document"

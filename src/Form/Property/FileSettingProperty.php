@@ -110,7 +110,7 @@ class FileSettingProperty implements ilObjectProperty
 
         $templateRadioOption = $field_factory->radio("");
         foreach ($this->templates as $template) {
-            $type_translation = sprintf("form_template_%s", $template->getType());
+            $type_translation = sprintf("form_template_%s", $template->getType()->value);
             $templateRadioOption = $templateRadioOption->withOption(
                 $template->getPath(),
                 sprintf("%s %s", $template->getTitle(), $this->plugin->txt($type_translation)),
@@ -134,9 +134,9 @@ class FileSettingProperty implements ilObjectProperty
                     ObjectSettingsForm::POST_VAR_FILE_CREATION_SETTING => $field_factory->radio(
                         "",
                     )->withRequired(true)
-                        ->withOption("text", $this->plugin->txt('form_input_create_file_text'))
-                        ->withOption("table", $this->plugin->txt('form_input_create_file_table'))
-                        ->withOption("presentation", $this->plugin->txt('form_input_create_file_presentation'))
+                        ->withOption(FileCreationType::TEXT->value, $this->plugin->txt('form_input_create_file_text'))
+                        ->withOption(FileCreationType::TABLE->value, $this->plugin->txt('form_input_create_file_table'))
+                        ->withOption(FileCreationType::PRESENTATION->value, $this->plugin->txt('form_input_create_file_presentation'))
                 ],
                 $this->plugin->txt('form_input_create_file')
             ),

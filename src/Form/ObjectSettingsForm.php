@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use ilCtrlInterface;
 use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\OpenSettingProperty;
@@ -79,9 +80,9 @@ class ObjectSettingsForm
         $inputField = $this->uiFactory->input()->field();
 
         // file template option
-        $text_templates = $this->storage_service->fetchTemplates("text");
-        $table_templates = $this->storage_service->fetchTemplates("table");
-        $presentation_templates = $this->storage_service->fetchTemplates("presentation");
+        $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
+        $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);
+        $presentation_templates = $this->storage_service->fetchTemplates(FileCreationType::PRESENTATION);
         $templates = array_merge($text_templates, $table_templates, $presentation_templates);
 
         $items = [

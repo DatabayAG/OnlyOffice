@@ -26,6 +26,7 @@ enum FileCreationType: string
 
     case TABLE = "table";
     case PRESENTATION = "presentation";
+    case NONE = "";
 
     public function toDocumentType(): string
     {
@@ -33,6 +34,15 @@ enum FileCreationType: string
             self::TEXT => "docx",
             self::TABLE => "xlsx",
             self::PRESENTATION => "pptx",
+        };
+    }
+
+    public function getEditorType(): string
+    {
+        return match ($this) {
+            self::TEXT => "word",
+            self::TABLE => "cell",
+            self::PRESENTATION => "slide",
         };
     }
 }

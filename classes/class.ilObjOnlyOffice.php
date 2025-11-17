@@ -160,7 +160,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setDescription($description);
         $this->object_settings->setAllowEdit($allowEdit->isAllowEdit());
         $this->object_settings->setOnline((bool) $formData[ObjectSettingsForm::POST_VAR_ONLINE]);
-        $this->object_settings->setOpen($openSetting->value);
+        $this->object_settings->setOpen($openSetting);
         $this->object_settings->setLimitedPeriod($allowEdit->isLimitedPeriod());
         $this->repo->objectSettings()->storeObjectSettings($this->object_settings);
     }
@@ -215,7 +215,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings->setTitle($title);
         $this->object_settings->setDescription($titleAndDescription->getDescription());
         $this->object_settings->setAllowEdit($allowEdit->isAllowEdit());
-        $this->object_settings->setOpen($openSetting->value);
+        $this->object_settings->setOpen($openSetting);
         $this->object_settings->setOnline((bool) $formData["online"]);
         $this->object_settings->setLimitedPeriod($allowEdit->isLimitedPeriod());
         $this->repo->objectSettings()->storeObjectSettings($this->object_settings);
@@ -267,16 +267,6 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public function setOnline(bool $is_online = true): void
     {
         $this->object_settings->setOnline($is_online);
-    }
-
-    public function setOpen(string $open = 'ilias'): void
-    {
-        $this->object_settings->setOpen($open);
-    }
-
-    public function getOpen(): string
-    {
-        return $this->object_settings->getOpen();
     }
 
     public function isAllowedEdit(): bool

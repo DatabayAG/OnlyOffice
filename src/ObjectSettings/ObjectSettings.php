@@ -5,6 +5,7 @@ namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 use ilDateTime;
 use ActiveRecord;
 use arConnector;
+use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ilOnlyOfficePlugin;
 
 
@@ -59,7 +60,7 @@ class ObjectSettings extends ActiveRecord
      * @con_length     10
      * @con_is_notnull true
      */
-    protected string $open_setting = "ilias";
+    protected string $open_setting = OpenSetting::ILIAS->value;
 
     /**
      * @var bool
@@ -176,14 +177,14 @@ class ObjectSettings extends ActiveRecord
         $this->is_online = $is_online;
     }
 
-    public function getOpen(): string
+    public function getOpen(): OpenSetting
     {
-        return $this->open_setting;
+        return OpenSetting::from($this->open_setting);
     }
 
-    public function setOpen(string $open): void
+    public function setOpen(OpenSetting $openSetting): void
     {
-        $this->open_setting = $open;
+        $this->open_setting = $openSetting->value;
     }
 
     public function getStartTime(): ?string

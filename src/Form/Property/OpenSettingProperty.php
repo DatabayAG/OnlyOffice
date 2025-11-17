@@ -35,7 +35,7 @@ class OpenSettingProperty implements ilObjectProperty
     private ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly string $openMode = "editor"
+        private readonly OpenSetting $openMode = OpenSetting::EDITOR
     )
     {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
@@ -54,15 +54,15 @@ class OpenSettingProperty implements ilObjectProperty
         );
 
         return $field_factory->radio($this->plugin->txt("form_open_setting"))
-            ->withOption("editor", $this->plugin->txt("settings_open_setting_editor"))
-            ->withOption("ilias", $this->plugin->txt("settings_open_setting_ilias"))
-            ->withOption("download", $this->plugin->txt("settings_open_setting_download"))
+            ->withOption(OpenSetting::EDITOR->value, $this->plugin->txt("settings_open_setting_editor"))
+            ->withOption(OpenSetting::ILIAS->value, $this->plugin->txt("settings_open_setting_ilias"))
+            ->withOption(OpenSetting::DOWNLOAD->value, $this->plugin->txt("settings_open_setting_download"))
             ->withRequired(true)
             ->withAdditionalTransformation($trafo)
-            ->withValue($this->getOpenMode());
+            ->withValue($this->getOpenMode()->value);
     }
 
-    public function getOpenMode(): string
+    public function getOpenMode(): OpenSetting
     {
         return $this->openMode;
     }

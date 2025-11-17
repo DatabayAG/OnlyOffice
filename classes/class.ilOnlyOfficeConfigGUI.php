@@ -162,7 +162,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         foreach ($templates as $template) {
             $tpl->setCurrentBlock("entry");
             $tpl->setVariable('TITLE', $template->getTitle());
-            $tpl->setVariable('TYPE', $this->plugin->txt("form_input_create_file_" . $template->getType()));
+            $tpl->setVariable('TYPE', $this->plugin->txt("form_input_create_file_" . $template->getType()->value));
             $tpl->setVariable('DESCRIPTION', empty($template->getDescription()) ? "-" : $template->getDescription());
             $tpl->setVariable('EXTENSION', $template->getExtension());
             $ctrlFormat = "%s&ootarget=%s&ooextension=%s";

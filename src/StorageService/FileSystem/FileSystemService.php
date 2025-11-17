@@ -8,6 +8,7 @@ use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\Filesystem\Stream\Stream;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Location;
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Filesystem\Stream\Streams;
@@ -64,10 +65,10 @@ class FileSystemService
      * Store a template from the config form
      * @throws IOException
      */
-    public function storeTemplate(UploadResult $upload_result, string $type, string $title, string $description, string $extension): string
+    public function storeTemplate(UploadResult $upload_result, FileCreationType $type, string $title, string $description, string $extension): string
     {
         // Define path and create it if it does not exist
-        $path = self::BASE_TEMPLATE_PATH . $type . "/";
+        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
 
         if (!$this->dic->filesystem()->web()->hasDir($path)) {
             $this->dic->filesystem()->web()->createDir($path);
@@ -95,9 +96,9 @@ class FileSystemService
         return $full_path;
     }
 
-    public function fetchTemplate(string $target, string $extension, string $type): ?FileTemplate
+    public function fetchTemplate(string $target, string $extension, FileCreationType $type): ?FileTemplate
     {
-        $path = self::BASE_TEMPLATE_PATH . $type . "/";
+        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
         $file_name = $target . "." . $extension;
         $full_path = $path . $file_name;
 
@@ -125,9 +126,9 @@ class FileSystemService
         return null;
     }
 
-    public function fetchTemplates(string $type): array
+    public function fetchTemplates(FileCreationType $type): array
     {
-        $path = self::BASE_TEMPLATE_PATH . $type . "/";
+        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
         $converted_files = [];
 
         if ($this->dic->filesystem()->web()->hasDir($path)) {
@@ -165,9 +166,9 @@ class FileSystemService
         return $converted_files;
     }
 
-    public function deleteTemplate(string $target, string $extension, string $type): bool
+    public function deleteTemplate(string $target, string $extension, FileCreationType $type): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type . "/";
+        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
         $file_name = $target . "." . $extension;
         $full_path = $path . $file_name;
 
@@ -182,9 +183,9 @@ class FileSystemService
         return false;
     }
 
-    public function modifyTemplate(string $type, string $prevTitle, string $extension, string $title, string $description): bool
+    public function modifyTemplate(FileCreationType $type, string $prevTitle, string $extension, string $title, string $description): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type . "/";
+        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
         $old_file_name = $prevTitle . "." . $extension;
         $full_old_path = $path . $old_file_name;
 
@@ -319,10 +320,10 @@ class FileSystemService
     /**
      * @throws IOException
      */
-    private function generateTemplateDescription(string $description, string $type, string $title): void
+    private function generateTemplateDescription(string $description, FileCreationType $type, string $title): void
     {
         if (!empty($description)) {
-            $description_path = self::BASE_TEMPLATE_PATH . $type . "/descriptions/";
+            $description_path = self::BASE_TEMPLATE_PATH . $type->value . "/descriptions/";
 
             if (!$this->dic->filesystem()->web()->hasDir($description_path)) {
                 $this->dic->filesystem()->web()->createDir($description_path);
