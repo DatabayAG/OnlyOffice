@@ -151,7 +151,8 @@ class FileSettingProperty implements ilObjectProperty
             $this->templates === [] ? $this->plugin->txt('form_input_template_no_templates') : null
         )
             ->withRequired(true)
-            ->withAdditionalTransformation($trafo);
+            ->withAdditionalTransformation($trafo)
+            ->withValue($this->getFileMode()->value);
     }
 
     public function getFileMode(): FileMode

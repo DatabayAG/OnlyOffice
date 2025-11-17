@@ -35,7 +35,7 @@ class AllowEditProperty implements ilObjectProperty
     private ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly bool               $allowEdit = false,
+        private readonly bool               $allowEdit = true,
         private readonly bool               $limitedPeriod = false,
         private readonly ?DateTimeImmutable $startTime = null,
         private readonly ?DateTimeImmutable $endTime = null
