@@ -97,8 +97,9 @@ class ilObjOnlyOffice extends ilObjectPlugin
             && $allowEdit->getStartTime()->getTimestamp() >= $allowEdit->getEndTime()->getTimestamp()
         ) {
             $this->tpl->setOnScreenMessage('failure', $this->pl->txt("settings_time_greater_than"), true);
-            $this->dic->ctrl()->redirectByClass("ilRepositoryGUI");
-            return false;
+            $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "ref_id", 1);
+            $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, ilObjOnlyOfficeGUI::class], "create");            return false;
         }
         return parent::beforeCreate();
     }
