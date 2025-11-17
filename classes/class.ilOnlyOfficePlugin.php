@@ -103,4 +103,14 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     {
         return true;
     }
+
+    public static function _getIcon(string $a_type): string
+    {
+        // ILIAS Core plugin path fix (Mantis #45866)
+        return str_replace(
+            ILIAS_ABSOLUTE_PATH . "/public/",
+            "",
+            realpath(parent::_getIcon($a_type))
+        );
+    }
 }
