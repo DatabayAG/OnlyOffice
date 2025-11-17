@@ -15,7 +15,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-
     public const PLUGIN_ID = "xono";
     public const PLUGIN_NAME = "OnlyOffice";
     public const PLUGIN_CLASS_NAME = self::class;

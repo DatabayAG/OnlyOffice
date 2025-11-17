@@ -8,7 +8,6 @@ use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
-use ilObjOnlyOfficeGUI;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
@@ -23,7 +22,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
 
 class StorageService
 {
-
     protected Container $dic;
     protected FileVersionRepository $file_version_repository;
     protected FileSystemService $file_system_service;

@@ -18,7 +18,6 @@
 
 declare(strict_types=1);
 
-
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
 use DateTimeImmutable;
@@ -35,21 +34,19 @@ class AllowEditProperty implements ilObjectProperty
     private ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly bool               $allowEdit = true,
-        private readonly bool               $limitedPeriod = false,
+        private readonly bool $allowEdit = true,
+        private readonly bool $limitedPeriod = false,
         private readonly ?DateTimeImmutable $startTime = null,
         private readonly ?DateTimeImmutable $endTime = null
-    )
-    {
+    ) {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function toForm(
-        ilLanguage   $language,
+        ilLanguage $language,
         FieldFactory $field_factory,
-        Refinery     $refinery
-    ): FormInput
-    {
+        Refinery $refinery
+    ): FormInput {
         $trafo = $refinery->custom()->transformation(
             function ($vs): ilObjectProperty {
                 $editLimited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
@@ -74,7 +71,8 @@ class AllowEditProperty implements ilObjectProperty
                 ], $this->plugin->txt('settings_allow_edit_limited'))
             ], $this->plugin->txt('settings_allow_edit_limited'))
         ], $this->plugin->txt('settings_allow_edit'), $this->plugin->txt('settings_allow_edit_info'))
-            ->withAdditionalTransformation($trafo)->withValue($this->isAllowEdit()
+            ->withAdditionalTransformation($trafo)->withValue(
+                $this->isAllowEdit()
                 ? [
                     ObjectSettingsForm::POST_VAR_EDIT => [
                         ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $this->isLimitedPeriod()

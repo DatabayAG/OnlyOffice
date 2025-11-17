@@ -14,7 +14,6 @@ use ilTextInputGUI;
 
 class TemplateForm extends ilPropertyFormGUI
 {
-
     private ilOnlyOfficePlugin $plugin;
     /**
      * @var Container|mixed

@@ -6,10 +6,8 @@ use ilOnlyOfficePlugin;
 use ilObjOnlyOffice;
 use ilObjOnlyOfficeGUI;
 
-
 final class Factory
 {
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Factory $instance = null;
     public static function getInstance(): self

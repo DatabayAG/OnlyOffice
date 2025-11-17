@@ -18,7 +18,6 @@
 
 declare(strict_types=1);
 
-
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
 use ILIAS\Filesystem\Filesystem;
@@ -47,24 +46,22 @@ class FileSettingProperty implements ilObjectProperty
      * @param FileTemplate[] $templates
      */
     public function __construct(
-        private readonly array             $templates = [],
-        private readonly FileMode          $fileMode = FileMode::UPLOAD,
-        private readonly ?UploadResult     $uploadResult = null,
+        private readonly array $templates = [],
+        private readonly FileMode $fileMode = FileMode::UPLOAD,
+        private readonly ?UploadResult $uploadResult = null,
         private readonly ?FileCreationType $fileCreationType = null,
-        private readonly ?string           $fileTemplate = null,
-    )
-    {
+        private readonly ?string $fileTemplate = null,
+    ) {
         global $DIC;
         $this->tmpFilesystem = $DIC->filesystem()->temp();
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function toForm(
-        ilLanguage   $language,
+        ilLanguage $language,
         FieldFactory $field_factory,
-        Refinery     $refinery
-    ): FormInput
-    {
+        Refinery $refinery
+    ): FormInput {
         $trafo = $refinery->custom()->transformation(
             function ($vs): self {
                 $fileMode = FileMode::from($vs[0]);

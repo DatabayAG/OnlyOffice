@@ -357,7 +357,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             ])
         );
 
-
         $form = new TemplateForm(true);
 
         if (!$form->checkInput()) {

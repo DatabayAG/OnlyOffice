@@ -5,10 +5,8 @@ namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 use ILIAS\DI\Container;
 use ilOnlyOfficePlugin;
 
-
 final class Repository
 {
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
     private Container $dic;
@@ -25,7 +23,7 @@ final class Repository
     private function __construct()
     {
         global $DIC;
-         $this->dic = $DIC;
+        $this->dic = $DIC;
     }
 
     public function cloneObjectSettings(ObjectSettings $object_settings): ObjectSettings

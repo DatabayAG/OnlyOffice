@@ -18,7 +18,6 @@
 
 declare(strict_types=1);
 
-
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
@@ -28,7 +27,6 @@ use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ilLanguage;
 use ilObjectProperty;
 use ilOnlyOfficePlugin;
-use Monolog\DateTimeImmutable;
 
 class OpenSettingProperty implements ilObjectProperty
 {
@@ -36,17 +34,15 @@ class OpenSettingProperty implements ilObjectProperty
 
     public function __construct(
         private readonly OpenSetting $openMode = OpenSetting::EDITOR
-    )
-    {
+    ) {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function toForm(
-        ilLanguage   $language,
+        ilLanguage $language,
         FieldFactory $field_factory,
-        Refinery     $refinery
-    ): FormInput
-    {
+        Refinery $refinery
+    ): FormInput {
         $trafo = $refinery->custom()->transformation(
             function ($vs): OpenSetting {
                 return OpenSetting::from($vs);

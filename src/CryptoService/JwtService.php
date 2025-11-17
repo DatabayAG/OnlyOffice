@@ -2,7 +2,6 @@
 
 namespace ILIAS\Plugin\OnlyOffice\CryptoService;
 
-
 /**
  * Encodes a given payload using a given key to a JsonWebToken or
  * decodes a given token using a given key.

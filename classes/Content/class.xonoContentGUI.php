@@ -30,11 +30,10 @@ class xonoContentGUI extends xonoAbstractGUI
     private Repository $repo;
 
     public function __construct(
-        Container          $dic,
+        Container $dic,
         ilOnlyOfficePlugin $plugin,
-        int                $object_id
-    )
-    {
+        int $object_id
+    ) {
         global $DIC;
 
         $this->refinery = $DIC->refinery();
@@ -121,10 +120,13 @@ class xonoContentGUI extends xonoAbstractGUI
             }
             $user = new ilObjUser($fileVersion->getUserId());
             $tpl->setVariable('TABLE_ROW_VERSION', $fileVersion->getVersion());
-            $tpl->setVariable('TABLE_ROW_CREATED_AT', $fileVersion->getCreatedAt()->get(
-                IL_CAL_FKT_DATE,
-                'd.m.Y H:i',
-                $this->dic->user()->getTimeZone())
+            $tpl->setVariable(
+                'TABLE_ROW_CREATED_AT',
+                $fileVersion->getCreatedAt()->get(
+                    IL_CAL_FKT_DATE,
+                    'd.m.Y H:i',
+                    $this->dic->user()->getTimeZone()
+                )
             );
             $tpl->setVariable('TABLE_ROW_USER', $user->getPublicName());
             $this->dic->ctrl()->setParameter($this, "version", $fileVersion->getVersion());

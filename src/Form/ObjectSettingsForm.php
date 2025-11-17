@@ -21,6 +21,7 @@ use ilLanguage;
 use ilObject;
 use ilObjOnlyOfficeGUI;
 use ilOnlyOfficePlugin;
+use ILIAS\UI\Factory;
 
 class ObjectSettingsForm
 {
@@ -43,7 +44,7 @@ class ObjectSettingsForm
     private WrapperFactory $httpWrapper;
     private ilOnlyOfficePlugin $plugin;
     private Container $dic;
-    private \ILIAS\UI\Factory $uiFactory;
+    private Factory $uiFactory;
     private StorageService $storage_service;
     private ilCtrlInterface $ctrl;
     private ilLanguage $lng;
@@ -107,7 +108,6 @@ class ObjectSettingsForm
 
             $openSettingProperty = new OpenSettingProperty($objectSettings->getOpen());
         }
-
 
         $items += [
             self::POST_VAR_ONLINE => $this->buildOnlineInput($objectSettings),

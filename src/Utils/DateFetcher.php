@@ -4,12 +4,10 @@ namespace ILIAS\Plugin\OnlyOffice\Utils;
 
 use ilDateTime;
 use ILIAS\Plugin\OnlyOffice\Repository;
-
 use ilTimeZone;
 
 class DateFetcher
 {
-
     public static function editingPeriodIsFetchable($obj_id): bool
     {
         $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);

@@ -8,7 +8,6 @@ use arConnector;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ilOnlyOfficePlugin;
 
-
 class ObjectSettings extends ActiveRecord
 {
     public const TABLE_NAME = "rep_robj_xono_set";

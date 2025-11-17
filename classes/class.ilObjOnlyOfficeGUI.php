@@ -7,16 +7,13 @@ use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Exception\IllegalStateException;
-use ILIAS\FileUpload\Handler\BasicFileInfoResult;
 use ILIAS\FileUpload\Handler\BasicHandlerResult;
-use ILIAS\FileUpload\Handler\FileInfoResult;
 use ILIAS\FileUpload\Handler\HandlerResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\Common\UUID;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -40,7 +37,6 @@ use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     public const CMD_MANAGE_CONTENTS = "manageContents";
@@ -59,7 +55,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public const TAB_SETTINGS = "settings";
     public const TAB_INFO = "info_short";
     public const TAB_SHOW_CONTENTS = "show_contents";
-
 
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
@@ -241,7 +236,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $message = $result->getStatus()->getMessage();
         }
 
-        $responseData =  new BasicHandlerResult(
+        $responseData = new BasicHandlerResult(
             UploadHandlerInterface::DEFAULT_FILE_ID_PARAMETER,
             $status,
             $tempName,
@@ -303,7 +298,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
             $fileCreationType = $fileSetting->getFileCreationType();
 
-             $this->storage_service->createNewFileFromDraft(
+            $this->storage_service->createNewFileFromDraft(
                 FileSanitizer::sanitizeFileName($title),
                 $fileCreationType->toDocumentType(),
                 $a_new_object->getId()

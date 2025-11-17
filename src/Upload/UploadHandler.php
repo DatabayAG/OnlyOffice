@@ -25,10 +25,6 @@ use ILIAS\DI\Container;
 use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
 use ILIAS\FileUpload\Handler\FileInfoResult;
 use ILIAS\FileUpload\Handler\BasicFileInfoResult;
-use Closure;
-use ILIAS\LegalDocuments\Value\DocumentContent;
-use ILIAS\Data\Result\Ok;
-use ILIAS\Data\Result;
 use ilObjOnlyOfficeGUI;
 
 class UploadHandler implements UploadHandlerInterface
@@ -72,7 +68,11 @@ class UploadHandler implements UploadHandlerInterface
     {
         return new BasicFileInfoResult(
             $this->getFileIdentifierParameterName(),
-            $identifier, "", 20, "");
+            $identifier,
+            "",
+            20,
+            ""
+        );
     }
 
     public function supportsChunkedUploads(): bool

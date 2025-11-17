@@ -5,7 +5,6 @@ namespace ILIAS\Plugin\OnlyOffice;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
 use ilOnlyOfficePlugin;
 
-
 final class Repository
 {
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;

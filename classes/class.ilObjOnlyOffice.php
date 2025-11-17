@@ -21,7 +21,6 @@ use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 
 class ilObjOnlyOffice extends ilObjectPlugin
 {
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
 
@@ -99,7 +98,8 @@ class ilObjOnlyOffice extends ilObjectPlugin
             $this->tpl->setOnScreenMessage('failure', $this->pl->txt("settings_time_greater_than"), true);
             $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "ref_id", 1);
             $this->dic->ctrl()->setParameterByClass(ilObjOnlyOfficeGUI::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
-            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, ilObjOnlyOfficeGUI::class], "create");            return false;
+            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, ilObjOnlyOfficeGUI::class], "create");
+            return false;
         }
         return parent::beforeCreate();
     }
@@ -134,7 +134,6 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
         /** @var OpenSetting $openSetting */
         $openSetting = $formData[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
-
 
         if (
             $fileSetting->getFileMode() === FileMode::UPLOAD
@@ -245,8 +244,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $new_obj,
         int $a_target_id,
         ?int $a_copy_id = null
-    ): void
-    {
+    ): void {
         $new_obj->object_settings = $this->repo->objectSettings()->cloneObjectSettings($this->object_settings);
         $new_obj->object_settings->setObjId($new_obj->id);
         $this->repo->objectSettings()->storeObjectSettings($new_obj->object_settings);
