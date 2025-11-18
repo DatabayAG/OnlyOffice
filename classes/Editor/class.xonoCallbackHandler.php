@@ -63,7 +63,7 @@ class xonoCallbackHandler
         $this->file_id = $file_id;
 
         $this->fileUrl = $data["url"];
-        $this->editor_id = $data["users"][0];
+        $this->editor_id = (int) $data["users"][0];
         $this->serverVersion = $data["history"]["serverVersion"];
         $this->changeUrl = $data["changesurl"];
         $this->changes_object = json_encode($data["history"]["changes"], JSON_THROW_ON_ERROR);
