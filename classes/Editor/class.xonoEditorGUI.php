@@ -22,6 +22,7 @@ use ILIAS\Data\UUID\Uuid;
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository;
@@ -106,7 +107,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
         }
 
-        $tpl = $this->plugin->getTemplate('html/tpl.editor.html');
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.editor.html", false), true, true);
 
         $withinPotentialTimelimit = true;
 

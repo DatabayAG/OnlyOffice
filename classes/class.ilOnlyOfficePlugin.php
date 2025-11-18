@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -129,5 +130,16 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
             "",
             realpath(parent::_getIcon($a_type))
         );
+    }
+
+    public function getRelativeDirectory(): string
+    {
+        return str_replace(ILIAS_ABSOLUTE_PATH . "/public/", "", realpath($this->getDirectory()));
+    }
+
+    public function assetsFile(PluginAsset $assetType, string $file, bool $relative = true): string
+    {
+        $basePath = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
+        return $basePath . "/assets/" . $assetType->value . "/" . $file;
     }
 }

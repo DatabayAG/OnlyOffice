@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
@@ -120,7 +121,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         $this->tpl->setOnScreenMessage('info', $this->plugin->txt("xono_reload_info"), true);
 
-        $tpl = $this->plugin->getTemplate('html/tpl.file_history.html');
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.file_history.html"), true, true);
         $tpl->setVariable('VERSION', $this->plugin->txt('xono_version'));
         $tpl->setVariable('CREATED', $this->plugin->txt('xono_date'));
         $tpl->setVariable('EDITOR', $this->plugin->txt('xono_editor'));

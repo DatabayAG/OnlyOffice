@@ -25,15 +25,16 @@ use ILIAS\FileUpload\DTO\ProcessingStatus;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
 use ILIAS\Plugin\OnlyOffice\Repository;
-use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Refinery\Factory;
 
 /**
  * @ilCtrl_IsCalledBy  ilOnlyOfficeConfigGUI: ilObjComponentSettingsGUI
@@ -162,7 +163,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->dic->ctrl()->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
         );
 
-        $tpl = $this->plugin->getTemplate("html/tpl.config_create_template.html");
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.config_create_template.html"), true, true);
 
         $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
         $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);
