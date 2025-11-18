@@ -154,7 +154,7 @@ class FileChangeAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'file_uuid':
-                return (new UUIDFactory())->uuid4();
+                return (new UUIDFactory())->fromString($field_value);
             default:
                 return parent::wakeUp($field_name, $field_value);
         }

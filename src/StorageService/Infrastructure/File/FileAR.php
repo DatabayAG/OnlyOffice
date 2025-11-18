@@ -150,7 +150,7 @@ class FileAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'uuid':
-                return (new UUIDFactory())->uuid4();
+                return (new UUIDFactory())->fromString($field_value);
             default:
                 return parent::wakeUp($field_name, $field_value);
         }

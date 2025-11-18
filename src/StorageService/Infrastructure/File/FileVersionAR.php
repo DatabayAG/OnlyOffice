@@ -159,7 +159,7 @@ class FileVersionAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'file_uuid':
-                return (new UUIDFactory())->uuid4();
+                return (new UUIDFactory())->fromString($field_value);
             case 'created_at':
                 return new ilDateTime($field_value, IL_CAL_DATE);
             default:
