@@ -1,15 +1,14 @@
 <?php
-// Try to determine ILIAS-root
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 
-$directory = strstr($_SERVER['SCRIPT_FILENAME'], 'Customizing', true);
-if (is_file('path.txt')) {
-    $directory = trim(file_get_contents('path.txt'));
+chdir(__DIR__);
+$ilias_main_directory = './';
+while (!file_exists($ilias_main_directory . 'ilias.ini.php')) {
+    $ilias_main_directory .= '../';
 }
+chdir($ilias_main_directory);
 
-chdir($directory);
-//echo get_class($DIC->database());
-// use database
+require_once './vendor/composer/vendor/autoload.php';
 
 initializeILIAS();
 global $DIC;
@@ -19,10 +18,7 @@ if (($body_stream = file_get_contents("php://input")) === false) {
     echo "Bad Request";
 }
 
-//$DIC->logger()->root()->info($body_stream);
 $encrypted = json_decode($body_stream, true);
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/CryptoService/JwtService.php';
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/InfoService/InfoService.php';
 
 $plugin = ilOnlyOfficePlugin::getInstance();
 
@@ -40,6 +36,7 @@ if ($data["status"] == 2) {
     $uuid = $httpWrapper->query()->retrieve("uuid", $refinery->kindlyTo()->string());
     $file_id = $httpWrapper->query()->retrieve("file_id", $refinery->kindlyTo()->int());
     $file_ext = $httpWrapper->query()->retrieve("ext", $refinery->kindlyTo()->string());
+    $DIC->logger()->root()->dump($data);
 
     try {
         $callback_handler = new xonoCallbackHandler($DIC, $uuid, $file_id, $data);
@@ -58,9 +55,7 @@ exit;
 function initializeILIAS()
 {
     try {
-        require_once ("Services/Context/classes/class.ilContext.php");
         ilContext::init(ilContext::CONTEXT_SOAP_NO_AUTH);
-        require_once("Services/Init/classes/class.ilInitialisation.php");
         ilInitialisation::initILIAS();
     }
     catch (Exception $exception) {
