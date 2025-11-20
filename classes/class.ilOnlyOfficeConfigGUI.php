@@ -163,7 +163,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->dic->ctrl()->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
         );
 
-        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.config_create_template.html"), true, true);
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.config_create_template.html", false), true, true);
 
         $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
         $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);
