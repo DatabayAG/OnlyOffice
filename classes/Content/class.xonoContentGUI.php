@@ -195,7 +195,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         }
 
-        $path = ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $fileVersion->getUrl();
+        $path = ILIAS_ABSOLUTE_PATH . '/public/data/' . CLIENT_ID . $fileVersion->getUrl();
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
         $fileName = rtrim($file->getTitle(), '.' . $ext);
         ilFileDelivery::deliverFileAttached(
