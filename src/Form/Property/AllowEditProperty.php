@@ -52,9 +52,9 @@ class AllowEditProperty implements ilObjectProperty
                 $editLimited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
                 return new AllowEditProperty(
                     isset($vs[ObjectSettingsForm::POST_VAR_EDIT]),
-                    isset($editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED]),
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED][ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED][ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
+                    $editLimited !== [],
+                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
+                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
                 );
             }
         );
