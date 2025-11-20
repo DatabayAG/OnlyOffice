@@ -62,7 +62,7 @@ class ObjectSettingsForm
     private ilOnlyOfficePlugin $plugin;
     private Container $dic;
     private Factory $uiFactory;
-    private StorageService $storage_service;
+    private StorageService $storageService;
     private ilCtrlInterface $ctrl;
     private ilLanguage $lng;
     private \ILIAS\Refinery\Factory $refinery;
@@ -78,7 +78,7 @@ class ObjectSettingsForm
         $this->lng = $this->dic->language();
         $this->refinery = $this->dic->refinery();
 
-        $this->storage_service = new StorageService(
+        $this->storageService = new StorageService(
             $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
@@ -95,11 +95,11 @@ class ObjectSettingsForm
 
     private function buildForm(?ObjectSettings $objectSettings, bool $newObject): StandardForm
     {
-        // file template option
-        $text_templates = $this->storage_service->fetchTemplates(FileCreationType::TEXT);
-        $table_templates = $this->storage_service->fetchTemplates(FileCreationType::TABLE);
-        $presentation_templates = $this->storage_service->fetchTemplates(FileCreationType::PRESENTATION);
-        $templates = array_merge($text_templates, $table_templates, $presentation_templates);
+        $templates = array_merge(
+            $this->storageService->fetchTemplates(FileCreationType::TEXT),
+            $this->storageService->fetchTemplates(FileCreationType::TABLE),
+            $this->storageService->fetchTemplates(FileCreationType::PRESENTATION)
+        );
 
         $items = [
             "title_and_description" => $this->buildTitleAndDescriptionInput($objectSettings),

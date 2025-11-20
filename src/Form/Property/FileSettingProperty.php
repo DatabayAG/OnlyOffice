@@ -57,9 +57,10 @@ class FileSettingProperty implements ilObjectProperty
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
+    /** @noinspection PhpParameterNameChangedDuringInheritanceInspection */
     public function toForm(
         ilLanguage $language,
-        FieldFactory $field_factory,
+        FieldFactory $fieldFactory,
         Refinery $refinery
     ): FormInput {
         $trafo = $refinery->custom()->transformation(
@@ -105,7 +106,7 @@ class FileSettingProperty implements ilObjectProperty
             }
         );
 
-        $templateRadioOption = $field_factory->radio("");
+        $templateRadioOption = $fieldFactory->radio("");
         foreach ($this->templates as $template) {
             $type_translation = sprintf("form_template_%s", $template->getType()->value);
             $templateRadioOption = $templateRadioOption->withOption(
@@ -115,20 +116,20 @@ class FileSettingProperty implements ilObjectProperty
             );
         }
 
-        $templateOption = $field_factory->group([
+        $templateOption = $fieldFactory->group([
             ObjectSettingsForm::POST_VAR_FILE_TEMPLATE_SETTING => $templateRadioOption
         ], $this->plugin->txt('form_input_template'))->withRequired(true);
 
         $fileOptions = [
-            ObjectSettingsForm::OPTION_SETTING_UPLOAD => $field_factory->group([
-                ObjectSettingsForm::POST_VAR_FILE => $field_factory->file(
+            ObjectSettingsForm::OPTION_SETTING_UPLOAD => $fieldFactory->group([
+                ObjectSettingsForm::POST_VAR_FILE => $fieldFactory->file(
                     new UploadHandler(),
                     $this->plugin->txt('form_input_file')
                 )->withRequired(true)
             ], $this->plugin->txt('form_input_upload_file')),
-            ObjectSettingsForm::OPTION_SETTING_CREATE => $field_factory->group(
+            ObjectSettingsForm::OPTION_SETTING_CREATE => $fieldFactory->group(
                 [
-                    ObjectSettingsForm::POST_VAR_FILE_CREATION_SETTING => $field_factory->radio(
+                    ObjectSettingsForm::POST_VAR_FILE_CREATION_SETTING => $fieldFactory->radio(
                         "",
                     )->withRequired(true)
                         ->withOption(FileCreationType::TEXT->value, $this->plugin->txt('form_input_create_file_text'))
@@ -142,7 +143,7 @@ class FileSettingProperty implements ilObjectProperty
             $fileOptions[ObjectSettingsForm::OPTION_SETTING_TEMPLATE] = $templateOption;
         }
 
-        return $field_factory->switchableGroup(
+        return $fieldFactory->switchableGroup(
             $fileOptions,
             $this->plugin->txt('form_input_file'),
             $this->templates === [] ? $this->plugin->txt('form_input_template_no_templates') : null

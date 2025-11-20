@@ -32,9 +32,9 @@ class JwtService
             "alg" => "HS256",
             "typ" => "JWT"
         ];
-        $payload_string = json_encode($payload, JSON_THROW_ON_ERROR);
+        $payloadString = json_encode($payload, JSON_THROW_ON_ERROR);
         $encHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
-        $encPayload = self::base64UrlEncode($payload_string);
+        $encPayload = self::base64UrlEncode($payloadString);
         $hash = self::base64UrlEncode(self::calculateHash($encHeader, $encPayload, $key));
 
         return "$encHeader.$encPayload.$hash";

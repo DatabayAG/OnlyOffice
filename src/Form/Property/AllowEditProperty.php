@@ -44,7 +44,7 @@ class AllowEditProperty implements ilObjectProperty
 
     public function toForm(
         ilLanguage $language,
-        FieldFactory $field_factory,
+        FieldFactory $fieldFactory,
         Refinery $refinery
     ): FormInput {
         $trafo = $refinery->custom()->transformation(
@@ -59,13 +59,13 @@ class AllowEditProperty implements ilObjectProperty
             }
         );
 
-        return $field_factory->optionalGroup([
-            ObjectSettingsForm::POST_VAR_EDIT => $field_factory->group([
-                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $field_factory->optionalGroup([
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $field_factory->dateTime(
+        return $fieldFactory->optionalGroup([
+            ObjectSettingsForm::POST_VAR_EDIT => $fieldFactory->group([
+                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $fieldFactory->optionalGroup([
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $fieldFactory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_start')
                     )->withUseTime(true)->withRequired(true),
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $field_factory->dateTime(
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $fieldFactory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_end')
                     )->withUseTime(true)->withRequired(true)
                 ], $this->plugin->txt('settings_allow_edit_limited'))

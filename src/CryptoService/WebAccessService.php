@@ -33,9 +33,9 @@ class WebAccessService
     public static function getWACUrl(string $url): string
     {
         ilWACSignedPath::setTokenMaxLifetimeInSeconds(ilWACSignedPath::MAX_LIFETIME);
-        $file_path = ilWACSignedPath::signFile(ilFileUtils::getWebspaceDir() . $url);
-        $file_path .= '&' . ilWebAccessChecker::DISPOSITION . '=' . ilFileDelivery::DISP_ATTACHMENT;
-        return $file_path;
+        $filePath = ilWACSignedPath::signFile(ilFileUtils::getWebspaceDir() . $url);
+        $filePath .= '&' . ilWebAccessChecker::DISPOSITION . '=' . ilFileDelivery::DISP_ATTACHMENT;
+        return $filePath;
 
     }
 

@@ -24,12 +24,11 @@ class FileSanitizer
 {
     public static function sanitizeFileName(string $fileNameToSanitize): string
     {
-        $sanitized_file_name = $fileNameToSanitize;
-        $sanitized_file_name = preg_replace('/[ä]+/', 'ae', $sanitized_file_name);
-        $sanitized_file_name = preg_replace('/[ü]+/', 'ue', $sanitized_file_name);
-        $sanitized_file_name = preg_replace('/[ö]+/', 'oe', $sanitized_file_name);
-        $sanitized_file_name = preg_replace('/[ß]+/', 'ss', $sanitized_file_name);
-        $sanitized_file_name = preg_replace('/[\s]+/', '_', $sanitized_file_name);
-        return preg_replace('/[^a-zA-Z0-9\-_]+/', '', $sanitized_file_name);
+        $fileNameToSanitize = preg_replace('/ä+/u', 'ae', $fileNameToSanitize);
+        $fileNameToSanitize = preg_replace('/ü+/u', 'ue', $fileNameToSanitize);
+        $fileNameToSanitize = preg_replace('/ö+/u', 'oe', $fileNameToSanitize);
+        $fileNameToSanitize = preg_replace('/ß+/u', 'ss', $fileNameToSanitize);
+        $fileNameToSanitize = preg_replace('/\s+/', '_', $fileNameToSanitize);
+        return preg_replace('/[^a-zA-Z0-9\-_]+/', '', $fileNameToSanitize);
     }
 }

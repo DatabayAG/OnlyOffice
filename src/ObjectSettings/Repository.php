@@ -59,11 +59,6 @@ final class Repository
         $this->dic->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
 
-    public function factory(): Factory
-    {
-        return Factory::getInstance();
-    }
-
     public function getObjectSettingsById(int $obj_id): ?ObjectSettings
     {
         /**
