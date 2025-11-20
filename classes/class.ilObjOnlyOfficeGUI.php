@@ -152,22 +152,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                                     return;
                                 }
                                 $file_version = $this->storage_service->getLatestVersion($file->getUuid());
-                                $ext = pathinfo($file_version->getUrl(), PATHINFO_EXTENSION);
-                                $filename = rtrim($file->getTitle(), '.' . $ext);
                                 $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
-                                    'path',
-                                    ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $file_version->getUrl()
-                                );
-                                $this->dic->ctrl()->setParameterByClass(
-                                    xonoContentGUI::class,
-                                    'name',
-                                    $filename . '_V' . $file_version->getVersion() . '.' . $file->getFileType()
-                                );
-                                $this->dic->ctrl()->setParameterByClass(
-                                    xonoContentGUI::class,
-                                    'mime',
-                                    $file->getMimeType()
+                                    "version",
+                                    $file_version->getVersion()
                                 );
                                 break;
                             case OpenSetting::EDITOR:
