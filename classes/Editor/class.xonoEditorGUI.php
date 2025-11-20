@@ -120,7 +120,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $withinPotentialTimeLimit = true;
 
         $editing_period = null;
-        if (!is_null($object_settings) && ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
+        if (!is_null($object_settings)) {
             $withinPotentialTimeLimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
             if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
                 $editing_period = DateFetcher::fetchEditingPeriod($this->file_id);
