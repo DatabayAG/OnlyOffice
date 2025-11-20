@@ -33,7 +33,6 @@ class JwtService
             "typ" => "JWT"
         ];
         $payload_string = json_encode($payload, JSON_THROW_ON_ERROR);
-        $payload_string = str_replace(['"#!!', '!!#"'], '"', $payload_string);
         $encHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
         $encPayload = self::base64UrlEncode($payload_string);
         $hash = self::base64UrlEncode(self::calculateHash($encHeader, $encPayload, $key));

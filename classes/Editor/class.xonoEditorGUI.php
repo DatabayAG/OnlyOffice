@@ -205,12 +205,12 @@ class xonoEditorGUI extends xonoAbstractGUI
             "forcesave" => true];
         $as_array['editorConfig'] = $editor;
 
-        // events config
+        // events config // function added/set in js code
         $as_array['events'] = [
-            "onRequestHistory" => "#!!onRequestHistory!!#",
-            "onRequestHistoryData" => "#!!onRequestHistoryData!!#",
-            "onDocumentStateChange" => "#!!onDocumentStateChange!!#",
-            "onAppReady" => "#!!onAppReady!!#"
+            "onRequestHistory" => "",
+            "onRequestHistoryData" => "",
+            "onDocumentStateChange" => "",
+            "onAppReady" => ""
         ];
 
         // add token

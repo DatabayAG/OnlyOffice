@@ -23,6 +23,13 @@ document.addEventListener("DOMContentLoaded", () => {
     config = window[`config_${PLUGIN_ID}`];
     delete window[`config_${PLUGIN_ID}`];
 
+    config.onlyOfficeConfig.events = {
+      "onRequestHistory": onRequestHistory,
+      "onRequestHistoryData": onRequestHistoryData,
+      "onDocumentStateChange": onDocumentStateChange,
+      "onAppReady": onAppReady
+    }
+
     const backButton = document.querySelector(".xono-back-button");
     backButton.addEventListener("click", () => {
       window.location.href = config.backTarget;
