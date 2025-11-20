@@ -38,6 +38,10 @@ interface FileChangeRepository
         string $changesUrl
     );
 
+    /**
+     * @param string $uuid
+     * @return array<int, FileChange>
+     */
     public function getAllChanges(string $uuid): array;
 
     public function getChange(string $uuid, int $version): FileChange;

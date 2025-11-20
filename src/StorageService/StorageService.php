@@ -28,6 +28,7 @@ use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
@@ -298,6 +299,10 @@ class StorageService
         return $this->file_version_repository->getAllVersions($file->getFileUuid());
     }
 
+    /**
+     * @param string $uuid
+     * @return array<int, FileChange>
+     */
     public function getAllChanges(string $uuid): array
     {
         return $this->file_change_repository->getAllChanges($uuid);
