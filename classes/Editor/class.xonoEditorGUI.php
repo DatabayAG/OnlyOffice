@@ -45,6 +45,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
     private Repository $repo;
+    private ilGlobalTemplateInterface $mainTpl;
 
     public function __construct(
         Container          $dic,
@@ -59,6 +60,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
         $this->file_id = $object_id;
         $this->repo = Repository::getInstance();
+        $this->mainTpl = $this->dic->ui()->mainTemplate();
 
         $this->afterConstructor();
     }
@@ -94,7 +96,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         }
     }
 
-    protected function editFile(): never
+    protected function editFile(): void
     {
         $object_settings = $this->repo->objectSettings()->getObjectSettingsById($this->file_id);
 
@@ -107,46 +109,72 @@ class xonoEditorGUI extends xonoAbstractGUI
             $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
         }
 
+        $this->mainTpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
+        $this->mainTpl->addCss($this->plugin->assetsFile(PluginAsset::Css, "editor.css"));
+
         $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.editor.html", false), true, true);
 
-        $withinPotentialTimelimit = true;
+        $tpl->setVariable("BACK_BUTTON", $this->plugin->txt("xono_back_button"));
+        $tpl->setVariable("API_SCRIPT_SRC", $this->onlyoffice_url . "/web-apps/apps/api/documents/api.js");
 
+        $withinPotentialTimeLimit = true;
+
+        $editing_period = null;
         if (!is_null($object_settings) && ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
-            $withinPotentialTimelimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
-            $tpl->setVariable('IS_LIMITED', $object_settings->isLimitedPeriod());
-            $tpl->setVariable('WITHIN_POTENTIAL_TIME_LIMIT', $withinPotentialTimelimit);
+            $withinPotentialTimeLimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
             if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
                 $editing_period = DateFetcher::fetchEditingPeriod($this->file_id);
-                $tpl->setVariable('EDIT_PERIOD_TXT', sprintf($this->plugin->txt('editor_edit_period'), $editing_period));
-                $tpl->setVariable('TIME_UP_TXT', $this->plugin->txt('editor_edit_timeup'));
-                $tpl->setVariable('TIME_WAS_UP_TXT', $this->plugin->txt('editor_edit_timewasup'));
-                $tpl->setVariable('START_TIME', $object_settings->getStartTime());
-                $tpl->setVariable('END_TIME', $object_settings->getEndTime());
             }
         }
 
-        $tpl->setVariable('BUTTON', $this->plugin->txt('xono_back_button'));
-        $tpl->setVariable('SCRIPT_SRC', $this->onlyoffice_url . '/web-apps/apps/api/documents/api.js');
-        $tpl->setVariable('RETURN', $this->generateReturnUrl());
-
+        $currentVersion = null;
+        $historyData = [];
+        $history = [];
+        $onlyOfficeConfig = [];
         if (!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
             $tpl->setVariable('FILE_TITLE', $file->getTitle());
-            $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
-            $tpl->setVariable('LATEST', $latest_version->getVersion());
-            $tpl->setVariable('HISTORY_DATA', $this->historyData($all_versions));
-            $tpl->setVariable('HISTORY', $this->history($latest_version, $all_versions));
+            $onlyOfficeConfig = $this->config($file, $latest_version, $object_settings, $withinPotentialTimeLimit);
+            $currentVersion = $latest_version->getVersion();
+            $historyData = $this->historyData($all_versions);
+            $history = $this->history($latest_version, $all_versions);
         }
 
-        $content = $tpl->get();
-        echo $content;
-        exit;
+        $this->mainTpl->addOnLoadCode(
+            "window." . "config_" . ilOnlyOfficePlugin::PLUGIN_ID . " = "
+            . json_encode([
+                "editing" => [
+                    "limited" => $object_settings->isLimitedPeriod(),
+                    "withinTimeLimit" => $withinPotentialTimeLimit,
+                    "startTime" => $object_settings->getStartTime(),
+                    "endTime" => $object_settings->getEndTime(),
+                ],
+                "file" => [
+                    "currentVersion" => $currentVersion,
+                    "historyData" => $historyData,
+                    "history" => $history
+                ],
+                "onlyOfficeConfig" => $onlyOfficeConfig,
+                "backTarget" => $this->generateReturnUrl(),
+            ], JSON_THROW_ON_ERROR)
+        );
 
+        $this->dic->language()->toJSMap([
+            "editor_edit_period" => $editing_period
+                ? sprintf($this->plugin->txt('editor_edit_period'), $editing_period)
+                : "",
+            "editor_edit_timeup" => $this->plugin->txt('editor_edit_timeup'),
+            "editor_edit_timewasup" => $this->plugin->txt('editor_edit_timewasup'),
+        ]);
+
+
+        $content = $tpl->get();
+        $this->mainTpl->setContent($content);
     }
 
     /**
-     * Builds and returns the config array as string
+     * Builds and returns the config array
      */
-    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): string
+    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): array
     {
         $as_array = []; // Config Array
         $extension = pathinfo($fileVersion->getUrl(), PATHINFO_EXTENSION);
@@ -189,15 +217,13 @@ class xonoEditorGUI extends xonoAbstractGUI
         $token = JwtService::jwtEncode($as_array, $this->onlyoffice_key);
         $as_array['token'] = $token;
 
-        // convert to valid string
-        $result = json_encode($as_array, JSON_THROW_ON_ERROR);
-        return str_replace(['"#!!', '!!#"'], '', $result);
+        return $as_array;
     }
 
     /**
-     * Builds and returns an array containing the version history of a file as string
+     * Builds and returns an array containing the version history of a file
      */
-    protected function history(FileVersion $latestVersion, array $all_versions): string
+    protected function history(FileVersion $latestVersion, array $all_versions): array
     {
         $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid()->toString());
         $history_array = [];
@@ -206,7 +232,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         foreach ($all_versions as $version) {
             $v = $version->getVersion();
             $info_array = [
-                "changes" => '#!!JSON.parse("' . $all_changes[$v]->getChangesObjectString() . '")!!#',
+                "changes" => json_decode($all_changes[$v]->getChangesObjectString(), true),
                 "created" => rtrim($version->getCreatedAt()->__toString(), '<br>'),
                 "key" => $this->generateDocumentKey($version),
                 "serverVersion" => $all_changes[$v]->getServerVersion(),
@@ -216,18 +242,13 @@ class xonoEditorGUI extends xonoAbstractGUI
             $history_array[] = $info_array;
         }
 
-        // convert to valid string
-        return str_replace(
-            ['(\"[{', '}]\")', '(\"{', '}\")', '"#!!', '!!#"'],
-            ['("[{', '}]")', '("{', '}")', '', ''],
-            json_encode($history_array, JSON_THROW_ON_ERROR)
-        );
+        return $history_array;
     }
 
     /**
-     * Builds and returns an array containing information about all file versions (as string)
+     * Builds and returns an array containing information about all file versions
      */
-    protected function historyData(array $allVersions): string
+    protected function historyData(array $allVersions): array
     {
         $result = [];
         foreach ($allVersions as $version) {
@@ -254,7 +275,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $result[$v] = $data_array;
 
         }
-        return json_encode($result, JSON_THROW_ON_ERROR);
+        return $result;
     }
 
     /* --- Helper Methods --- */

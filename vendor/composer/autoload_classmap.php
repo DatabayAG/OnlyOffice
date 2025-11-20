@@ -323,6 +323,7 @@ return array(
     'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileCreationType' => $baseDir . '/src/Enum/FileCreationType.php',
     'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileMode' => $baseDir . '/src/Enum/FileMode.php',
     'ILIAS\\Plugin\\OnlyOffice\\Enum\\OpenSetting' => $baseDir . '/src/Enum/OpenSetting.php',
+    'ILIAS\\Plugin\\OnlyOffice\\Enum\\PluginAsset' => $baseDir . '/src/Enum/PluginAsset.php',
     'ILIAS\\Plugin\\OnlyOffice\\Form\\ObjectSettingsForm' => $baseDir . '/src/Form/ObjectSettingsForm.php',
     'ILIAS\\Plugin\\OnlyOffice\\Form\\PluginConfigForm' => $baseDir . '/src/Form/PluginConfigForm.php',
     'ILIAS\\Plugin\\OnlyOffice\\Form\\Property\\AllowEditProperty' => $baseDir . '/src/Form/Property/AllowEditProperty.php',

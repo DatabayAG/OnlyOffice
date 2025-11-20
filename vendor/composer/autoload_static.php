@@ -20,7 +20,7 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
+        's' =>
         array (
             'srag\\RemovePluginDataConfirm\\OnlyOffice\\' => 40,
             'srag\\LibraryLanguageInstaller\\OnlyOffice\\' => 41,
@@ -29,7 +29,7 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'srag\\CustomInputGUIs\\OnlyOffice\\' => 32,
             'srag\\ActiveRecordConfig\\OnlyOffice\\' => 35,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php81\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
@@ -51,7 +51,7 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'SebastianFeldmann\\Cli\\' => 22,
             'SebastianFeldmann\\Camino\\' => 25,
         ),
-        'R' => 
+        'R' =>
         array (
             'React\\Stream\\' => 13,
             'React\\Socket\\' => 13,
@@ -63,26 +63,26 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Log\\' => 8,
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'PhpCsFixer\\' => 11,
         ),
-        'I' => 
+        'I' =>
         array (
             'ILIAS\\Plugin\\OnlyOffice\\' => 24,
         ),
-        'F' => 
+        'F' =>
         array (
             'Fidry\\CpuCoreCounter\\' => 21,
         ),
-        'E' => 
+        'E' =>
         array (
             'Evenement\\' => 10,
         ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\XdebugHandler\\' => 23,
             'Composer\\Semver\\' => 16,
@@ -91,202 +91,202 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'CaptainHook\\Secrets\\' => 20,
             'CaptainHook\\App\\' => 16,
         ),
-        'B' => 
+        'B' =>
         array (
             'Brick\\Math\\' => 11,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'srag\\RemovePluginDataConfirm\\OnlyOffice\\' => 
+        'srag\\RemovePluginDataConfirm\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/removeplugindataconfirm/src',
         ),
-        'srag\\LibraryLanguageInstaller\\OnlyOffice\\' => 
+        'srag\\LibraryLanguageInstaller\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/librarylanguageinstaller/src',
         ),
-        'srag\\LibrariesNamespaceChanger\\' => 
+        'srag\\LibrariesNamespaceChanger\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src',
         ),
-        'srag\\DIC\\OnlyOffice\\' => 
+        'srag\\DIC\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/dic/src',
         ),
-        'srag\\CustomInputGUIs\\OnlyOffice\\' => 
+        'srag\\CustomInputGUIs\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/custominputguis/src',
         ),
-        'srag\\ActiveRecordConfig\\OnlyOffice\\' => 
+        'srag\\ActiveRecordConfig\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/activerecordconfig/src',
         ),
-        'Symfony\\Polyfill\\Php81\\' => 
+        'Symfony\\Polyfill\\Php81\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Stopwatch\\' => 
+        'Symfony\\Component\\Stopwatch\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/stopwatch',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\OptionsResolver\\' => 
+        'Symfony\\Component\\OptionsResolver\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\Filesystem\\' => 
+        'Symfony\\Component\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'SebastianFeldmann\\Git\\' => 
+        'SebastianFeldmann\\Git\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/git/src',
         ),
-        'SebastianFeldmann\\Cli\\' => 
+        'SebastianFeldmann\\Cli\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/cli/src',
         ),
-        'SebastianFeldmann\\Camino\\' => 
+        'SebastianFeldmann\\Camino\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/camino/src',
         ),
-        'React\\Stream\\' => 
+        'React\\Stream\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/stream/src',
         ),
-        'React\\Socket\\' => 
+        'React\\Socket\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/socket/src',
         ),
-        'React\\Promise\\' => 
+        'React\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/promise/src',
         ),
-        'React\\EventLoop\\' => 
+        'React\\EventLoop\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/event-loop/src',
         ),
-        'React\\Dns\\' => 
+        'React\\Dns\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/dns/src',
         ),
-        'React\\ChildProcess\\' => 
+        'React\\ChildProcess\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/child-process/src',
         ),
-        'React\\Cache\\' => 
+        'React\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/cache/src',
         ),
-        'Ramsey\\Uuid\\' => 
+        'Ramsey\\Uuid\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
-        'Ramsey\\Collection\\' => 
+        'Ramsey\\Collection\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PhpCsFixer\\' => 
+        'PhpCsFixer\\' =>
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src',
         ),
-        'ILIAS\\Plugin\\OnlyOffice\\' => 
+        'ILIAS\\Plugin\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/../..' . '/src',
         ),
-        'Fidry\\CpuCoreCounter\\' => 
+        'Fidry\\CpuCoreCounter\\' =>
         array (
             0 => __DIR__ . '/..' . '/fidry/cpu-core-counter/src',
         ),
-        'Evenement\\' => 
+        'Evenement\\' =>
         array (
             0 => __DIR__ . '/..' . '/evenement/evenement/src',
         ),
-        'Composer\\XdebugHandler\\' => 
+        'Composer\\XdebugHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/xdebug-handler/src',
         ),
-        'Composer\\Semver\\' => 
+        'Composer\\Semver\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Clue\\React\\NDJson\\' => 
+        'Clue\\React\\NDJson\\' =>
         array (
             0 => __DIR__ . '/..' . '/clue/ndjson-react/src',
         ),
-        'CaptainHook\\Secrets\\' => 
+        'CaptainHook\\Secrets\\' =>
         array (
             0 => __DIR__ . '/..' . '/captainhook/secrets/src',
         ),
-        'CaptainHook\\App\\' => 
+        'CaptainHook\\App\\' =>
         array (
             0 => __DIR__ . '/..' . '/captainhook/captainhook/src',
         ),
-        'Brick\\Math\\' => 
+        'Brick\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
@@ -610,6 +610,7 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
         'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileCreationType' => __DIR__ . '/../..' . '/src/Enum/FileCreationType.php',
         'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileMode' => __DIR__ . '/../..' . '/src/Enum/FileMode.php',
         'ILIAS\\Plugin\\OnlyOffice\\Enum\\OpenSetting' => __DIR__ . '/../..' . '/src/Enum/OpenSetting.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Enum\\PluginAsset' => __DIR__ . '/../..' . '/src/Enum/PluginAsset.php',
         'ILIAS\\Plugin\\OnlyOffice\\Form\\ObjectSettingsForm' => __DIR__ . '/../..' . '/src/Form/ObjectSettingsForm.php',
         'ILIAS\\Plugin\\OnlyOffice\\Form\\PluginConfigForm' => __DIR__ . '/../..' . '/src/Form/PluginConfigForm.php',
         'ILIAS\\Plugin\\OnlyOffice\\Form\\Property\\AllowEditProperty' => __DIR__ . '/../..' . '/src/Form/Property/AllowEditProperty.php',
