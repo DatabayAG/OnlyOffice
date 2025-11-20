@@ -1,4 +1,6 @@
 <?php
+
+use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 
 chdir(__DIR__);
@@ -12,7 +14,6 @@ require_once './vendor/composer/vendor/autoload.php';
 
 initializeILIAS();
 global $DIC;
-//$DIC->logger()->root()->info("Ilias initialized");
 
 if (($body_stream = file_get_contents("php://input")) === false) {
     echo "Bad Request";
@@ -23,12 +24,11 @@ $encrypted = json_decode($body_stream, true);
 $plugin = ilOnlyOfficePlugin::getInstance();
 
 $secret = $plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
-$decrypted = \ILIAS\Plugin\OnlyOffice\CryptoService\JwtService::jwtDecode($encrypted['token'],
-    $secret);
-//$DIC->logger()->root()->info($decrypted);
+$decrypted = JwtService::jwtDecode($encrypted['token'], $secret);
+
 $data = json_decode($decrypted, true);
 
-if ($data["status"] == 2) {
+if ($data["status"] === 2) {
     $DIC->logger()->root()->info("Save File");
     $httpWrapper = $DIC->http()->wrapper();
     $refinery = $DIC->refinery();
@@ -36,7 +36,6 @@ if ($data["status"] == 2) {
     $uuid = $httpWrapper->query()->retrieve("uuid", $refinery->kindlyTo()->string());
     $file_id = $httpWrapper->query()->retrieve("file_id", $refinery->kindlyTo()->int());
     $file_ext = $httpWrapper->query()->retrieve("ext", $refinery->kindlyTo()->string());
-    $DIC->logger()->root()->dump($data);
 
     try {
         $callback_handler = new xonoCallbackHandler($DIC, $uuid, $file_id, $data);
@@ -47,12 +46,12 @@ if ($data["status"] == 2) {
     }
 
 }
-echo "{\"error\":0}";
+echo json_encode(["error" => 0], JSON_THROW_ON_ERROR);
 exit;
 
 //-------------------------------------------------------------------
 
-function initializeILIAS()
+function initializeILIAS(): void
 {
     try {
         ilContext::init(ilContext::CONTEXT_SOAP_NO_AUTH);
