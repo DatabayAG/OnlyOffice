@@ -166,7 +166,6 @@ class xonoEditorGUI extends xonoAbstractGUI
             "editor_edit_timewasup" => $this->plugin->txt('editor_edit_timewasup'),
         ]);
 
-
         $content = $tpl->get();
         $this->mainTpl->setContent($content);
     }

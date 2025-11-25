@@ -275,7 +275,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $results = $this->dic->upload()->getResults();
         $result = end($results);
 
-
         $fileServiceSettings = $this->dic->fileServiceSettings();
         $extension = pathinfo($result->getName(), PATHINFO_EXTENSION);
 

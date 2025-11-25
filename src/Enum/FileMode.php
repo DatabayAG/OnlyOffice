@@ -25,7 +25,6 @@ use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 enum FileMode: string
 {
     case UPLOAD = ObjectSettingsForm::OPTION_SETTING_UPLOAD;
-
     case CREATE = ObjectSettingsForm::OPTION_SETTING_CREATE;
     case TEMPLATE = ObjectSettingsForm::OPTION_SETTING_TEMPLATE;
 }
