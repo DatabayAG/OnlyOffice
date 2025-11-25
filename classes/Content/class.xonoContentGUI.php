@@ -65,7 +65,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $this->afterConstructor();
     }
 
-    protected function afterConstructor(): void/*: void*/
+    protected function afterConstructor(): void
     {
 
         $this->storage_service = new StorageService(

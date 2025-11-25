@@ -54,7 +54,7 @@ final class Repository
         $object_settings->delete();
     }
 
-    public function dropTables(): void/*:void*/
+    public function dropTables(): void
     {
         $this->dic->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
