@@ -18,9 +18,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . "/../../vendor/autoload.php";
-
-
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
