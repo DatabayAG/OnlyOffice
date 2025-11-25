@@ -18,8 +18,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . "/../vendor/autoload.php";
-
 use ILIAS\DI\Container;
 use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;

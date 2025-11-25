@@ -18,8 +18,6 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . "/../vendor/autoload.php";
-
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
