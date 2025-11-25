@@ -23,7 +23,6 @@ namespace ILIAS\Plugin\OnlyOffice\Enum;
 enum FileCreationType: string
 {
     case TEXT = "text";
-
     case TABLE = "table";
     case PRESENTATION = "presentation";
     case NONE = "";
