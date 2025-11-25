@@ -277,8 +277,8 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $results = $this->dic->upload()->getResults();
         $result = end($results);
 
-        global $DIC;
-        $fileServiceSettings = $DIC->fileServiceSettings();
+
+        $fileServiceSettings = $this->dic->fileServiceSettings();
         $extension = pathinfo($result->getName(), PATHINFO_EXTENSION);
 
         // Return if file extension not whitelisted by ILIAS instance

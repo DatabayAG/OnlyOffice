@@ -53,14 +53,13 @@ class xonoContentGUI extends xonoAbstractGUI
         ilOnlyOfficePlugin $plugin,
         int $object_id
     ) {
-        global $DIC;
 
-        $this->refinery = $DIC->refinery();
-        $this->httpWrapper = $DIC->http()->wrapper();
+        $this->refinery = $dic->refinery();
+        $this->httpWrapper = $dic->http()->wrapper();
 
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
-        $this->tpl = $DIC->ui()->mainTemplate();
+        $this->tpl = $dic->ui()->mainTemplate();
         $this->repo = Repository::getInstance();
 
         $this->afterConstructor();
