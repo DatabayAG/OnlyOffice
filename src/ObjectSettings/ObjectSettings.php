@@ -1,19 +1,33 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\ObjectSettings;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
 use ilDateTime;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
 use ActiveRecord;
 use arConnector;
+use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
 
 class ObjectSettings extends ActiveRecord
 {
-    use DICTrait;
-    use OnlyOfficeTrait;
-
     public const TABLE_NAME = "rep_robj_xono_set";
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
@@ -63,7 +77,7 @@ class ObjectSettings extends ActiveRecord
      * @con_length     10
      * @con_is_notnull true
      */
-    protected string $open_setting = "ilias";
+    protected string $open_setting = OpenSetting::ILIAS->value;
 
     /**
      * @var bool
@@ -117,17 +131,16 @@ class ObjectSettings extends ActiveRecord
         }
     }
 
-    public function wakeUp(/*string*/ $field_name, $field_value)
+    /**
+     * @param string $field_name
+     */
+    public function wakeUp($field_name, $field_value): bool|int|null
     {
-        switch ($field_name) {
-            case "obj_id":
-                return intval($field_value);
-            case "is_online":
-            case "allow_edit":
-                return boolval($field_value);
-            default:
-                return null;
-        }
+        return match ($field_name) {
+            "obj_id" => (int) $field_value,
+            "is_online", "allow_edit" => (bool) $field_value,
+            default => null,
+        };
     }
 
     public function getObjId(): int
@@ -180,14 +193,14 @@ class ObjectSettings extends ActiveRecord
         $this->is_online = $is_online;
     }
 
-    public function getOpen(): string
+    public function getOpen(): OpenSetting
     {
-        return $this->open_setting;
+        return OpenSetting::from($this->open_setting);
     }
 
-    public function setOpen(string $open): void
+    public function setOpen(OpenSetting $openSetting): void
     {
-        $this->open_setting = $open;
+        $this->open_setting = $openSetting->value;
     }
 
     public function getStartTime(): ?string

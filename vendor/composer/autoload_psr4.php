@@ -7,7 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'srag\\RemovePluginDataConfirm\\OnlyOffice\\' => array($vendorDir . '/srag/removeplugindataconfirm/src'),
-    'srag\\Plugins\\OnlyOffice\\' => array($baseDir . '/src'),
     'srag\\LibraryLanguageInstaller\\OnlyOffice\\' => array($vendorDir . '/srag/librarylanguageinstaller/src'),
     'srag\\LibrariesNamespaceChanger\\' => array($vendorDir . '/srag/librariesnamespacechanger/src'),
     'srag\\DIC\\OnlyOffice\\' => array($vendorDir . '/srag/dic/src'),
@@ -45,6 +44,7 @@ return array(
     'Psr\\EventDispatcher\\' => array($vendorDir . '/psr/event-dispatcher/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'PhpCsFixer\\' => array($vendorDir . '/friendsofphp/php-cs-fixer/src'),
+    'ILIAS\\Plugin\\OnlyOffice\\' => array($baseDir . '/src'),
     'Fidry\\CpuCoreCounter\\' => array($vendorDir . '/fidry/cpu-core-counter/src'),
     'Evenement\\' => array($vendorDir . '/evenement/evenement/src'),
     'Composer\\XdebugHandler\\' => array($vendorDir . '/composer/xdebug-handler/src'),

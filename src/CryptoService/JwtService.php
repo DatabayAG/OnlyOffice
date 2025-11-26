@@ -1,8 +1,24 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\CryptoService;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-require_once 'libs/composer/vendor/autoload.php';
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\CryptoService;
 
 /**
  * Encodes a given payload using a given key to a JsonWebToken or
@@ -16,11 +32,9 @@ class JwtService
             "alg" => "HS256",
             "typ" => "JWT"
         ];
-        $payload_string = json_encode($payload);
-        $payload_string = str_replace('"#!!', '"', $payload_string);
-        $payload_string = str_replace('!!#"', '"', $payload_string);
-        $encHeader = self::base64UrlEncode(json_encode($header));
-        $encPayload = self::base64UrlEncode($payload_string);
+        $payloadString = json_encode($payload, JSON_THROW_ON_ERROR);
+        $encHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
+        $encPayload = self::base64UrlEncode($payloadString);
         $hash = self::base64UrlEncode(self::calculateHash($encHeader, $encPayload, $key));
 
         return "$encHeader.$encPayload.$hash";
@@ -30,13 +44,13 @@ class JwtService
     {
 
         $split = explode(".", $token);
-        if (count($split) != 3) {
+        if (count($split) !== 3) {
             return "";
         }
 
         $hash = self::base64UrlEncode(self::calculateHash($split[0], $split[1], $key));
 
-        if (strcmp($hash, $split[2]) != 0) {
+        if (strcmp($hash, $split[2]) !== 0) {
             return "";
         }
         return self::base64UrlDecode($split[1]);
@@ -49,18 +63,18 @@ class JwtService
 
     protected static function base64UrlEncode($str): string
     {
-        return str_replace("/", "_", str_replace("+", "-", trim(base64_encode($str), "=")));
+        return str_replace(["+", "/"], ["-", "_"], trim(base64_encode($str), "="));
     }
 
     protected static function base64UrlDecode($payload): string
     {
-        $b64 = str_replace("_", "/", str_replace("-", "+", $payload));
+        $b64 = str_replace(["-", "_"], ["+", "/"], $payload);
         switch (strlen($b64) % 4) {
             case 2:
-                $b64 = $b64 . "==";
+                $b64 .= "==";
                 break;
             case 3:
-                $b64 = $b64 . "=";
+                $b64 .= "=";
                 break;
         }
         return base64_decode($b64);

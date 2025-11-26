@@ -18,26 +18,13 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\Enum;
 
-use ActiveRecord;
-use ILIAS\Data\UUID\Uuid;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 
-interface FileRepository
+enum FileMode: string
 {
-    public function create(
-        Uuid   $file_uuid,
-        int    $obj_id,
-        string $title,
-        string $file_type,
-        string $mime_type
-    ): void;
-
-    public function getFile(int $obj_id): ?File;
-
-    public function getAR(int $file_id): ActiveRecord;
-
-    public function getAllFiles();
-
+    case UPLOAD = ObjectSettingsForm::OPTION_SETTING_UPLOAD;
+    case CREATE = ObjectSettingsForm::OPTION_SETTING_CREATE;
+    case TEMPLATE = ObjectSettingsForm::OPTION_SETTING_TEMPLATE;
 }

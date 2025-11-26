@@ -1,18 +1,33 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\ObjectSettings;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
+
+use ILIAS\DI\Container;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
 
 final class Repository
 {
-    use DICTrait;
-    use OnlyOfficeTrait;
-
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
+    private Container $dic;
 
     public static function getInstance(): self
     {
@@ -25,7 +40,8 @@ final class Repository
 
     private function __construct()
     {
-
+        global $DIC;
+        $this->dic = $DIC;
     }
 
     public function cloneObjectSettings(ObjectSettings $object_settings): ObjectSettings
@@ -38,14 +54,9 @@ final class Repository
         $object_settings->delete();
     }
 
-    public function dropTables(): void/*:void*/
+    public function dropTables(): void
     {
-        self::dic()->database()->dropTable(ObjectSettings::TABLE_NAME, false);
-    }
-
-    public function factory(): Factory
-    {
-        return Factory::getInstance();
+        $this->dic->database()->dropTable(ObjectSettings::TABLE_NAME, false);
     }
 
     public function getObjectSettingsById(int $obj_id): ?ObjectSettings

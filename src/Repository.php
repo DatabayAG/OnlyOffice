@@ -1,17 +1,30 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\Config\Repository as ConfigRepository;
-use srag\Plugins\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice;
+
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
 use ilOnlyOfficePlugin;
-use srag\DIC\OnlyOffice\DICTrait;
 
 final class Repository
 {
-    use DICTrait;
-    use OnlyOfficeTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
 
@@ -29,20 +42,13 @@ final class Repository
 
     }
 
-    public function config(): ConfigRepository
-    {
-        return ConfigRepository::getInstance();
-    }
-
     public function dropTables(): void
     {
-        $this->config()->dropTables();
         $this->objectSettings()->dropTables();
     }
 
     public function installTables(): void
     {
-        $this->config()->installTables();
         $this->objectSettings()->installTables();
     }
 

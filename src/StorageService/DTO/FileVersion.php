@@ -1,20 +1,40 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\DTO;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
 
 use ilDateTime;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
+use ilObjUser;
+use JsonSerializable;
 
-class FileVersion implements \JsonSerializable
+class FileVersion implements JsonSerializable
 {
     public const FIRST_VERSION = 1;
     protected int $version;
     protected ilDateTime $created_at;
     protected int $user_id;
     protected string $url;
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
 
-    public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, UUID $file_uuid)
+    public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, Uuid $file_uuid)
     {
         $this->version = $version;
         $this->created_at = $created_at;
@@ -63,27 +83,26 @@ class FileVersion implements \JsonSerializable
         $this->url = $url;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }
 
-    public function setFileUuid(UUID $uuid): void
+    public function setFileUuid(Uuid $uuid): void
     {
         $this->file_uuid = $uuid;
     }
 
     public function jsonSerialize(): array
     {
-        global $DIC;
-        $user = new \ilObjUser($this->user_id);
+        $user = new ilObjUser($this->user_id);
         return [
             'version' => $this->version,
             'createdAt' => $this->created_at->get(1),
             'userId' => $this->user_id,
             'user' => $user->getPublicName(),
             'url' => $this->url,
-            'uuid' => $this->file_uuid->asString()
+            'uuid' => $this->file_uuid->toString()
         ];
     }
 

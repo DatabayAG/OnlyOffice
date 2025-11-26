@@ -1,26 +1,41 @@
 <?php
 
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+use ILIAS\Data\UUID\Uuid;
 use ILIAS\DI\Container;
-use srag\DIC\OnlyOffice\Exception\DICException;
-use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
-use srag\Plugins\OnlyOffice\StorageService\DTO\File;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\DIC\OnlyOffice\DIC\DICInterface;
-use srag\DIC\OnlyOffice\DICStatic;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\InfoService\InfoService;
-use srag\Plugins\OnlyOffice\CryptoService\JwtService;
-use srag\Plugins\OnlyOffice\CryptoService\WebAccessService;
-use srag\Plugins\OnlyOffice\Utils\DateFetcher;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
+use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
-    use OnlyOfficeTrait;
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
@@ -29,31 +44,31 @@ class xonoEditorGUI extends xonoAbstractGUI
     public const BASE_URL = ILIAS_HTTP_PATH;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
+    private Repository $repo;
+    private ilGlobalTemplateInterface $mainTpl;
 
-    /**
-     * @throws DICException
-     */
     public function __construct(
-        Container $dic,
+        Container          $dic,
         ilOnlyOfficePlugin $plugin,
-        int $object_id
-    ) {
+        int                $object_id
+    )
+    {
         parent::__construct($dic, $plugin);
 
-        $this->onlyoffice_url = InfoService::getOnlyOfficeUrl();
-        $this->onlyoffice_key = InfoService::getSecret();
+        $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
+        $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
 
         $this->file_id = $object_id;
+        $this->repo = Repository::getInstance();
+        $this->mainTpl = $this->dic->ui()->mainTemplate();
+
         $this->afterConstructor();
     }
 
-    /**
-     * @throws DICException
-     */
     protected function afterConstructor(): void
     {
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -66,29 +81,24 @@ class xonoEditorGUI extends xonoAbstractGUI
     }
 
     /**
-     * @throws DICException
      * @throws ilCtrlException
      */
     public function executeCommand(): void
     {
-        self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 
-        switch ($next_class) {
+        switch ($cmd) {
             default:
-                switch ($cmd) {
-                    default:
-                        $this->{$cmd}();
-                        break;
-                }
-
+                $this->{$cmd}();
+                break;
         }
     }
 
     protected function editFile(): void
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id);
+        $object_settings = $this->repo->objectSettings()->getObjectSettingsById($this->file_id);
 
         $file = $this->storage_service->getFile($this->file_id);
         $latest_version = null;
@@ -99,54 +109,77 @@ class xonoEditorGUI extends xonoAbstractGUI
             $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
         }
 
-        $tpl = $this->plugin->getTemplate('html/tpl.editor.html');
+        $this->mainTpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
+        $this->mainTpl->addCss($this->plugin->assetsFile(PluginAsset::Css, "editor.css"));
 
-        $withinPotentialTimelimit = true;
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.editor.html", false), true, true);
 
+        $tpl->setVariable("BACK_BUTTON", $this->plugin->txt("xono_back_button"));
+        $tpl->setVariable("API_SCRIPT_SRC", $this->onlyoffice_url . "/web-apps/apps/api/documents/api.js");
+
+        $withinPotentialTimeLimit = true;
+
+        $editing_period = null;
         if (!is_null($object_settings)) {
-            if (ilObjOnlyOfficeAccess::hasEditFileAccess() === false) {
-                $withinPotentialTimelimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
-                $tpl->setVariable('IS_LIMITED', $object_settings->isLimitedPeriod());
-                $tpl->setVariable('WITHIN_POTENTIAL_TIME_LIMIT', $withinPotentialTimelimit);
-                if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
-                    $editing_period = DateFetcher::fetchEditingPeriod($this->file_id);
-                    $tpl->setVariable('EDIT_PERIOD_TXT', sprintf($this->plugin->txt('editor_edit_period'), $editing_period));
-                    $tpl->setVariable('TIME_UP_TXT', $this->plugin->txt('editor_edit_timeup'));
-                    $tpl->setVariable('TIME_WAS_UP_TXT', $this->plugin->txt('editor_edit_timewasup'));
-                    $tpl->setVariable('START_TIME', $object_settings->getStartTime());
-                    $tpl->setVariable('END_TIME', $object_settings->getEndTime());
-                }
+            $withinPotentialTimeLimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
+            if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
+                $editing_period = DateFetcher::fetchEditingPeriod($this->file_id);
             }
         }
 
-        $tpl->setVariable('BUTTON', $this->plugin->txt('xono_back_button'));
-        $tpl->setVariable('SCRIPT_SRC', $this->onlyoffice_url . '/web-apps/apps/api/documents/api.js');
-        $tpl->setVariable('RETURN', $this->generateReturnUrl());
-
+        $currentVersion = null;
+        $historyData = [];
+        $history = [];
+        $onlyOfficeConfig = [];
         if (!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
             $tpl->setVariable('FILE_TITLE', $file->getTitle());
-            $tpl->setVariable('CONFIG', $this->config($file, $latest_version, $object_settings, $withinPotentialTimelimit));
-            $tpl->setVariable('LATEST', $latest_version->getVersion());
-            $tpl->setVariable('HISTORY_DATA', $this->historyData($all_versions));
-            $tpl->setVariable('HISTORY', $this->history($latest_version, $all_versions));
+            $onlyOfficeConfig = $this->config($file, $latest_version, $object_settings, $withinPotentialTimeLimit);
+            $currentVersion = $latest_version->getVersion();
+            $historyData = $this->historyData($all_versions);
+            $history = $this->history($latest_version, $all_versions);
         }
 
-        $content = $tpl->get();
-        echo $content;
-        exit;
+        $this->mainTpl->addOnLoadCode(
+            "window." . "config_" . ilOnlyOfficePlugin::PLUGIN_ID . " = "
+            . json_encode([
+                "editing" => [
+                    "limited" => $object_settings->isLimitedPeriod(),
+                    "withinTimeLimit" => $withinPotentialTimeLimit,
+                    "startTime" => $object_settings->getStartTime(),
+                    "endTime" => $object_settings->getEndTime(),
+                ],
+                "file" => [
+                    "currentVersion" => $currentVersion,
+                    "historyData" => $historyData,
+                    "history" => $history
+                ],
+                "onlyOfficeConfig" => $onlyOfficeConfig,
+                "backTarget" => $this->generateReturnUrl(),
+            ], JSON_THROW_ON_ERROR)
+        );
 
+        $this->dic->language()->toJSMap([
+            "editor_edit_period" => $editing_period
+                ? sprintf($this->plugin->txt('editor_edit_period'), $editing_period)
+                : "",
+            "editor_edit_timeup" => $this->plugin->txt('editor_edit_timeup'),
+            "editor_edit_timewasup" => $this->plugin->txt('editor_edit_timewasup'),
+        ]);
+
+        $content = $tpl->get();
+        $this->mainTpl->setContent($content);
     }
 
     /**
-     * Builds and returns the config array as string
+     * Builds and returns the config array
      */
-    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): string
+    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): array
     {
         $as_array = []; // Config Array
         $extension = pathinfo($fileVersion->getUrl(), PATHINFO_EXTENSION);
 
         // general config
-        $as_array['documentType'] = File::determineDocType($extension);
+        $as_array['documentType'] = File::determineDocType($extension)->getEditorType();
 
         // document config
         $document = []; // SubArray "document"
@@ -171,38 +204,34 @@ class xonoEditorGUI extends xonoAbstractGUI
             "forcesave" => true];
         $as_array['editorConfig'] = $editor;
 
-        // events config
-        $as_array['events'] = ["onRequestHistory" => "#!!onRequestHistory!!#",
-                                    "onRequestHistoryData" => "#!!onRequestHistoryData!!#",
-                                    "onDocumentStateChange" => "#!!onDocumentStateChange!!#",
-                                    "onAppReady" => "#!!onAppReady!!#"
+        // events config // function added/set in js code
+        $as_array['events'] = [
+            "onRequestHistory" => "",
+            "onRequestHistoryData" => "",
+            "onDocumentStateChange" => "",
+            "onAppReady" => ""
         ];
 
         // add token
         $token = JwtService::jwtEncode($as_array, $this->onlyoffice_key);
         $as_array['token'] = $token;
 
-        // convert to valid string
-        $result = json_encode($as_array);
-        $result = str_replace('"#!!', '', $result);
-        $result = str_replace('!!#"', '', $result);
-        return $result;
-
+        return $as_array;
     }
 
     /**
-     * Builds and returns an array containing the version history of a file as string
+     * Builds and returns an array containing the version history of a file
      */
-    protected function history(FileVersion $latestVersion, array $all_versions): string
+    protected function history(FileVersion $latestVersion, array $all_versions): array
     {
-        $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid()->asString());
+        $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid()->toString());
         $history_array = [];
 
         // add all versions to history
         foreach ($all_versions as $version) {
             $v = $version->getVersion();
             $info_array = [
-                "changes" => '#!!JSON.parse("' . $all_changes[$v]->getChangesObjectString() . '")!!#',
+                "changes" => json_decode($all_changes[$v]->getChangesObjectString(), true),
                 "created" => rtrim($version->getCreatedAt()->__toString(), '<br>'),
                 "key" => $this->generateDocumentKey($version),
                 "serverVersion" => $all_changes[$v]->getServerVersion(),
@@ -212,28 +241,19 @@ class xonoEditorGUI extends xonoAbstractGUI
             $history_array[] = $info_array;
         }
 
-        // convert to valid string
-        $result = json_encode($history_array);
-        $result = str_replace('(\"[{', '("[{', $result);
-        $result = str_replace('}]\")', '}]")', $result);
-        $result = str_replace('(\"{', '("{', $result);
-        $result = str_replace('}\")', '}")', $result);
-        $result = str_replace('"#!!', '', $result);
-        $result = str_replace('!!#"', '', $result);
-
-        return $result;
+        return $history_array;
     }
 
     /**
-     * Builds and returns an array containing information about all file versions (as string)
+     * Builds and returns an array containing information about all file versions
      */
-    protected function historyData(array $allVersions): string
+    protected function historyData(array $allVersions): array
     {
         $result = [];
         foreach ($allVersions as $version) {
             $data_array = [];
             $v = $version->getVersion();
-            $uuid = $version->getFileUuid()->asString();
+            $uuid = $version->getFileUuid()->toString();
 
             $change_url = $this->storage_service->getChangeUrl($uuid, $v);
             $data_array['changesUrl'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($change_url), '.');
@@ -254,7 +274,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $result[$v] = $data_array;
 
         }
-        return json_encode($result);
+        return $result;
     }
 
     /* --- Helper Methods --- */
@@ -272,10 +292,10 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * generates the callback URL for the only office document server
      */
-    protected function generateCallbackUrl(UUID $file_uuid, int $file_id, string $extension): string
+    protected function generateCallbackUrl(Uuid $file_uuid, int $file_id, string $extension): string
     {
         $path = 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/save.php?' .
-            '&uuid=' . $file_uuid->asString() .
+            '&uuid=' . $file_uuid->toString() .
             '&file_id=' . $file_id .
             '&client_id=' . CLIENT_ID .
             '&ext=' . $extension;
@@ -284,17 +304,17 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function generateDocumentKey(FileVersion $fv): string
     {
-        return $fv->getFileUuid()->asString() . '-' . $fv->getVersion();
+        return $fv->getFileUuid()->toString() . '-' . $fv->getVersion();
     }
 
     protected function buildPreviousArray(FileVersion $version): array
     {
         $result = [];
         $previous = $this->storage_service->getPreviousVersion(
-            $version->getFileUuid()->asString(),
+            $version->getFileUuid()->toString(),
             $version->getVersion()
         );
-        $key = $previous->getFileUuid()->asString() . '-' . $previous->getVersion();
+        $key = $previous->getFileUuid()->toString() . '-' . $previous->getVersion();
         $result['key'] = $key;
         $url = self::BASE_URL . ltrim(WebAccessService::getWACUrl($previous->getUrl()), '.');
         $result['url'] = $url;
@@ -317,24 +337,15 @@ class xonoEditorGUI extends xonoAbstractGUI
     {
         if (
             (
-                self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
+                $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
                 &&
                 $withinPotentialTimeLimit
             )
             || ilObjOnlyOfficeAccess::hasEditFileAccess()
         ) {
             return "edit";
-        } else {
-            return "view";
         }
-    }
 
-    /**
-     * Get DIC interface
-     * @throws DICException
-     */
-    final protected static function dic(): DICInterface
-    {
-        return DICStatic::dic();
+        return "view";
     }
 }

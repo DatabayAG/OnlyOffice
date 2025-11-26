@@ -1,9 +1,8 @@
 <?php
 
-require_once __DIR__ . "/vendor/srag/dic/src/PHPVersionChecker.php";
 $id = "xono";
-$version = "2025.09.16";
-$ilias_min_version = "9.0";
-$ilias_max_version = "9.999";
+$version = "2026.11.11";
+$ilias_min_version = "10.0";
+$ilias_max_version = "10.999";
 $responsible = "Marvin Beym";
 $responsible_mail = "mbeym@databay.de";

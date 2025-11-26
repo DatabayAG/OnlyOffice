@@ -1,29 +1,44 @@
 <?php
 
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
 use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Refinery\Factory;
-use srag\DIC\OnlyOffice\DIC\DICInterface;
-use srag\DIC\OnlyOffice\DICStatic;
-use srag\Plugins\OnlyOffice\InfoService\InfoService;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileVersion;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\Utils\DateFetcher;
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoContentGUI extends xonoAbstractGUI
 {
-    use OnlyOfficeTrait;
-
     public const BASE_URL = ILIAS_HTTP_PATH;
 
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     protected int $file_id;
-    private $tpl;
+    private ilGlobalTemplateInterface $tpl;
 
     public const CMD_STANDARD = 'showVersions';
     public const CMD_SHOW_VERSIONS = 'showVersions';
@@ -31,30 +46,30 @@ class xonoContentGUI extends xonoAbstractGUI
     public const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
     private Factory $refinery;
     private WrapperFactory $httpWrapper;
+    private Repository $repo;
 
     public function __construct(
-        Container          $dic,
+        Container $dic,
         ilOnlyOfficePlugin $plugin,
-        int                $object_id
-    )
-    {
-        global $DIC;
+        int $object_id
+    ) {
 
-        $this->refinery = $DIC->refinery();
-        $this->httpWrapper = $DIC->http()->wrapper();
+        $this->refinery = $dic->refinery();
+        $this->httpWrapper = $dic->http()->wrapper();
 
         parent::__construct($dic, $plugin);
         $this->file_id = $object_id;
-        $this->tpl = $DIC["tpl"];
+        $this->tpl = $dic->ui()->mainTemplate();
+        $this->repo = Repository::getInstance();
 
         $this->afterConstructor();
     }
 
-    protected function afterConstructor()/*: void*/
+    protected function afterConstructor(): void
     {
 
         $this->storage_service = new StorageService(
-            self::dic()->dic(),
+            $this->dic,
             new ilDBFileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
@@ -66,28 +81,26 @@ class xonoContentGUI extends xonoAbstractGUI
         return ilOnlyOfficePlugin::PLUGIN_ID;
     }
 
-    public function executeCommand()
+    public function executeCommand(): void
     {
-        self::dic()->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
+        $this->dic->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
 
-        self::dic()->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 
-        switch (strtolower($next_class)) {
-            case strtolower(xonoEditorGUI::class):
-                $xono_editor = new xonoEditorGUI($this->dic, $this->plugin, $this->file_id);
-                $this->dic->ctrl()->forwardCommand($xono_editor);
-                break;
-            default:
-                switch ($cmd) {
-                    case self::CMD_EDIT:
-                        $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-                        break;
-                    default:
-                        $this->{$cmd}();
-                        break;
-                }
+        if (strtolower($next_class) === strtolower(xonoEditorGUI::class)) {
+            $xono_editor = new xonoEditorGUI($this->dic, $this->plugin, $this->file_id);
+            $this->dic->ctrl()->forwardCommand($xono_editor);
+        } else {
+            switch ($cmd) {
+                case self::CMD_EDIT:
+                    $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
+                    break;
+                default:
+                    $this->{$cmd}();
+                    break;
+            }
         }
     }
 
@@ -95,7 +108,7 @@ class xonoContentGUI extends xonoAbstractGUI
      * Fetches the information about all versions of a file from the database
      * Renders the GUI for content
      */
-    protected function showVersions()
+    protected function showVersions(): void
     {
         /** @var FileVersion[] $fileVersions */
         $fileVersions = $this->storage_service->getAllVersions($this->file_id);
@@ -107,7 +120,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         $this->tpl->setOnScreenMessage('info', $this->plugin->txt("xono_reload_info"), true);
 
-        $tpl = $this->plugin->getTemplate('html/tpl.file_history.html');
+        $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.file_history.html", false), true, true);
         $tpl->setVariable('VERSION', $this->plugin->txt('xono_version'));
         $tpl->setVariable('CREATED', $this->plugin->txt('xono_date'));
         $tpl->setVariable('EDITOR', $this->plugin->txt('xono_editor'));
@@ -115,7 +128,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $tpl->setVariable('FORWARD', $this->buttonTarget());
         $tpl->setVariable('BUTTON', $this->buttonName());
 
-        $limit = InfoService::getNumberOfVersions();
+        $limit = (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, "10");
         $fileVersionsAdded = 0;
         foreach ($fileVersions as $fileVersion) {
             if ($fileVersionsAdded >= $limit) {
@@ -123,10 +136,13 @@ class xonoContentGUI extends xonoAbstractGUI
             }
             $user = new ilObjUser($fileVersion->getUserId());
             $tpl->setVariable('TABLE_ROW_VERSION', $fileVersion->getVersion());
-            $tpl->setVariable('TABLE_ROW_CREATED_AT', $fileVersion->getCreatedAt()->get(
-                IL_CAL_FKT_DATE,
-                'd.m.Y H:i',
-                self::dic()->user()->getTimeZone())
+            $tpl->setVariable(
+                'TABLE_ROW_CREATED_AT',
+                $fileVersion->getCreatedAt()->get(
+                    IL_CAL_FKT_DATE,
+                    'd.m.Y H:i',
+                    $this->dic->user()->getTimeZone()
+                )
             );
             $tpl->setVariable('TABLE_ROW_USER', $user->getPublicName());
             $this->dic->ctrl()->setParameter($this, "version", $fileVersion->getVersion());
@@ -148,7 +164,7 @@ class xonoContentGUI extends xonoAbstractGUI
     /**
      * Delivers a file version for download
      */
-    protected function downloadFileVersion()
+    protected function downloadFileVersion(): never
     {
         $requestedVersion = $this->httpWrapper->query()->retrieve(
             "version",
@@ -159,7 +175,7 @@ class xonoContentGUI extends xonoAbstractGUI
         );
 
         if ($requestedVersion === null) {
-            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+            $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
         /** @var FileVersion $version */
@@ -174,11 +190,11 @@ class xonoContentGUI extends xonoAbstractGUI
         $file = $this->storage_service->getFile($this->file_id);
 
         if (!$fileVersion || !$file) {
-            $this->dic->ctrl()->redirectByClass(xonoContentGUI::class, xonoContentGUI::CMD_SHOW_VERSIONS);
+            $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
 
         }
 
-        $path = ILIAS_ABSOLUTE_PATH . '/data/' . CLIENT_ID . $fileVersion->getUrl();
+        $path = ILIAS_ABSOLUTE_PATH . '/public/data/' . CLIENT_ID . $fileVersion->getUrl();
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
         $fileName = rtrim($file->getTitle(), '.' . $ext);
         ilFileDelivery::deliverFileAttached(
@@ -193,7 +209,7 @@ class xonoContentGUI extends xonoAbstractGUI
      * Determines the button name based on the object settings and RBAC
      * @return string
      */
-    protected function buttonName()
+    protected function buttonName(): string
     {
         //
         //todo if works place this to ilObjOnlyOfficeAccess
@@ -208,7 +224,7 @@ class xonoContentGUI extends xonoAbstractGUI
         //setting ALLOW_EDIT is checked
         //setting EDITING_PERIOD is not configured
         if (
-            self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
+            $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
             &&
             DateFetcher::editingPeriodIsFetchable($this->file_id) === false
         ) {
@@ -219,7 +235,7 @@ class xonoContentGUI extends xonoAbstractGUI
         //setting EDITING_PERIOD is configured
         //current time is within configured EDITING_PERIOD
         if (
-            self::onlyOffice()->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
+            $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
             &&
             DateFetcher::editingPeriodIsFetchable($this->file_id) === true
             &&
@@ -228,30 +244,19 @@ class xonoContentGUI extends xonoAbstractGUI
             $allowEdit = true;
         }
 
-        ////
-
         if ($allowEdit === true) {
             return $this->plugin->txt('xono_edit_button');
-        } else {
-            return $this->plugin->txt('xono_view_button');
         }
+
+        return $this->plugin->txt('xono_view_button');
     }
 
     /**
      * generates and returns the target URL for the button
      */
-    protected function buttonTarget()
+    protected function buttonTarget(): string
     {
         return $this->dic->ctrl()->getLinkTargetByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-    }
-
-    /**
-     * Get DIC interface
-     * @return DICInterface DIC interface
-     */
-    final protected static function dic(): DICInterface
-    {
-        return DICStatic::dic();
     }
 
 }

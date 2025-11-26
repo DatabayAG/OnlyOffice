@@ -1,9 +1,27 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
-use srag\Plugins\OnlyOffice\StorageService\DTO\FileChange;
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
+
+use ILIAS\Data\UUID\Uuid;
+use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 interface FileChangeRepository
 {
@@ -13,13 +31,17 @@ interface FileChangeRepository
      * @return mixed
      */
     public function create(
-        UUID $file_uuid,
+        Uuid $file_uuid,
         int $version,
         string $changesObjectString,
         string $serverVersion,
         string $changesUrl
     );
 
+    /**
+     * @param string $uuid
+     * @return array<int, FileChange>
+     */
     public function getAllChanges(string $uuid): array;
 
     public function getChange(string $uuid, int $version): FileChange;

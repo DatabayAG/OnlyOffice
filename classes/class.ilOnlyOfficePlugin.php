@@ -1,29 +1,44 @@
 <?php
 
-require_once __DIR__ . "/../vendor/autoload.php";
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\RemovePluginDataConfirm\OnlyOffice\RepositoryObjectPluginUninstallTrait;
-use srag\Plugins\OnlyOffice\StorageService\StorageService;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use srag\Plugins\OnlyOffice\ObjectSettings\ObjectSettings;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\File\FileAR;
+declare(strict_types=1);
+
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 /**
  *         Sophie Pfister <sophie@fluxlabs.ch>
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    use RepositoryObjectPluginUninstallTrait;
-    use OnlyOfficeTrait;
-
     public const PLUGIN_ID = "xono";
     public const PLUGIN_NAME = "OnlyOffice";
     public const PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
+    private Repository $repo;
+    public ilSetting $settings;
 
     public static function getInstance(): self
     {
@@ -33,7 +48,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
             /** @var $component_factory ilComponentFactory */
             $component_factory = $DIC['component.factory'];
             /** @var $plugin ilOnlyOfficePlugin */
-            $plugin = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+            $plugin = $component_factory->getPlugin(self::PLUGIN_ID);
 
             static::$instance = $plugin;
         }
@@ -48,6 +63,9 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     ) {
         global $DIC;
         parent::__construct($db, $component_repository, $id);
+        $this->repo = Repository::getInstance();
+        $this->settings = new ilSetting(self::PLUGIN_ID . "_config");
+
         $this->db = $DIC->database();
     }
 
@@ -56,16 +74,9 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return self::PLUGIN_NAME;
     }
 
-    public function updateLanguages(/*?array*/ $a_lang_keys = null): void
-    {
-        parent::updateLanguages($a_lang_keys);
-
-        $this->installRemovePluginDataConfirmLanguages();
-    }
-
     protected function deleteData(): void
     {
-        self::onlyOffice()->dropTables();
+        $this->repo->dropTables();
     }
 
     protected function shouldUseOneUpdateStepOnly(): bool
@@ -73,13 +84,18 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return false;
     }
 
-    protected function uninstallCustom(): void
+    protected function beforeUninstallCustom(): bool
     {
-        require_once("./Services/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
+        require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
         $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
-        ilDBUpdateNewObjectType::deleteRBACOperation($type, $op_id);
+        ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
 
+        return parent::beforeUninstallCustom();
+    }
+
+    protected function uninstallCustom(): void
+    {
         // Delete all file data
         global $DIC;
         $all_files = FileAR::get();
@@ -102,5 +118,26 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     public function allowCopy(): bool
     {
         return true;
+    }
+
+    public static function _getIcon(string $a_type): string
+    {
+        // ILIAS Core plugin path fix (Mantis #45866)
+        return str_replace(
+            ILIAS_ABSOLUTE_PATH . "/public/",
+            "",
+            realpath(parent::_getIcon($a_type))
+        );
+    }
+
+    public function getRelativeDirectory(): string
+    {
+        return str_replace(ILIAS_ABSOLUTE_PATH . "/public/", "", realpath($this->getDirectory()));
+    }
+
+    public function assetsFile(PluginAsset $assetType, string $file, bool $relative = true): string
+    {
+        $basePath = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
+        return $basePath . "/assets/" . $assetType->value . "/" . $file;
     }
 }

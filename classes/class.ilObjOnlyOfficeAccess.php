@@ -1,15 +1,32 @@
 <?php
 
-require_once __DIR__ . "/../vendor/autoload.php";
-use srag\Plugins\OnlyOffice\Utils\OnlyOfficeTrait;
-use srag\DIC\OnlyOffice\DICTrait;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Repository;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-    use DICTrait;
-    use OnlyOfficeTrait;
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
+
+    private Container $dic;
 
     public static function getInstance(): self
     {
@@ -23,43 +40,37 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public function __construct()
     {
         parent::__construct();
+        global $DIC;
+        $this->dic = $DIC;
     }
 
-    public function _checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
+    public function _checkAccess(string $cmd, string $permission, ?int $ref_id = null, ?int $obj_id = null, ?int $user_id = null): bool
     {
-        if ($a_ref_id === null) {
-            $a_ref_id = filter_input(INPUT_GET, "ref_id");
+        if ($ref_id === null) {
+            $ref_id = (int) filter_input(INPUT_GET, "ref_id");
         }
 
-        if ($a_obj_id === null) {
-            $a_obj_id = ilObjOnlyOffice::_lookupObjectId($a_ref_id);
+        if ($obj_id === null) {
+            $obj_id = ilObjOnlyOffice::_lookupObjectId($ref_id);
         }
 
-        if ($a_user_id == null) {
-            $a_user_id = self::dic()->user()->getId();
+        if ($user_id === null) {
+            $user_id = $this->dic->user()->getId();
         }
 
-        switch ($a_permission) {
-            case "visible":
-            case "read":
-                return boolval((self::dic()->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id) && !self::_isOffline($a_obj_id))
-                    || self::dic()->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
-
-            case "delete":
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, "delete", "", $a_ref_id)
-                    || self::dic()->access()->checkAccessOfUser($a_user_id, "write", "", $a_ref_id));
-            case "editFile":
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, "rep_robj_xono_perm_editFile", "", $a_ref_id));
-            case "write":
-            case "edit_permission":
-            default:
-                return boolval(self::dic()->access()->checkAccessOfUser($a_user_id, $a_permission, "", $a_ref_id));
-        }
+        return match ($permission) {
+            "visible", "read" => ($this->dic->access()->checkAccessOfUser($user_id, $permission, "", $ref_id) && !self::_isOffline($obj_id))
+                || $this->dic->access()->checkAccessOfUser($user_id, "write", "", $ref_id),
+            "delete" => $this->dic->access()->checkAccessOfUser($user_id, "delete", "", $ref_id)
+                || $this->dic->access()->checkAccessOfUser($user_id, "write", "", $ref_id),
+            "editFile" => $this->dic->access()->checkAccessOfUser($user_id, "rep_robj_xono_perm_editFile", "", $ref_id),
+            default => $this->dic->access()->checkAccessOfUser($user_id, $permission, "", $ref_id),
+        };
     }
 
-    protected static function checkAccess(string $a_cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
+    protected static function checkAccess(string $cmd, string $a_permission, ?int $a_ref_id = null, ?int $a_obj_id = null, ?int $a_user_id = null): bool
     {
-        return self::getInstance()->_checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id);
+        return self::getInstance()->_checkAccess($cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id);
     }
 
     public static function redirectNonAccess($class, string $cmd = ""): void
@@ -69,27 +80,27 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
-        $tpl = $DIC["tpl"];
+        $tpl = $DIC->ui()->mainTemplate();
         $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
 
         if (is_object($class)) {
-            self::dic()->ctrl()->clearParameters($class);
-            self::dic()->ctrl()->redirect($class, $cmd);
+            $DIC->ctrl()->clearParameters($class);
+            $DIC->ctrl()->redirect($class, $cmd);
         } else {
-            self::dic()->ctrl()->clearParametersByClass($class);
-            self::dic()->ctrl()->redirectByClass($class, $cmd);
+            $DIC->ctrl()->clearParametersByClass($class);
+            $DIC->ctrl()->redirectByClass($class, $cmd);
         }
     }
 
-    public static function _isOffline(?int $a_obj_id): bool
+    public static function _isOffline(?int $obj_id): bool
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById(intval($a_obj_id));
+        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById(intval($obj_id));
 
         if ($object_settings !== null) {
             return (!$object_settings->isOnline());
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     public static function hasVisibleAccess(?int $ref_id = null): bool

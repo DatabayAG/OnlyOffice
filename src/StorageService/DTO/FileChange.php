@@ -1,13 +1,31 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\DTO;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
+
+use ILIAS\Data\UUID\Uuid;
 
 class FileChange
 {
     protected int $change_id;
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
     protected int $version;
     protected string $changesObjectString;
     protected string $serverVersion;
@@ -15,7 +33,7 @@ class FileChange
 
     public function __construct(
         int $change_id,
-        UUID $file_uuid,
+        Uuid $file_uuid,
         int $version,
         string $changesObjectString,
         string $serverVersion,
@@ -39,12 +57,12 @@ class FileChange
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid): void
+    public function setFileUuid(Uuid $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }

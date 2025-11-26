@@ -1,80 +1,48 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\DTO;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
 
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
+
+use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Data\UUID\Uuid;
 
 class File
 {
-    protected UUID $uuid;
+    protected Uuid $uuid;
     protected int $obj_id;
     protected string $title;
     protected string $file_type;
     protected string $mime_type;
 
-    /**
-     * Determines the doc type (word, cell, or slide) based on the file extension
-     */
-    public static function determineDocType(string $extension, bool $formatForEditor = true): string
+    public static function determineDocType(string $extension): FileCreationType
     {
-        switch ($extension) {
-            case "pptx":
-            case "fodp":
-            case "odp":
-            case "otp":
-            case "pot":
-            case "potm":
-            case "potx":
-            case "pps":
-            case "ppsm":
-            case "ppsx":
-            case "ppt":
-            case "pptm":
-                if ($formatForEditor) {
-                    return "slide";
-                }
-                return "presentation";
-            case "xlsx":
-            case "csv":
-            case "fods":
-            case "ods":
-            case "ots":
-            case "xls":
-            case "xlsm":
-            case "xlt":
-            case "xltm":
-            case "xltx":
-                if ($formatForEditor) {
-                    return "cell";
-                }
-                return "table";
-            case "doc":
-            case "docx":
-            case "dotx":
-            case "fb2":
-            case "odt":
-            case "ott":
-            case "rtf":
-            case "txt":
-            case "pdf":
-            case "pdf/a":
-            case "html":
-            case "epub":
-            case "xps":
-            case "djvu":
-            case "xml":
-            case "docxf":
-            case "oform":
-                if ($formatForEditor) {
-                    return "word";
-                }
-                return "text";
-            default:
-                return "";
-        }
+        return match ($extension) {
+            "pptx", "fodp", "odp", "otp", "pot", "potm", "potx", "pps", "ppsm", "ppsx", "ppt", "pptm" => FileCreationType::PRESENTATION,
+            "xlsx", "csv", "fods", "ods", "ots", "xls", "xlsm", "xlt", "xltm", "xltx" => FileCreationType::TABLE,
+            "doc", "docx", "dotx", "fb2", "odt", "ott", "rtf", "txt", "pdf", "pdf/a", "html", "epub", "xps", "djvu", "xml", "docxf", "oform" => FileCreationType::TEXT,
+            default => FileCreationType::NONE // Should never be reached.
+        };
+
     }
 
-    public function __construct(UUID $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
+    public function __construct(Uuid $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
     {
         $this->uuid = $uuid;
         $this->title = $title;
@@ -83,7 +51,7 @@ class File
         $this->mime_type = $mime_type;
     }
 
-    public function getUuid(): UUID
+    public function getUuid(): Uuid
     {
         return $this->uuid;
     }
@@ -103,7 +71,7 @@ class File
         return $this->file_type;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->uuid;
     }

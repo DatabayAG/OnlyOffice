@@ -20,17 +20,16 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
     );
 
     public static $prefixLengthsPsr4 = array (
-        's' => 
+        's' =>
         array (
             'srag\\RemovePluginDataConfirm\\OnlyOffice\\' => 40,
-            'srag\\Plugins\\OnlyOffice\\' => 24,
             'srag\\LibraryLanguageInstaller\\OnlyOffice\\' => 41,
             'srag\\LibrariesNamespaceChanger\\' => 31,
             'srag\\DIC\\OnlyOffice\\' => 20,
             'srag\\CustomInputGUIs\\OnlyOffice\\' => 32,
             'srag\\ActiveRecordConfig\\OnlyOffice\\' => 35,
         ),
-        'S' => 
+        'S' =>
         array (
             'Symfony\\Polyfill\\Php81\\' => 23,
             'Symfony\\Polyfill\\Php80\\' => 23,
@@ -52,7 +51,7 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'SebastianFeldmann\\Cli\\' => 22,
             'SebastianFeldmann\\Camino\\' => 25,
         ),
-        'R' => 
+        'R' =>
         array (
             'React\\Stream\\' => 13,
             'React\\Socket\\' => 13,
@@ -64,22 +63,26 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
-        'P' => 
+        'P' =>
         array (
             'Psr\\Log\\' => 8,
             'Psr\\EventDispatcher\\' => 20,
             'Psr\\Container\\' => 14,
             'PhpCsFixer\\' => 11,
         ),
-        'F' => 
+        'I' =>
+        array (
+            'ILIAS\\Plugin\\OnlyOffice\\' => 24,
+        ),
+        'F' =>
         array (
             'Fidry\\CpuCoreCounter\\' => 21,
         ),
-        'E' => 
+        'E' =>
         array (
             'Evenement\\' => 10,
         ),
-        'C' => 
+        'C' =>
         array (
             'Composer\\XdebugHandler\\' => 23,
             'Composer\\Semver\\' => 16,
@@ -88,202 +91,202 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
             'CaptainHook\\Secrets\\' => 20,
             'CaptainHook\\App\\' => 16,
         ),
-        'B' => 
+        'B' =>
         array (
             'Brick\\Math\\' => 11,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'srag\\RemovePluginDataConfirm\\OnlyOffice\\' => 
+        'srag\\RemovePluginDataConfirm\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/removeplugindataconfirm/src',
         ),
-        'srag\\Plugins\\OnlyOffice\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src',
-        ),
-        'srag\\LibraryLanguageInstaller\\OnlyOffice\\' => 
+        'srag\\LibraryLanguageInstaller\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/librarylanguageinstaller/src',
         ),
-        'srag\\LibrariesNamespaceChanger\\' => 
+        'srag\\LibrariesNamespaceChanger\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src',
         ),
-        'srag\\DIC\\OnlyOffice\\' => 
+        'srag\\DIC\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/dic/src',
         ),
-        'srag\\CustomInputGUIs\\OnlyOffice\\' => 
+        'srag\\CustomInputGUIs\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/custominputguis/src',
         ),
-        'srag\\ActiveRecordConfig\\OnlyOffice\\' => 
+        'srag\\ActiveRecordConfig\\OnlyOffice\\' =>
         array (
             0 => __DIR__ . '/..' . '/srag/activerecordconfig/src',
         ),
-        'Symfony\\Polyfill\\Php81\\' => 
+        'Symfony\\Polyfill\\Php81\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php81',
         ),
-        'Symfony\\Polyfill\\Php80\\' => 
+        'Symfony\\Polyfill\\Php80\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
         ),
-        'Symfony\\Polyfill\\Mbstring\\' => 
+        'Symfony\\Polyfill\\Mbstring\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
         ),
-        'Symfony\\Polyfill\\Intl\\Normalizer\\' => 
+        'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
         ),
-        'Symfony\\Polyfill\\Intl\\Grapheme\\' => 
+        'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme',
         ),
-        'Symfony\\Polyfill\\Ctype\\' => 
+        'Symfony\\Polyfill\\Ctype\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
         ),
-        'Symfony\\Contracts\\Service\\' => 
+        'Symfony\\Contracts\\Service\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/service-contracts',
         ),
-        'Symfony\\Contracts\\EventDispatcher\\' => 
+        'Symfony\\Contracts\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
-        'Symfony\\Component\\String\\' => 
+        'Symfony\\Component\\String\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
         ),
-        'Symfony\\Component\\Stopwatch\\' => 
+        'Symfony\\Component\\Stopwatch\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/stopwatch',
         ),
-        'Symfony\\Component\\Process\\' => 
+        'Symfony\\Component\\Process\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/process',
         ),
-        'Symfony\\Component\\OptionsResolver\\' => 
+        'Symfony\\Component\\OptionsResolver\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/options-resolver',
         ),
-        'Symfony\\Component\\Finder\\' => 
+        'Symfony\\Component\\Finder\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/finder',
         ),
-        'Symfony\\Component\\Filesystem\\' => 
+        'Symfony\\Component\\Filesystem\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/filesystem',
         ),
-        'Symfony\\Component\\EventDispatcher\\' => 
+        'Symfony\\Component\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/event-dispatcher',
         ),
-        'Symfony\\Component\\Console\\' => 
+        'Symfony\\Component\\Console\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/console',
         ),
-        'SebastianFeldmann\\Git\\' => 
+        'SebastianFeldmann\\Git\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/git/src',
         ),
-        'SebastianFeldmann\\Cli\\' => 
+        'SebastianFeldmann\\Cli\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/cli/src',
         ),
-        'SebastianFeldmann\\Camino\\' => 
+        'SebastianFeldmann\\Camino\\' =>
         array (
             0 => __DIR__ . '/..' . '/sebastianfeldmann/camino/src',
         ),
-        'React\\Stream\\' => 
+        'React\\Stream\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/stream/src',
         ),
-        'React\\Socket\\' => 
+        'React\\Socket\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/socket/src',
         ),
-        'React\\Promise\\' => 
+        'React\\Promise\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/promise/src',
         ),
-        'React\\EventLoop\\' => 
+        'React\\EventLoop\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/event-loop/src',
         ),
-        'React\\Dns\\' => 
+        'React\\Dns\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/dns/src',
         ),
-        'React\\ChildProcess\\' => 
+        'React\\ChildProcess\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/child-process/src',
         ),
-        'React\\Cache\\' => 
+        'React\\Cache\\' =>
         array (
             0 => __DIR__ . '/..' . '/react/cache/src',
         ),
-        'Ramsey\\Uuid\\' => 
+        'Ramsey\\Uuid\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
         ),
-        'Ramsey\\Collection\\' => 
+        'Ramsey\\Collection\\' =>
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
-        'Psr\\Log\\' => 
+        'Psr\\Log\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
         ),
-        'Psr\\EventDispatcher\\' => 
+        'Psr\\EventDispatcher\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/event-dispatcher/src',
         ),
-        'Psr\\Container\\' => 
+        'Psr\\Container\\' =>
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
         ),
-        'PhpCsFixer\\' => 
+        'PhpCsFixer\\' =>
         array (
             0 => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src',
         ),
-        'Fidry\\CpuCoreCounter\\' => 
+        'ILIAS\\Plugin\\OnlyOffice\\' =>
+        array (
+            0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Fidry\\CpuCoreCounter\\' =>
         array (
             0 => __DIR__ . '/..' . '/fidry/cpu-core-counter/src',
         ),
-        'Evenement\\' => 
+        'Evenement\\' =>
         array (
             0 => __DIR__ . '/..' . '/evenement/evenement/src',
         ),
-        'Composer\\XdebugHandler\\' => 
+        'Composer\\XdebugHandler\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/xdebug-handler/src',
         ),
-        'Composer\\Semver\\' => 
+        'Composer\\Semver\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/semver/src',
         ),
-        'Composer\\Pcre\\' => 
+        'Composer\\Pcre\\' =>
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
         ),
-        'Clue\\React\\NDJson\\' => 
+        'Clue\\React\\NDJson\\' =>
         array (
             0 => __DIR__ . '/..' . '/clue/ndjson-react/src',
         ),
-        'CaptainHook\\Secrets\\' => 
+        'CaptainHook\\Secrets\\' =>
         array (
             0 => __DIR__ . '/..' . '/captainhook/secrets/src',
         ),
-        'CaptainHook\\App\\' => 
+        'CaptainHook\\App\\' =>
         array (
             0 => __DIR__ . '/..' . '/captainhook/captainhook/src',
         ),
-        'Brick\\Math\\' => 
+        'Brick\\Math\\' =>
         array (
             0 => __DIR__ . '/..' . '/brick/math/src',
         ),
@@ -602,6 +605,40 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
         'Fidry\\CpuCoreCounter\\Finder\\_NProcessorFinder' => __DIR__ . '/..' . '/fidry/cpu-core-counter/src/Finder/_NProcessorFinder.php',
         'Fidry\\CpuCoreCounter\\NumberOfCpuCoreNotFound' => __DIR__ . '/..' . '/fidry/cpu-core-counter/src/NumberOfCpuCoreNotFound.php',
         'Fidry\\CpuCoreCounter\\ParallelisationResult' => __DIR__ . '/..' . '/fidry/cpu-core-counter/src/ParallelisationResult.php',
+        'ILIAS\\Plugin\\OnlyOffice\\CryptoService\\JwtService' => __DIR__ . '/../..' . '/src/CryptoService/JwtService.php',
+        'ILIAS\\Plugin\\OnlyOffice\\CryptoService\\WebAccessService' => __DIR__ . '/../..' . '/src/CryptoService/WebAccessService.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileCreationType' => __DIR__ . '/../..' . '/src/Enum/FileCreationType.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Enum\\FileMode' => __DIR__ . '/../..' . '/src/Enum/FileMode.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Enum\\OpenSetting' => __DIR__ . '/../..' . '/src/Enum/OpenSetting.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Enum\\PluginAsset' => __DIR__ . '/../..' . '/src/Enum/PluginAsset.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\ObjectSettingsForm' => __DIR__ . '/../..' . '/src/Form/ObjectSettingsForm.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\PluginConfigForm' => __DIR__ . '/../..' . '/src/Form/PluginConfigForm.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\Property\\AllowEditProperty' => __DIR__ . '/../..' . '/src/Form/Property/AllowEditProperty.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\Property\\FileSettingProperty' => __DIR__ . '/../..' . '/src/Form/Property/FileSettingProperty.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\Property\\OpenSettingProperty' => __DIR__ . '/../..' . '/src/Form/Property/OpenSettingProperty.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Form\\TemplateForm' => __DIR__ . '/../..' . '/src/Form/TemplateForm.php',
+        'ILIAS\\Plugin\\OnlyOffice\\ObjectSettings\\Factory' => __DIR__ . '/../..' . '/src/ObjectSettings/Factory.php',
+        'ILIAS\\Plugin\\OnlyOffice\\ObjectSettings\\ObjectSettings' => __DIR__ . '/../..' . '/src/ObjectSettings/ObjectSettings.php',
+        'ILIAS\\Plugin\\OnlyOffice\\ObjectSettings\\Repository' => __DIR__ . '/../..' . '/src/ObjectSettings/Repository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Repository' => __DIR__ . '/../..' . '/src/Repository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\DTO\\File' => __DIR__ . '/../..' . '/src/StorageService/DTO/File.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\DTO\\FileChange' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileChange.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\DTO\\FileTemplate' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileTemplate.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\DTO\\FileVersion' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileVersion.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\FileSystem\\FileSystemService' => __DIR__ . '/../..' . '/src/StorageService/FileSystem/FileSystemService.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileAR.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileChangeAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileChangeAR.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileChangeRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileChangeRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileVersionAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileVersionAR.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileVersionRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileVersionRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileChangeRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileChangeRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileVersionRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileVersionRepository.php',
+        'ILIAS\\Plugin\\OnlyOffice\\StorageService\\StorageService' => __DIR__ . '/../..' . '/src/StorageService/StorageService.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Upload\\UploadHandler' => __DIR__ . '/../..' . '/src/Upload/UploadHandler.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Utils\\DateFetcher' => __DIR__ . '/../..' . '/src/Utils/DateFetcher.php',
+        'ILIAS\\Plugin\\OnlyOffice\\Utils\\FileSanitizer' => __DIR__ . '/../..' . '/src/Utils/FileSanitizer.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
         'PhpCsFixer\\AbstractDoctrineAnnotationFixer' => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src/AbstractDoctrineAnnotationFixer.php',
         'PhpCsFixer\\AbstractFixer' => __DIR__ . '/..' . '/friendsofphp/php-cs-fixer/src/AbstractFixer.php',
@@ -1811,36 +1848,6 @@ class ComposerStaticInitdeddd02a31326b02407601afe4c5b12b
         'srag\\LibrariesNamespaceChanger\\PHP7Backport' => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src/PHP7Backport.php',
         'srag\\LibrariesNamespaceChanger\\RemovePHP72Backport' => __DIR__ . '/..' . '/srag/librariesnamespacechanger/src/RemovePHP72Backport.php',
         'srag\\LibraryLanguageInstaller\\OnlyOffice\\LibraryLanguageInstaller' => __DIR__ . '/..' . '/srag/librarylanguageinstaller/src/LibraryLanguageInstaller.php',
-        'srag\\Plugins\\OnlyOffice\\Config\\ConfigFormGUI' => __DIR__ . '/../..' . '/src/Config/ConfigFormGUI.php',
-        'srag\\Plugins\\OnlyOffice\\Config\\Factory' => __DIR__ . '/../..' . '/src/Config/Factory.php',
-        'srag\\Plugins\\OnlyOffice\\Config\\Repository' => __DIR__ . '/../..' . '/src/Config/Repository.php',
-        'srag\\Plugins\\OnlyOffice\\CryptoService\\JwtService' => __DIR__ . '/../..' . '/src/CryptoService/JwtService.php',
-        'srag\\Plugins\\OnlyOffice\\CryptoService\\WebAccessService' => __DIR__ . '/../..' . '/src/CryptoService/WebAccessService.php',
-        'srag\\Plugins\\OnlyOffice\\InfoService\\InfoService' => __DIR__ . '/../..' . '/src/InfoService/InfoService.php',
-        'srag\\Plugins\\OnlyOffice\\ObjectSettings\\Factory' => __DIR__ . '/../..' . '/src/ObjectSettings/Factory.php',
-        'srag\\Plugins\\OnlyOffice\\ObjectSettings\\ObjectSettings' => __DIR__ . '/../..' . '/src/ObjectSettings/ObjectSettings.php',
-        'srag\\Plugins\\OnlyOffice\\ObjectSettings\\ObjectSettingsFormGUI' => __DIR__ . '/../..' . '/src/ObjectSettings/ObjectSettingsFormGUI.php',
-        'srag\\Plugins\\OnlyOffice\\ObjectSettings\\Repository' => __DIR__ . '/../..' . '/src/ObjectSettings/Repository.php',
-        'srag\\Plugins\\OnlyOffice\\Repository' => __DIR__ . '/../..' . '/src/Repository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\DTO\\File' => __DIR__ . '/../..' . '/src/StorageService/DTO/File.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\DTO\\FileChange' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileChange.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\DTO\\FileTemplate' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileTemplate.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\DTO\\FileVersion' => __DIR__ . '/../..' . '/src/StorageService/DTO/FileVersion.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\FileSystem\\FileSystemService' => __DIR__ . '/../..' . '/src/StorageService/FileSystem/FileSystemService.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\Common\\UUID' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/Common/UUID.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileAR.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileChangeAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileChangeAR.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileChangeRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileChangeRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileVersionAR' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileVersionAR.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\FileVersionRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/FileVersionRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileChangeRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileChangeRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\Infrastructure\\File\\ilDBFileVersionRepository' => __DIR__ . '/../..' . '/src/StorageService/Infrastructure/File/ilDBFileVersionRepository.php',
-        'srag\\Plugins\\OnlyOffice\\StorageService\\StorageService' => __DIR__ . '/../..' . '/src/StorageService/StorageService.php',
-        'srag\\Plugins\\OnlyOffice\\Utils\\DateFetcher' => __DIR__ . '/../..' . '/src/Utils/DateFetcher.php',
-        'srag\\Plugins\\OnlyOffice\\Utils\\FileSanitizer' => __DIR__ . '/../..' . '/src/Utils/FileSanitizer.php',
-        'srag\\Plugins\\OnlyOffice\\Utils\\OnlyOfficeTrait' => __DIR__ . '/../..' . '/src/Utils/OnlyOfficeTrait.php',
         'srag\\RemovePluginDataConfirm\\OnlyOffice\\BasePluginUninstallTrait' => __DIR__ . '/..' . '/srag/removeplugindataconfirm/src/BasePluginUninstallTrait.php',
         'srag\\RemovePluginDataConfirm\\OnlyOffice\\PluginUninstallTrait' => __DIR__ . '/..' . '/srag/removeplugindataconfirm/src/PluginUninstallTrait.php',
         'srag\\RemovePluginDataConfirm\\OnlyOffice\\RemovePluginDataConfirmCtrl' => __DIR__ . '/..' . '/srag/removeplugindataconfirm/src/class.RemovePluginDataConfirmCtrl.php',

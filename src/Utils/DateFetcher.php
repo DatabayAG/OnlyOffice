@@ -1,19 +1,35 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\Utils;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\Utils;
 
 use ilDateTime;
-use srag\DIC\OnlyOffice\DICTrait;
+use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Repository;
 use ilTimeZone;
 
 class DateFetcher
 {
-    use DICTrait;
-    use OnlyOfficeTrait;
-
     public static function editingPeriodIsFetchable($obj_id): bool
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
+        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         if (!is_null($object_settings) && !is_null($object_settings->isLimitedPeriod())) {
             return $object_settings->isLimitedPeriod();
         }
@@ -22,17 +38,21 @@ class DateFetcher
 
     public static function fetchEditingPeriod($obj_id): string
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
+        global $DIC;
+
+        /** @var ObjectSettings $object_settings */
+        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         $converted_start_time = new ilDateTime($object_settings->getStartTime(), IL_CAL_DATETIME, ilTimeZone::UTC);
-        $converted_start_time = $converted_start_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
+        $converted_start_time = $converted_start_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
         $converted_end_time = new ilDateTime($object_settings->getEndTime(), IL_CAL_DATETIME, ilTimeZone::UTC);
-        $converted_end_time = $converted_end_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', self::dic()->user()->getTimeZone());
+        $converted_end_time = $converted_end_time->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
         return sprintf("%s - %s", $converted_start_time, $converted_end_time);
     }
 
     public static function isWithinPotentialTimeLimit($obj_id): bool
     {
-        $object_settings = self::onlyOffice()->objectSettings()->getObjectSettingsById($obj_id);
+        /** @var ObjectSettings $object_settings */
+        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById($obj_id);
         $withinPotentialTimeLimit = true;
         if ($object_settings->isLimitedPeriod()) {
             $currentTime = new ilDateTime(time(), IL_CAL_UNIX);

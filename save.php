@@ -1,33 +1,27 @@
 <?php
-// Try to determine ILIAS-root
-$directory = strstr($_SERVER['SCRIPT_FILENAME'], 'Customizing', true);
-if (is_file('path.txt')) {
-    $directory = trim(file_get_contents('path.txt'));
-}
 
-chdir($directory);
-//echo get_class($DIC->database());
-// use database
+use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
+use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+
+require_once dirname(__DIR__, 8) . '/vendor/composer/vendor/autoload.php';
 
 initializeILIAS();
 global $DIC;
-//$DIC->logger()->root()->info("Ilias initialized");
 
 if (($body_stream = file_get_contents("php://input")) === false) {
     echo "Bad Request";
 }
 
-//$DIC->logger()->root()->info($body_stream);
 $encrypted = json_decode($body_stream, true);
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/CryptoService/JwtService.php';
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/OnlyOffice/src/InfoService/InfoService.php';
-$secret = \srag\Plugins\OnlyOffice\InfoService\InfoService::getSecret();
-$decrypted = \srag\Plugins\OnlyOffice\CryptoService\JwtService::jwtDecode($encrypted['token'],
-    $secret);
-//$DIC->logger()->root()->info($decrypted);
+
+$plugin = ilOnlyOfficePlugin::getInstance();
+
+$secret = $plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
+$decrypted = JwtService::jwtDecode($encrypted['token'], $secret);
+
 $data = json_decode($decrypted, true);
 
-if ($data["status"] == 2) {
+if ($data["status"] === 2) {
     $DIC->logger()->root()->info("Save File");
     $httpWrapper = $DIC->http()->wrapper();
     $refinery = $DIC->refinery();
@@ -45,17 +39,15 @@ if ($data["status"] == 2) {
     }
 
 }
-echo "{\"error\":0}";
+echo json_encode(["error" => 0], JSON_THROW_ON_ERROR);
 exit;
 
 //-------------------------------------------------------------------
 
-function initializeILIAS()
+function initializeILIAS(): void
 {
     try {
-        require_once ("Services/Context/classes/class.ilContext.php");
         ilContext::init(ilContext::CONTEXT_SOAP_NO_AUTH);
-        require_once("Services/Init/classes/class.ilInitialisation.php");
         ilInitialisation::initILIAS();
     }
     catch (Exception $exception) {

@@ -18,26 +18,11 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\Enum;
 
-use ActiveRecord;
-use ILIAS\Data\UUID\Uuid;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-
-interface FileRepository
+enum OpenSetting: string
 {
-    public function create(
-        Uuid   $file_uuid,
-        int    $obj_id,
-        string $title,
-        string $file_type,
-        string $mime_type
-    ): void;
-
-    public function getFile(int $obj_id): ?File;
-
-    public function getAR(int $file_id): ActiveRecord;
-
-    public function getAllFiles();
-
+    case EDITOR = "editor";
+    case ILIAS = "ilias";
+    case DOWNLOAD = "download";
 }

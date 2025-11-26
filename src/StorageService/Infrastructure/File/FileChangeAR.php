@@ -1,10 +1,29 @@
 <?php
 
-namespace srag\Plugins\OnlyOffice\StorageService\Infrastructure\File;
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
+namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
 use ActiveRecord;
 use Exception;
-use srag\Plugins\OnlyOffice\StorageService\Infrastructure\Common\UUID;
+use ILIAS\Data\UUID\Uuid;
+use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 /**
  * Stores the changes between file versions
@@ -33,7 +52,7 @@ class FileChangeAR extends ActiveRecord
      * @con_fieldtype text
      * @con_length    256
      */
-    protected UUID $file_uuid;
+    protected Uuid $file_uuid;
     /**
      * @con_has_field    true
      * @con_fieldtype    integer
@@ -68,12 +87,12 @@ class FileChangeAR extends ActiveRecord
         return $this->change_id;
     }
 
-    public function setFileUuid(UUID $file_uuid): void
+    public function setFileUuid(Uuid $file_uuid): void
     {
         $this->file_uuid = $file_uuid;
     }
 
-    public function getFileUuid(): UUID
+    public function getFileUuid(): Uuid
     {
         return $this->file_uuid;
     }
@@ -122,7 +141,7 @@ class FileChangeAR extends ActiveRecord
     {
         switch ($field_name) {
             case 'file_uuid':
-                return $this->file_uuid->asString();
+                return $this->file_uuid->toString();
             default:
                 return parent::sleep($field_name);
         }
@@ -131,11 +150,11 @@ class FileChangeAR extends ActiveRecord
     /**
      * @throws Exception
      */
-    public function wakeUp($field_name, $field_value)
+    public function wakeUp($field_name, $field_value): ?Uuid
     {
         switch ($field_name) {
             case 'file_uuid':
-                return new UUID($field_value);
+                return (new UUIDFactory())->fromString($field_value);
             default:
                 return parent::wakeUp($field_name, $field_value);
         }
