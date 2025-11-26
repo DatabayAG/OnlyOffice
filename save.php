@@ -3,14 +3,7 @@
 use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 
-chdir(__DIR__);
-$ilias_main_directory = './';
-while (!file_exists($ilias_main_directory . 'ilias.ini.php')) {
-    $ilias_main_directory .= '../';
-}
-chdir($ilias_main_directory);
-
-require_once './vendor/composer/vendor/autoload.php';
+require_once dirname(__DIR__, 8) . '/vendor/composer/vendor/autoload.php';
 
 initializeILIAS();
 global $DIC;
