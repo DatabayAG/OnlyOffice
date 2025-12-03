@@ -5,27 +5,10 @@
     "ILIAS",
     "Plugin"
   ],
-  "homepage": "https://github.com/studer-raimann/OnlyOffice",
   "license": "GPL-3.0-only",
-  "authors": [
-    {
-      "name": "studer + raimann ag - Team Custom 1",
-      "email": "support-custom1@studer-raimann.ch",
-      "homepage": "https://studer-raimann.ch",
-      "role": "Developer"
-    }
-  ],
-  "support": {
-    "issues": "https://plugins.studer-raimann.ch/goto.php?target=uihk_srsu_PLONLYOFFICE"
-  },
   "require": {
     "php": "^8.2 || ^8.3",
-    "ramsey/uuid": "^4",
-    "srag/activerecordconfig": ">=0.1.0",
-    "srag/custominputguis": ">=0.1.0",
-    "srag/dic": "=0.32.4",
-    "srag/librariesnamespacechanger": "0.15.4",
-    "srag/removeplugindataconfirm": ">=0.1.0"
+    "ramsey/uuid": "^4"
   },
   "autoload": {
     "psr-4": {
@@ -40,12 +23,9 @@
     "optimize-autoloader": true,
     "sort-packages": true
   },
-  "scripts": {
-    "pre-autoload-dump": [
-      "srag\\LibrariesNamespaceChanger\\LibrariesNamespaceChanger::rewriteLibrariesNamespaces"
-    ]
-  },
   "require-dev": {
+    "roave/security-advisories": "dev-latest"
+    ,
     "captainhook/captainhook": "^5.24",
     "friendsofphp/php-cs-fixer": "^3.66"
   }
