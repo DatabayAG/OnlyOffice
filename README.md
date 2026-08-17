@@ -7,7 +7,7 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
 | Component | Version(s)                                                                                    | Link                      |
 |-----------|-----------------------------------------------------------------------------------------------|---------------------------|
 | PHP       | ![](https://img.shields.io/badge/8.2-blue.svg) ![](https://img.shields.io/badge/8.3-blue.svg) | [PHP](https://php.net)    |
-| ILIAS     | ![](https://img.shields.io/badge/10-orange.svg)                                                | [ILIAS](https://ilias.de) |
+| ILIAS     | ![](https://img.shields.io/badge/10-orange.svg)                                               | [ILIAS](https://ilias.de) |
 
 ---
 
@@ -16,6 +16,7 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
   * [Requirements](#requirements)
   * [Installation](#installation)
     * [OnlyOffice docker container](#onlyoffice-docker-container)
+  * [Lucene Indexing](#lucene-indexing)
   * [Troubleshooting](#troubleshooting)
   * [License](#license)
 <!-- TOC -->
@@ -49,6 +50,14 @@ Note that the free community edition allows only 20 simultaneous connections.
 Installation Guides can be found [here](https://helpcenter.onlyoffice.com/installation/docs-index.aspx)
 
 Use `http://%onlyoffice_ip%` as `ONLYOFFICE root URL` in plugin configuration
+
+## Lucene Indexing
+
+This plugin supports lucene indexing of the basic object data.
+
+Lucene indexing is broken for plugins since ILIAS 10.
+
+A Pr was created to fix this issue: https://github.com/ILIAS-eLearning/ILIAS/pull/11873
 
 ## Troubleshooting
 1. If the OnlyOffice window opens up but you can't access the file make sure that your webserver user has read and write access to the plugin folder and the data folder where the files are saved.
