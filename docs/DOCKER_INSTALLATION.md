@@ -5,7 +5,6 @@ This simple guide will guide developers on the installation process of OnlyOffic
 
 ### Requirements
 
-* ILIAS 6.x / 7.x
 * docker
 * docker-compose
 
@@ -37,24 +36,6 @@ Set a more secure password for the JWT_SECRET variable.
 ![adjust-jwt](images/adjust-jwt.png)
 
 Save and exit the file.
-
-### Install Ilias & the OnlyOffice-Plugin
-Clone the OnlyOffice repository, switch directories and run the docker file in it:
-```bash
-git clone https://git.fluxlabs.ch/fluxlabs/ilias/plugins/RepositoryObjects/OnlyOffice.git OnlyOffice
-cd /OnlyOffice/docker/
-sudo docker-compose up
-```
-
-Once the docker is running, we need to clone the plugin first to get rid of all errors. From the previous steps, a new folder should have appeared called "ilias-www". Now do the following:
-
-```bash
-cd ilias-www/
-sudo mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
-cd Customizing/global/plugins/Services/Repository/RepositoryObject
-sudo git clone https://git.fluxlabs.ch/fluxlabs/ilias/plugins/RepositoryObjects/OnlyOffice.git OnlyOffice
-```
-> You may want to change the permissions of the "ilias-www" folder using chmod if you are planning on editing the files inside.
 
 #### Obtaining the IP address of the docker containers
 
