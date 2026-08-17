@@ -23,7 +23,7 @@ sudo docker-compose up
 > You may get an error saying "address already in use". This is likely because your host machine already utilises the port 80 for ilias.
 > To fix this, edit the ports in docker-compose.yml of OnlyOffice Docs to 8180:80.
 >
->![errorfix_docs](docker-installation-pics/errorfix_docs.png)
+>![errorfix_docs](images/errorfix_docs.png)
 
 OnlyOffice Docs is now running on your docker server. Let's make it more secure in the next step.
 
@@ -34,7 +34,7 @@ In the environment section, uncomment all variables starting with "JWT".
 
 Set a more secure password for the JWT_SECRET variable.
 
-![adjust-jwt](docker-installation-pics/adjust-jwt.png)
+![adjust-jwt](images/adjust-jwt.png)
 
 Save and exit the file.
 
@@ -67,7 +67,7 @@ Here you need to locate the container IDs of your two docker containers: OnlyOff
 
 In the picture below, the container ID of OnlyOffice Docs is 990bc51a6d7d, because it's in front of an image ending with "onlyoffice-documentserver".
 
->![container](docker-installation-pics/container.png)
+>![container](images/container.png)
 
 Similarly, the container ID of ilias is 0a98db0eee39, because it's in front of an image ending with "ilias:latest".
 
@@ -79,7 +79,7 @@ docker container inspect CONTAINER_ID
 
 Here, locate the "Gateway" variable and copy it into a separate text document. Do this for both container IDs.
 
->![gateway](docker-installation-pics/gateway.png)
+>![gateway](images/gateway.png)
 
 #### Adjust .htaccess
 
@@ -103,7 +103,7 @@ Next, evaluate what needs to be inserted. We need to evaluate the hypothetical v
 
 > The port may be different, consult the docker-compose.yml of OnlyOffice Docs, it's the highlighted value in the picture below.
 >
-> ![errorfix_docs](docker-installation-pics/errorfix_docs.png)
+> ![errorfix_docs](images/errorfix_docs.png)
 
 Now, edit the .htaccess file with a text editor of your choice.
 
@@ -124,7 +124,7 @@ Access Ilias through DOCS_HTTP_WITH_PORT (e.g. http://x.x.x.x:9100).
 
 Switch to the plugin administration and install OnlyOffice if you haven't already. Open the plugin configuration of OnlyOffice.
 
-![pluginconfig](docker-installation-pics/pluginconfig.png)
+![pluginconfig](images/pluginconfig.png)
 
 Insert DOCS_HTTP_WITH_PORT into the field "ONLYOFFICE root URL".
 
