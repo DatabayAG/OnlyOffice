@@ -210,6 +210,54 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $this->tpl->setContent($html);
     }
 
+    public function save(): void
+    {
+        $form = (new ObjectSettingsForm())->getForm()->withRequest($this->dic->http()->request());
+        $formData = $form->getData();
+
+        if ($formData === null) {
+            return;
+        }
+
+        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        $titleAndDescription = $formData["title_and_description"];
+        $title = $titleAndDescription->getTitle();
+
+        /** @var FileSettingProperty $fileSetting */
+        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var AllowEditProperty $allowEdit */
+        $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
+
+        if ($fileSetting->getFileMode() === FileMode::CREATE && $title === "") {
+            $this->tpl->setOnScreenMessage(
+                'failure',
+                sprintf(
+                    $this->plugin->txt("settings_file_mode_create_title_required"),
+                    $this->plugin->txt("form_input_create_file")
+                ),
+                true
+            );
+            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
+            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+
+            return;
+        }
+
+        if (
+            $allowEdit->isLimitedPeriod()
+            && $allowEdit->getStartTime()->getTimestamp() >= $allowEdit->getEndTime()->getTimestamp()
+        ) {
+            $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("settings_time_greater_than"), true);
+            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
+            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+            return;
+        }
+
+        parent::save();
+    }
+
     public function initCreateForm(string $new_type = null): StandardForm
     {
         return (new ObjectSettingsForm(null, true))->getForm();
