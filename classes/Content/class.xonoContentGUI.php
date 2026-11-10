@@ -75,14 +75,14 @@ class xonoContentGUI extends xonoAbstractGUI
 
     final public function getType(): string
     {
-        return ilOnlyOfficePlugin::PLUGIN_ID;
+        return ilOnlyOfficePlugin::ID;
     }
 
     public function executeCommand(): void
     {
         $this->dic->tabs()->activateTab(ilObjOnlyOfficeGUI::TAB_SHOW_CONTENTS);
 
-        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 

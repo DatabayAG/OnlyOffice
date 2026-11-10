@@ -62,14 +62,14 @@ class ilObjOnlyOffice extends ilObjectPlugin
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::ID);
         $this->tpl = $DIC->ui()->mainTemplate();
         $this->repo = Repository::getInstance();
     }
 
     final public function initType(): void
     {
-        $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->setType(ilOnlyOfficePlugin::ID);
     }
 
     public function doCreate(bool $clone_mode = false): void

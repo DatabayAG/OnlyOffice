@@ -74,7 +74,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     final public function getType(): string
     {
-        return ilOnlyOfficePlugin::PLUGIN_ID;
+        return ilOnlyOfficePlugin::ID;
     }
 
     /**
@@ -82,7 +82,7 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     public function executeCommand(): void
     {
-        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
         $cmd = $this->dic->ctrl()->getCmd(self::CMD_STANDARD);
 
@@ -137,7 +137,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         }
 
         $this->mainTpl->addOnLoadCode(
-            "window." . "config_" . ilOnlyOfficePlugin::PLUGIN_ID . " = "
+            "window." . "config_" . ilOnlyOfficePlugin::ID . " = "
             . json_encode([
                 "editing" => [
                     "limited" => $object_settings->isLimitedPeriod(),

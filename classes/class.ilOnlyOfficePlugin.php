@@ -32,7 +32,7 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    public const string PLUGIN_ID = "xono";
+    public const string ID = "xono";
 
     protected static ?ilOnlyOfficePlugin $instance = null;
     private readonly Repository $repo;
@@ -46,7 +46,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
             /** @var $component_factory ilComponentFactory */
             $component_factory = $DIC['component.factory'];
             /** @var $plugin ilOnlyOfficePlugin */
-            $plugin = $component_factory->getPlugin(self::PLUGIN_ID);
+            $plugin = $component_factory->getPlugin(self::ID);
 
             static::$instance = $plugin;
         }
@@ -62,7 +62,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         global $DIC;
         parent::__construct($db, $component_repository, $id);
         $this->repo = Repository::getInstance();
-        $this->settings = new ilSetting(self::PLUGIN_ID . "_config");
+        $this->settings = new ilSetting(self::ID . "_config");
 
         $this->db = $DIC->database();
     }
@@ -81,7 +81,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     {
         require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
         $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
-        $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
+        $type = ilDBUpdateNewObjectType::getObjectTypeId(self::ID);
         ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
 
         return parent::beforeUninstallCustom();

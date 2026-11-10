@@ -69,7 +69,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
-        $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
+        $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::ID);
         $tpl = $DIC->ui()->mainTemplate();
         $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
 

@@ -97,7 +97,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     final public function getType(): string
     {
-        return ilOnlyOfficePlugin::PLUGIN_ID;
+        return ilOnlyOfficePlugin::ID;
     }
 
     /**
@@ -105,7 +105,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function performCommand(string $cmd): void
     {
-        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
 
         switch (strtolower($next_class)) {
@@ -234,7 +234,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 true
             );
             $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
             $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
 
             return;
@@ -246,7 +246,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         ) {
             $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("settings_time_greater_than"), true);
             $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
+            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
             $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
             return;
         }

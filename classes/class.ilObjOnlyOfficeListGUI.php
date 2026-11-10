@@ -154,7 +154,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     public function initType(): void
     {
-        $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->setType(ilOnlyOfficePlugin::ID);
     }
 
 }
