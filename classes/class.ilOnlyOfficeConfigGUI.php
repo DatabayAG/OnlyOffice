@@ -129,7 +129,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         /** @var ilLocatorGUI $locator */
         $locator = $this->dic["ilLocator"];
-        $locator->addItem(ilOnlyOfficePlugin::PLUGIN_NAME, $this->dic->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
+        $locator->addItem($this->plugin->getPluginName(), $this->dic->ctrl()->getLinkTarget($this, self::CMD_CONFIGURE));
     }
 
     protected function configure(?PluginConfigForm $form = null): void

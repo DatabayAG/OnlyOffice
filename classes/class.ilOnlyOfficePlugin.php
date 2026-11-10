@@ -33,7 +33,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
     public const string PLUGIN_ID = "xono";
-    public const string PLUGIN_NAME = "OnlyOffice";
 
     protected static ?ilOnlyOfficePlugin $instance = null;
     private readonly Repository $repo;
@@ -66,11 +65,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         $this->settings = new ilSetting(self::PLUGIN_ID . "_config");
 
         $this->db = $DIC->database();
-    }
-
-    public function getPluginName(): string
-    {
-        return self::PLUGIN_NAME;
     }
 
     protected function deleteData(): void
