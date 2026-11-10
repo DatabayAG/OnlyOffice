@@ -26,6 +26,7 @@ use ilOnlyOfficePlugin;
 final class Repository
 {
     public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+
     protected static ?Repository $instance = null;
 
     public static function getInstance(): self

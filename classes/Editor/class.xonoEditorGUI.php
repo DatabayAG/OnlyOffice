@@ -36,11 +36,12 @@ use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
+    public const string CMD_EDIT = "editFile";
+    public const string CMD_STANDARD = "editFile";
+    public const string BASE_URL = ILIAS_HTTP_PATH;
+
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
-    public const CMD_EDIT = "editFile";
-    public const CMD_STANDARD = "editFile";
-    public const BASE_URL = ILIAS_HTTP_PATH;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
     private readonly Repository $repo;

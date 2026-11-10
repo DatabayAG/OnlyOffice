@@ -32,7 +32,7 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
  */
 class FileChangeAR extends ActiveRecord
 {
-    public const TABLE_NAME = 'xono_file_change';
+    public const string TABLE_NAME = 'xono_file_change';
 
     public function getConnectorContainerName(): string
     {

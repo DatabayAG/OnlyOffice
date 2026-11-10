@@ -34,8 +34,9 @@ use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 class FileSystemService
 {
-    public const BASE_PATH = '/only_office/';
-    public const BASE_TEMPLATE_PATH = '/only_office/templates/';
+    public const string BASE_PATH = '/only_office/';
+    public const string BASE_TEMPLATE_PATH = '/only_office/templates/';
+
     protected Container $dic;
 
     public function __construct(Container $dic)

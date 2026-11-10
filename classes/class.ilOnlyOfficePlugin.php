@@ -32,9 +32,9 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
  */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    public const PLUGIN_ID = "xono";
-    public const PLUGIN_NAME = "OnlyOffice";
-    public const PLUGIN_CLASS_NAME = self::class;
+    public const string PLUGIN_ID = "xono";
+    public const string PLUGIN_NAME = "OnlyOffice";
+    public const string PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
     private readonly Repository $repo;

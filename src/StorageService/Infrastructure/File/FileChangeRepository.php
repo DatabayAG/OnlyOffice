@@ -25,7 +25,7 @@ use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 interface FileChangeRepository
 {
-    public const DEFAULT_SERVER_VERSION = '6.3.1';
+    public const string DEFAULT_SERVER_VERSION = '6.3.1';
 
     /**
      * @return mixed

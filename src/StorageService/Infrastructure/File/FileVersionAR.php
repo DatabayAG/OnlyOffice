@@ -29,7 +29,7 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 class FileVersionAR extends ActiveRecord
 {
-    public const TABLE_NAME = 'xono_file_version';
+    public const string TABLE_NAME = 'xono_file_version';
 
     public function getConnectorContainerName(): string
     {

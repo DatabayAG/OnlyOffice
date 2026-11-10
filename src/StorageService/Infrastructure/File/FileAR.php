@@ -27,7 +27,8 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
 
 class FileAR extends ActiveRecord
 {
-    public const TABLE_NAME = 'xono_file';
+    public const string TABLE_NAME = 'xono_file';
+
     public function getConnectorContainerName(): string
     {
         return self::TABLE_NAME;

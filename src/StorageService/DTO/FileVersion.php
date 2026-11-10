@@ -27,7 +27,8 @@ use JsonSerializable;
 
 class FileVersion implements JsonSerializable
 {
-    public const FIRST_VERSION = 1;
+    public const int FIRST_VERSION = 1;
+
     protected ilDateTime $created_at;
     protected Uuid $file_uuid;
 

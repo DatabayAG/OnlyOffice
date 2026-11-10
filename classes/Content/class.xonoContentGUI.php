@@ -33,16 +33,15 @@ use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoContentGUI extends xonoAbstractGUI
 {
-    public const BASE_URL = ILIAS_HTTP_PATH;
+    public const string BASE_URL = ILIAS_HTTP_PATH;
+    public const string CMD_STANDARD = 'showVersions';
+    public const string CMD_SHOW_VERSIONS = 'showVersions';
+    public const string CMD_DOWNLOAD = 'downloadFileVersion';
+    public const string CMD_EDIT = xonoEditorGUI::CMD_EDIT;
 
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
     private readonly ilGlobalTemplateInterface $tpl;
-
-    public const CMD_STANDARD = 'showVersions';
-    public const CMD_SHOW_VERSIONS = 'showVersions';
-    public const CMD_DOWNLOAD = 'downloadFileVersion';
-    public const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
     private readonly Repository $repo;

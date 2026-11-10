@@ -23,7 +23,8 @@ use ILIAS\Plugin\OnlyOffice\Repository;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
     private readonly Container $dic;

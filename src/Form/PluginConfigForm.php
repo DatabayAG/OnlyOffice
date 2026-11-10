@@ -29,9 +29,9 @@ use ilTextInputGUI;
 
 class PluginConfigForm extends ilPropertyFormGUI
 {
-    public const KEY_ONLYOFFICE_URL = "onlyoffice_url";
-    public const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
-    public const KEY_NUM_VERSIONS = "number_of_versions";
+    public const string KEY_ONLYOFFICE_URL = "onlyoffice_url";
+    public const string KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
+    public const string KEY_NUM_VERSIONS = "number_of_versions";
 
     private readonly ilOnlyOfficePlugin $plugin;
 

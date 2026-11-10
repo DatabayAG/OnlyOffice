@@ -39,19 +39,20 @@ use ILIAS\Refinery\Factory;
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-    public const CMD_CONFIGURE = "configure";
-    public const CMD_TEMPLATES = "configureTemplates";
-    public const CMD_CREATE_TEMPLATE = "createTemplate";
-    public const CMD_EDIT_TEMPLATE = "editTemplate";
-    public const CMD_SAVE_EDIT_TEMPLATE = "saveEditTemplate";
-    public const CMD_DELETE_TEMPLATE = "deleteTemplate";
-    public const CMD_UPDATE_CONFIGURE = "updateConfigure";
-    public const CMD_UPDATE_TEMPLATES = "updateTemplates";
-    public const CMD_CONFIRM_DELETE = "confirmDelete";
-    public const TAB_CONFIGURATION = "configuration";
-    public const TAB_SUB_CONFIGURATION = "subConfiguration";
-    public const TAB_SUB_TEMPLATES = "templates";
+    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const string CMD_CONFIGURE = "configure";
+    public const string CMD_TEMPLATES = "configureTemplates";
+    public const string CMD_CREATE_TEMPLATE = "createTemplate";
+    public const string CMD_EDIT_TEMPLATE = "editTemplate";
+    public const string CMD_SAVE_EDIT_TEMPLATE = "saveEditTemplate";
+    public const string CMD_DELETE_TEMPLATE = "deleteTemplate";
+    public const string CMD_UPDATE_CONFIGURE = "updateConfigure";
+    public const string CMD_UPDATE_TEMPLATES = "updateTemplates";
+    public const string CMD_CONFIRM_DELETE = "confirmDelete";
+    public const string TAB_CONFIGURATION = "configuration";
+    public const string TAB_SUB_CONFIGURATION = "subConfiguration";
+    public const string TAB_SUB_TEMPLATES = "templates";
+
     protected StorageService $storage_service;
     private readonly ilPlugin $pl;
     private readonly ilGlobalTemplateInterface $tpl;

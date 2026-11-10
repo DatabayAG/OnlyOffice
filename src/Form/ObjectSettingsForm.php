@@ -42,21 +42,21 @@ use ILIAS\UI\Factory;
 
 class ObjectSettingsForm
 {
-    public const OPTION_SETTING_CREATE = "create_file";
-    public const OPTION_SETTING_UPLOAD = "upload_file";
-    public const OPTION_SETTING_TEMPLATE = "template_file";
+    public const string OPTION_SETTING_CREATE = "create_file";
+    public const string OPTION_SETTING_UPLOAD = "upload_file";
+    public const string OPTION_SETTING_TEMPLATE = "template_file";
 
-    public const POST_VAR_FILE = 'upload_files';
-    public const POST_VAR_FILE_SETTING = 'file_setting';
-    public const POST_VAR_FILE_CREATION_SETTING = 'file_creation_setting';
-    public const POST_VAR_FILE_TEMPLATE_SETTING = 'file_template_setting';
-    public const POST_VAR_OPEN_SETTING = 'open_setting';
-    public const POST_VAR_ONLINE = 'online';
-    public const POST_VAR_EDIT = 'allow_edit';
-    public const POST_VAR_EDIT_LIMITED = 'allow_edit_limited';
-    public const POST_VAR_EDIT_LIMITED_START = 'start_time';
-    public const POST_VAR_EDIT_LIMITED_END = 'end_time';
-    public const POST_VAR_CREATE = 'createFrom';
+    public const string POST_VAR_FILE = 'upload_files';
+    public const string POST_VAR_FILE_SETTING = 'file_setting';
+    public const string POST_VAR_FILE_CREATION_SETTING = 'file_creation_setting';
+    public const string POST_VAR_FILE_TEMPLATE_SETTING = 'file_template_setting';
+    public const string POST_VAR_OPEN_SETTING = 'open_setting';
+    public const string POST_VAR_ONLINE = 'online';
+    public const string POST_VAR_EDIT = 'allow_edit';
+    public const string POST_VAR_EDIT_LIMITED = 'allow_edit_limited';
+    public const string POST_VAR_EDIT_LIMITED_START = 'start_time';
+    public const string POST_VAR_EDIT_LIMITED_END = 'end_time';
+    public const string POST_VAR_CREATE = 'createFrom';
 
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly Container $dic;

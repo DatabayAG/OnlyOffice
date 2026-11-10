@@ -53,24 +53,24 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
-    public const CMD_MANAGE_CONTENTS = "manageContents";
-    public const CMD_PERMISSIONS = "perm";
-    public const CMD_SETTINGS = "settings";
-    public const CMD_SETTINGS_STORE = "settingsStore";
-    public const CMD_SHOW_CONTENTS = "showContents";
-    public const CMD_SHOW_VERSIONS = "showVersions";
+    public const string CMD_MANAGE_CONTENTS = "manageContents";
+    public const string CMD_PERMISSIONS = "perm";
+    public const string CMD_SETTINGS = "settings";
+    public const string CMD_SETTINGS_STORE = "settingsStore";
+    public const string CMD_SHOW_CONTENTS = "showContents";
+    public const string CMD_SHOW_VERSIONS = "showVersions";
     /* standard commands */
-    public const CMD_SAVE = 'save';
-    public const CMD_CANCEL = 'cancel';
-    public const CMD_SHOW_INFO = 'infoScreen';
-    public const CMD_TEMPLATE = 'createFromTemplate';
+    public const string CMD_SAVE = 'save';
+    public const string CMD_CANCEL = 'cancel';
+    public const string CMD_SHOW_INFO = 'infoScreen';
+    public const string CMD_TEMPLATE = 'createFromTemplate';
 
-    public const TAB_PERMISSIONS = "perm_settings";
-    public const TAB_SETTINGS = "settings";
-    public const TAB_INFO = "info_short";
-    public const TAB_SHOW_CONTENTS = "show_contents";
+    public const string TAB_PERMISSIONS = "perm_settings";
+    public const string TAB_SETTINGS = "settings";
+    public const string TAB_INFO = "info_short";
+    public const string TAB_SHOW_CONTENTS = "show_contents";
 
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
