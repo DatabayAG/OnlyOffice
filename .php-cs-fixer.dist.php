@@ -1,13 +1,29 @@
 <?php
 
+/**
+ * This file is part of ILIAS, a powerful learning management system
+ * published by ILIAS open source e-Learning e.V.
+ *
+ * ILIAS is licensed with the GPL-3.0,
+ * see https://www.gnu.org/licenses/gpl-3.0.en.html
+ * You should have received a copy of said license along with the
+ * source code, too.
+ *
+ * If this is not the case or you just want to try ILIAS, you'll find
+ * us at:
+ * https://www.ilias.de
+ * https://github.com/ILIAS-eLearning
+ *
+ *********************************************************************/
+
+declare(strict_types=1);
+
 require_once __DIR__ . "/vendor/autoload.php";
 
 $dirs = array_filter([
-    __DIR__ . "/classes",
-    __DIR__ . "/src"
-], static function (string $dir): bool {
-    return is_dir($dir);
-});
+    __DIR__ . "/src",
+    __DIR__ . "/classes"
+], is_dir(...));
 
 $finder = PhpCsFixer\Finder::create()
     ->exclude([__DIR__ . "/vendor"])
@@ -26,6 +42,7 @@ return (new PhpCsFixer\Config())
         "type_declaration_spaces" => true,
         "binary_operator_spaces" => true,
         "array_syntax" => ["syntax" => "short"],
+        "function_declaration" => ["closure_fn_spacing" => "none"],
         "fully_qualified_strict_types" => ["import_symbols" => true],
         "no_superfluous_phpdoc_tags" => [
             "allow_mixed" => true,
