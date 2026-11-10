@@ -295,7 +295,7 @@ class FileSystemService
         $child_path = $this->createAndGetPath(
             $file_id,
             $uuid
-            ) . $parent_version->getVersion() . '.' . $extension;
+        ) . $parent_version->getVersion() . '.' . $extension;
         ;
         $web = $this->dic->filesystem()->web();
         $web->copy($parent_path, $child_path);

@@ -300,7 +300,6 @@ class StorageService
     }
 
     /**
-     * @param string $uuid
      * @return array<int, FileChange>
      */
     public function getAllChanges(string $uuid): array

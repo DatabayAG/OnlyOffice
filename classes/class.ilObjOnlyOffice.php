@@ -73,8 +73,6 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
     }
 
-    /**
-     */
     public function doCreate(bool $clone_mode = false): void
     {
         if ($clone_mode) {
@@ -141,8 +139,6 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->object_settings = $this->repo->objectSettings()->getObjectSettingsById(intval($this->id));
     }
 
-    /**
-     */
     public function doUpdate(?StandardForm &$form = null): void
     {
         if ($form === null) {

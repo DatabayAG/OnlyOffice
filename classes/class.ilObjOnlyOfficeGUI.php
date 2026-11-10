@@ -74,9 +74,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
-    /**
-     * @var ilPlugin|ilOnlyOfficePlugin|null
-     */
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
     private Repository $repo;
     private Container $dic;

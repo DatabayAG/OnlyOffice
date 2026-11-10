@@ -23,7 +23,6 @@ namespace ILIAS\Plugin\OnlyOffice\Form;
 use DateTimeImmutable;
 use ilCtrlInterface;
 use ILIAS\DI\Container;
-use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;

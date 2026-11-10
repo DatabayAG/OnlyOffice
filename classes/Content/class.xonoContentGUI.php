@@ -207,7 +207,6 @@ class xonoContentGUI extends xonoAbstractGUI
 
     /**
      * Determines the button name based on the object settings and RBAC
-     * @return string
      */
     protected function buttonName(): string
     {

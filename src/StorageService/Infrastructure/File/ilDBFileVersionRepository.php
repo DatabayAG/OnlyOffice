@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
 
-use arException;
 use ilDateTime;
 use ilDateTimeException;
 use ilTimeZone;

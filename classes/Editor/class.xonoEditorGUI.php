@@ -48,11 +48,10 @@ class xonoEditorGUI extends xonoAbstractGUI
     private ilGlobalTemplateInterface $mainTpl;
 
     public function __construct(
-        Container          $dic,
+        Container $dic,
         ilOnlyOfficePlugin $plugin,
-        int                $object_id
-    )
-    {
+        int $object_id
+    ) {
         parent::__construct($dic, $plugin);
 
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");

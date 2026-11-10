@@ -27,8 +27,8 @@ use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 interface FileRepository
 {
     public function create(
-        Uuid   $file_uuid,
-        int    $obj_id,
+        Uuid $file_uuid,
+        int $obj_id,
         string $title,
         string $file_type,
         string $mime_type
