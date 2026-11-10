@@ -25,6 +25,7 @@ use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\FileUpload\Handler\BasicHandlerResult;
 use ILIAS\FileUpload\Handler\HandlerResult;
+use ILIAS\ILIASObject\Properties\CoreProperties\TitleAndDescription;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
@@ -214,7 +215,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             return;
         }
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        /** @var TitleAndDescription $titleAndDescription */
         $titleAndDescription = $formData["title_and_description"];
         $title = $titleAndDescription->getTitle();
 
@@ -309,7 +310,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->request);
 
         /** @var array{
-         *     title_and_description: ilObjectPropertyTitleAndDescription,
+         *     title_and_description: TitleAndDescription,
          *     file_setting: FileSettingProperty,
          *     online: bool,
          *     allow_edit: AllowEditProperty,
@@ -318,7 +319,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
          */
         $formData = $form->getData();
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        /** @var TitleAndDescription $titleAndDescription */
         $titleAndDescription = $formData["title_and_description"];
         $title = $titleAndDescription->getTitle();
 

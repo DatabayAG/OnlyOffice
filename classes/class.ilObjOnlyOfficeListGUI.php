@@ -27,10 +27,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
-    //protected $settings = false;
-    //protected $versions = true;
-    //protected $available = false;
-
     private readonly Container $dic;
 
     public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
@@ -72,7 +68,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $this->tags_enabled = false;
         $this->timings_enabled = true;
 
-        $commands = [
+        return [
             [
                 "permission" => "read",
                 "cmd" => ilObjOnlyOfficeGUI::getStartCmd(),
@@ -91,8 +87,6 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
                 "lang_var" => "versions"
             ],
         ];
-
-        return $commands;
     }
 
     public function getProperties(): array

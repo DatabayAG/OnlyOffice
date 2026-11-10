@@ -25,6 +25,7 @@ use ILIAS\FileUpload\Collection\EntryLockingStringMap;
 use ILIAS\FileUpload\Collection\ImmutableMapWrapper;
 use ILIAS\FileUpload\DTO\ProcessingStatus;
 use ILIAS\FileUpload\DTO\UploadResult;
+use ILIAS\ILIASObject\Properties\Property;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
@@ -34,10 +35,9 @@ use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ilLanguage;
-use ilObjectProperty;
 use ilOnlyOfficePlugin;
 
-class FileSettingProperty implements ilObjectProperty
+class FileSettingProperty implements Property
 {
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly Filesystem $tmpFilesystem;

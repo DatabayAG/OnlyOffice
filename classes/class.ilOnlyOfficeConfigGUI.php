@@ -470,7 +470,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             ])
         );
 
-        $conf->addItem('tableview', 1, $ooTarget);
+        $conf->addItem('tableview', "1", $ooTarget);
 
         $conf->setConfirm($this->dic->language()->txt('delete'), self::CMD_DELETE_TEMPLATE);
         $conf->setCancel($this->dic->language()->txt('cancel'), self::CMD_TEMPLATES);

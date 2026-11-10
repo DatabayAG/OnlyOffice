@@ -21,6 +21,7 @@ declare(strict_types=1);
 use ILIAS\DI\Container;
 use ILIAS\FileUpload\FileUpload;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
+use ILIAS\ILIASObject\Properties\CoreProperties\TitleAndDescription;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
@@ -83,7 +84,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->dic->http()->request());
 
         /** @var array{
-         *     title_and_description: ilObjectPropertyTitleAndDescription,
+         *     title_and_description: TitleAndDescription,
          *     file_setting: FileSettingProperty,
          *     online: bool,
          *     allow_edit: AllowEditProperty,
@@ -92,7 +93,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
          */
         $formData = $form->getData();
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        /** @var TitleAndDescription $titleAndDescription */
         $titleAndDescription = $formData["title_and_description"];
         $title = $titleAndDescription->getTitle();
         $description = $titleAndDescription->getDescription();
@@ -140,13 +141,12 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     public function doUpdate(?StandardForm &$form = null): void
     {
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
         $form ??= (new ObjectSettingsForm($this->object_settings))
             ->getForm()
             ->withRequest($this->dic->http()->request());
 
         /** @var array{
-         *     title_and_description: ilObjectPropertyTitleAndDescription,
+         *     title_and_description: TitleAndDescription,
          *     file_setting: FileSettingProperty,
          *     online: bool,
          *     allow_edit: AllowEditProperty,
@@ -159,7 +159,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
             return;
         }
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
+        /** @var TitleAndDescription $titleAndDescription */
         $titleAndDescription = $formData["title_and_description"];
         $title = $titleAndDescription->getTitle();
 

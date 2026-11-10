@@ -21,15 +21,15 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
 use DateTimeImmutable;
+use ILIAS\ILIASObject\Properties\Property;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ilLanguage;
-use ilObjectProperty;
 use ilOnlyOfficePlugin;
 
-class AllowEditProperty implements ilObjectProperty
+class AllowEditProperty implements Property
 {
     private readonly ilOnlyOfficePlugin $plugin;
 
@@ -44,11 +44,11 @@ class AllowEditProperty implements ilObjectProperty
 
     public function toForm(
         ilLanguage $language,
-        FieldFactory $fieldFactory,
+        FieldFactory $field_factory,
         Refinery $refinery
     ): FormInput {
         $trafo = $refinery->custom()->transformation(
-            function ($vs): ilObjectProperty {
+            function ($vs): Property {
                 $editLimited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
                 return new AllowEditProperty(
                     isset($vs[ObjectSettingsForm::POST_VAR_EDIT]),
@@ -59,13 +59,13 @@ class AllowEditProperty implements ilObjectProperty
             }
         );
 
-        return $fieldFactory->optionalGroup([
-            ObjectSettingsForm::POST_VAR_EDIT => $fieldFactory->group([
-                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $fieldFactory->optionalGroup([
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $fieldFactory->dateTime(
+        return $field_factory->optionalGroup([
+            ObjectSettingsForm::POST_VAR_EDIT => $field_factory->group([
+                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $field_factory->optionalGroup([
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $field_factory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_start')
                     )->withUseTime(true)->withRequired(true),
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $fieldFactory->dateTime(
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $field_factory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_end')
                     )->withUseTime(true)->withRequired(true)
                 ], $this->plugin->txt('settings_allow_edit_limited'))

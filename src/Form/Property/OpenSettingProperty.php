@@ -20,15 +20,15 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
+use ILIAS\ILIASObject\Properties\Property;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ilLanguage;
-use ilObjectProperty;
 use ilOnlyOfficePlugin;
 
-class OpenSettingProperty implements ilObjectProperty
+class OpenSettingProperty implements Property
 {
     private readonly ilOnlyOfficePlugin $plugin;
 
