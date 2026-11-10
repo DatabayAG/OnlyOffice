@@ -27,7 +27,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRep
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
-    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     //protected $settings = false;
     //protected $versions = true;

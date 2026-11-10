@@ -29,7 +29,6 @@ use ilOnlyOfficePlugin;
 class ObjectSettings extends ActiveRecord
 {
     public const string TABLE_NAME = "rep_robj_xono_set";
-    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     public function getConnectorContainerName(): string
     {

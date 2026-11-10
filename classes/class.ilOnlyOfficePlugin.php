@@ -34,7 +34,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
     public const string PLUGIN_ID = "xono";
     public const string PLUGIN_NAME = "OnlyOffice";
-    public const string PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
     private readonly Repository $repo;
@@ -108,11 +107,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         $storage->deleteAll();
         ObjectSettings::truncateDB();
 
-    }
-
-    public static function checkPluginClassNameConst(): string
-    {
-        return self::PLUGIN_CLASS_NAME;
     }
 
     public function allowCopy(): bool

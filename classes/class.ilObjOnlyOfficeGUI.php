@@ -53,7 +53,6 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
-    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
 
     public const string CMD_MANAGE_CONTENTS = "manageContents";
     public const string CMD_PERMISSIONS = "perm";

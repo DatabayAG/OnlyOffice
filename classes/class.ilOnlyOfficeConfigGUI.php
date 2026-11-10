@@ -39,7 +39,6 @@ use ILIAS\Refinery\Factory;
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
-    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public const string CMD_CONFIGURE = "configure";
     public const string CMD_TEMPLATES = "configureTemplates";
     public const string CMD_CREATE_TEMPLATE = "createTemplate";
