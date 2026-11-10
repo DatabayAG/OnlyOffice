@@ -24,9 +24,9 @@
     "sort-packages": true
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest"
-    ,
     "captainhook/captainhook": "^5.24",
-    "friendsofphp/php-cs-fixer": "^3.66"
+    "friendsofphp/php-cs-fixer": "^3.66",
+    "rector/rector": "^2.8",
+    "roave/security-advisories": "dev-latest"
   }
 }
