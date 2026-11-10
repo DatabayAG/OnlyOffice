@@ -32,12 +32,12 @@ use ilTextInputGUI;
 
 class TemplateForm extends ilPropertyFormGUI
 {
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
     /**
      * @var Container|mixed
      */
-    private mixed $dic;
-    private WrapperFactory $httpWrapper;
+    private readonly mixed $dic;
+    private readonly WrapperFactory $httpWrapper;
 
     public function __construct(bool $edit = false)
     {

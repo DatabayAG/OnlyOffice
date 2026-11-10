@@ -45,7 +45,7 @@ class FileChangeAR extends ActiveRecord
      * @con_is_primary   true
      * @con_sequence     true
      */
-    protected ?int $change_id;
+    protected ?int $change_id = null;
 
     /**
      * @con_has_field true
@@ -139,12 +139,10 @@ class FileChangeAR extends ActiveRecord
 
     public function sleep($field_name): ?string
     {
-        switch ($field_name) {
-            case 'file_uuid':
-                return $this->file_uuid->toString();
-            default:
-                return parent::sleep($field_name);
-        }
+        return match ($field_name) {
+            'file_uuid' => $this->file_uuid->toString(),
+            default => parent::sleep($field_name),
+        };
     }
 
     /**
@@ -152,12 +150,10 @@ class FileChangeAR extends ActiveRecord
      */
     public function wakeUp($field_name, $field_value): ?Uuid
     {
-        switch ($field_name) {
-            case 'file_uuid':
-                return (new UUIDFactory())->fromString($field_value);
-            default:
-                return parent::wakeUp($field_name, $field_value);
-        }
+        return match ($field_name) {
+            'file_uuid' => (new UUIDFactory())->fromString($field_value),
+            default => parent::wakeUp($field_name, $field_value),
+        };
     }
 
 }

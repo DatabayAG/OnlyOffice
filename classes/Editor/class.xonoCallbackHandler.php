@@ -37,7 +37,6 @@ class xonoCallbackHandler
     protected StorageService $storage_service;
     protected string $file_data;
     protected Uuid $uuid;
-    protected int $file_id;
     protected int $editor_id;
     protected string $file_extension;
     protected string $changes_object;
@@ -53,12 +52,11 @@ class xonoCallbackHandler
     public function __construct(
         Container $dic,
         string $uuid,
-        int $file_id,
+        protected int $file_id,
         array $data
     ) {
         $this->dic = $dic;
         $this->uuid = (new UUIDFactory())->fromString($uuid);
-        $this->file_id = $file_id;
 
         $this->fileUrl = $data["url"];
         $this->editor_id = (int) $data["users"][0];

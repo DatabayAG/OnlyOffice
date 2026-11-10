@@ -28,18 +28,12 @@ use JsonSerializable;
 class FileVersion implements JsonSerializable
 {
     public const FIRST_VERSION = 1;
-    protected int $version;
     protected ilDateTime $created_at;
-    protected int $user_id;
-    protected string $url;
     protected Uuid $file_uuid;
 
-    public function __construct(int $version, ilDateTime $created_at, int $user_id, string $url, Uuid $file_uuid)
+    public function __construct(protected int $version, ilDateTime $created_at, protected int $user_id, protected string $url, Uuid $file_uuid)
     {
-        $this->version = $version;
         $this->created_at = $created_at;
-        $this->user_id = $user_id;
-        $this->url = $url;
         $this->file_uuid = $file_uuid;
     }
 

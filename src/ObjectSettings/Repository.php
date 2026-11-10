@@ -25,15 +25,13 @@ use ilOnlyOfficePlugin;
 
 final class Repository
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
+    public const string PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?Repository $instance = null;
-    private Container $dic;
+    private readonly Container $dic;
 
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
+        self::$instance ??= new self();
 
         return self::$instance;
     }

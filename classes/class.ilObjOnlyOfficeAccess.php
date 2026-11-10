@@ -26,13 +26,11 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
-    private Container $dic;
+    private readonly Container $dic;
 
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
+        self::$instance ??= new self();
 
         return self::$instance;
     }
@@ -46,17 +44,9 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 
     public function _checkAccess(string $cmd, string $permission, ?int $ref_id = null, ?int $obj_id = null, ?int $user_id = null): bool
     {
-        if ($ref_id === null) {
-            $ref_id = (int) filter_input(INPUT_GET, "ref_id");
-        }
-
-        if ($obj_id === null) {
-            $obj_id = ilObjOnlyOffice::_lookupObjectId($ref_id);
-        }
-
-        if ($user_id === null) {
-            $user_id = $this->dic->user()->getId();
-        }
+        $ref_id ??= (int) filter_input(INPUT_GET, "ref_id");
+        $obj_id ??= ilObjOnlyOffice::_lookupObjectId($ref_id);
+        $user_id ??= $this->dic->user()->getId();
 
         return match ($permission) {
             "visible", "read" => ($this->dic->access()->checkAccessOfUser($user_id, $permission, "", $ref_id) && !self::_isOffline($obj_id))

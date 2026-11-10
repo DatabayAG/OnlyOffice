@@ -33,7 +33,7 @@ class PluginConfigForm extends ilPropertyFormGUI
     public const KEY_ONLYOFFICE_SECRET = "onlyoffice_secret";
     public const KEY_NUM_VERSIONS = "number_of_versions";
 
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct()
     {

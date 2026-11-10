@@ -33,7 +33,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
     //protected $versions = true;
     //protected $available = false;
 
-    private Container $dic;
+    private readonly Container $dic;
 
     public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
     {

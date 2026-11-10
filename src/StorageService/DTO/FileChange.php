@@ -24,27 +24,17 @@ use ILIAS\Data\UUID\Uuid;
 
 class FileChange
 {
-    protected int $change_id;
     protected Uuid $file_uuid;
-    protected int $version;
-    protected string $changesObjectString;
-    protected string $serverVersion;
-    protected string $changesUrl;
 
     public function __construct(
-        int $change_id,
+        protected int $change_id,
         Uuid $file_uuid,
-        int $version,
-        string $changesObjectString,
-        string $serverVersion,
-        string $changesUrl
+        protected int $version,
+        protected string $changesObjectString,
+        protected string $serverVersion,
+        protected string $changesUrl
     ) {
-        $this->change_id = $change_id;
         $this->file_uuid = $file_uuid;
-        $this->version = $version;
-        $this->changesObjectString = $changesObjectString;
-        $this->serverVersion = $serverVersion;
-        $this->changesUrl = $changesUrl;
     }
 
     public function setChangeId(int $change_id): void

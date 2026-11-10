@@ -53,13 +53,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     public const TAB_SUB_CONFIGURATION = "subConfiguration";
     public const TAB_SUB_TEMPLATES = "templates";
     protected StorageService $storage_service;
-    private ilPlugin $pl;
-    private $tpl;
-    private Factory $refinery;
-    private WrapperFactory $httpWrapper;
-    private Repository $repo;
+    private readonly ilPlugin $pl;
+    private readonly ilGlobalTemplateInterface $tpl;
+    private readonly Factory $refinery;
+    private readonly WrapperFactory $httpWrapper;
+    private readonly Repository $repo;
     private Container $dic;
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct()
     {

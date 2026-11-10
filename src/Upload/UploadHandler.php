@@ -29,8 +29,8 @@ use ilObjOnlyOfficeGUI;
 
 class UploadHandler implements UploadHandlerInterface
 {
-    private Container $dic;
-    private ilCtrlInterface $ctrl;
+    private readonly Container $dic;
+    private readonly ilCtrlInterface $ctrl;
 
     public function __construct(
     ) {

@@ -39,8 +39,8 @@ use ilOnlyOfficePlugin;
 
 class FileSettingProperty implements ilObjectProperty
 {
-    private ilOnlyOfficePlugin $plugin;
-    private Filesystem $tmpFilesystem;
+    private readonly ilOnlyOfficePlugin $plugin;
+    private readonly Filesystem $tmpFilesystem;
 
     /**
      * @param FileTemplate[] $templates

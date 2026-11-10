@@ -37,7 +37,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     public const PLUGIN_CLASS_NAME = self::class;
 
     protected static ?ilOnlyOfficePlugin $instance = null;
-    private Repository $repo;
+    private readonly Repository $repo;
     public ilSetting $settings;
 
     public static function getInstance(): self

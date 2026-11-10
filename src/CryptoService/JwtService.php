@@ -69,14 +69,11 @@ class JwtService
     protected static function base64UrlDecode($payload): string
     {
         $b64 = str_replace(["-", "_"], ["+", "/"], $payload);
-        switch (strlen($b64) % 4) {
-            case 2:
-                $b64 .= "==";
-                break;
-            case 3:
-                $b64 .= "=";
-                break;
-        }
+        match (strlen($b64) % 4) {
+            2 => $b64 .= "==",
+            3 => $b64 .= "=",
+            default => base64_decode($b64),
+        };
         return base64_decode($b64);
     }
 }

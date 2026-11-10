@@ -52,9 +52,7 @@ class FileSystemService
         string $file_id,
         ?string $file_name = null
     ): string {
-        if ($file_name === null) {
-            $file_name = (string) FileVersion::FIRST_VERSION;
-        }
+        $file_name ??= (string) FileVersion::FIRST_VERSION;
         $ext = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
         $file_name .= '.' . $ext;
 
@@ -177,7 +175,7 @@ class FileSystemService
                 try {
                     $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
                     $converted_file->setDescription($description_stream->getContents());
-                } catch (FileNotFoundException $ex) {
+                } catch (FileNotFoundException) {
                     $converted_file->setDescription("");
                 }
 

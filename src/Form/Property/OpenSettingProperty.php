@@ -30,7 +30,7 @@ use ilOnlyOfficePlugin;
 
 class OpenSettingProperty implements ilObjectProperty
 {
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct(
         private readonly OpenSetting $openMode = OpenSetting::EDITOR

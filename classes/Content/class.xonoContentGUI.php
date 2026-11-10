@@ -37,28 +37,26 @@ class xonoContentGUI extends xonoAbstractGUI
 
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
-    protected int $file_id;
-    private ilGlobalTemplateInterface $tpl;
+    private readonly ilGlobalTemplateInterface $tpl;
 
     public const CMD_STANDARD = 'showVersions';
     public const CMD_SHOW_VERSIONS = 'showVersions';
     public const CMD_DOWNLOAD = 'downloadFileVersion';
     public const CMD_EDIT = xonoEditorGUI::CMD_EDIT;
-    private Factory $refinery;
-    private WrapperFactory $httpWrapper;
-    private Repository $repo;
+    private readonly Factory $refinery;
+    private readonly WrapperFactory $httpWrapper;
+    private readonly Repository $repo;
 
     public function __construct(
         Container $dic,
         ilOnlyOfficePlugin $plugin,
-        int $object_id
+        protected int $file_id
     ) {
 
         $this->refinery = $dic->refinery();
         $this->httpWrapper = $dic->http()->wrapper();
 
         parent::__construct($dic, $plugin);
-        $this->file_id = $object_id;
         $this->tpl = $dic->ui()->mainTemplate();
         $this->repo = Repository::getInstance();
 
@@ -93,14 +91,10 @@ class xonoContentGUI extends xonoAbstractGUI
             $xono_editor = new xonoEditorGUI($this->dic, $this->plugin, $this->file_id);
             $this->dic->ctrl()->forwardCommand($xono_editor);
         } else {
-            switch ($cmd) {
-                case self::CMD_EDIT:
-                    $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT);
-                    break;
-                default:
-                    $this->{$cmd}();
-                    break;
-            }
+            match ($cmd) {
+                self::CMD_EDIT => $this->dic->ctrl()->redirectByClass(xonoEditorGUI::class, xonoEditorGUI::CMD_EDIT),
+                default => $this->{$cmd}(),
+            };
         }
     }
 

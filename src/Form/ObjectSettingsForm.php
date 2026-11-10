@@ -58,14 +58,14 @@ class ObjectSettingsForm
     public const POST_VAR_EDIT_LIMITED_END = 'end_time';
     public const POST_VAR_CREATE = 'createFrom';
 
-    private ilOnlyOfficePlugin $plugin;
-    private Container $dic;
-    private Factory $uiFactory;
-    private StorageService $storageService;
-    private ilCtrlInterface $ctrl;
-    private ilLanguage $lng;
-    private \ILIAS\Refinery\Factory $refinery;
-    private StandardForm $form;
+    private readonly ilOnlyOfficePlugin $plugin;
+    private readonly Container $dic;
+    private readonly Factory $uiFactory;
+    private readonly StorageService $storageService;
+    private readonly ilCtrlInterface $ctrl;
+    private readonly ilLanguage $lng;
+    private readonly \ILIAS\Refinery\Factory $refinery;
+    private readonly StandardForm $form;
 
     public function __construct(?ObjectSettings $objectSettings = null, bool $newObject = false)
     {

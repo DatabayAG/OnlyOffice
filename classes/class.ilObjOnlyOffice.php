@@ -40,14 +40,14 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     public ObjectSettings $object_settings;
 
-    private ilPlugin $pl;
-    private $tpl;
-    private Factory $refinery;
-    private WrapperFactory $httpWrapper;
-    private FileUpload $upload;
-    private Repository $repo;
+    private readonly ilPlugin $pl;
+    private readonly ilGlobalTemplateInterface $tpl;
+    private readonly Factory $refinery;
+    private readonly WrapperFactory $httpWrapper;
+    private readonly FileUpload $upload;
+    private readonly Repository $repo;
 
-    private Container $dic;
+    private readonly Container $dic;
 
     public function __construct(int $a_ref_id = 0)
     {
@@ -141,12 +141,10 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     public function doUpdate(?StandardForm &$form = null): void
     {
-        if ($form === null) {
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $form = (new ObjectSettingsForm($this->object_settings))
-                ->getForm()
-                ->withRequest($this->dic->http()->request());
-        }
+        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
+        $form ??= (new ObjectSettingsForm($this->object_settings))
+            ->getForm()
+            ->withRequest($this->dic->http()->request());
 
         /** @var array{
          *     title_and_description: ilObjectPropertyTitleAndDescription,

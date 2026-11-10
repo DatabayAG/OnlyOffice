@@ -26,10 +26,6 @@ use ILIAS\Data\UUID\Uuid;
 class File
 {
     protected Uuid $uuid;
-    protected int $obj_id;
-    protected string $title;
-    protected string $file_type;
-    protected string $mime_type;
 
     public static function determineDocType(string $extension): FileCreationType
     {
@@ -42,13 +38,9 @@ class File
 
     }
 
-    public function __construct(Uuid $uuid, int $obj_id, string $title, string $file_type, string $mime_type)
+    public function __construct(Uuid $uuid, protected int $obj_id, protected string $title, protected string $file_type, protected string $mime_type)
     {
         $this->uuid = $uuid;
-        $this->title = $title;
-        $this->file_type = $file_type;
-        $this->obj_id = $obj_id;
-        $this->mime_type = $mime_type;
     }
 
     public function getUuid(): Uuid

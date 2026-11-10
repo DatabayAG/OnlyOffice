@@ -48,7 +48,7 @@ class ObjectSettings extends ActiveRecord
      * @con_is_notnull   true
      * @con_is_primary   true
      */
-    protected ?int $obj_id;
+    protected ?int $obj_id = null;
 
     /**
      * @con_has_field  true
@@ -122,13 +122,10 @@ class ObjectSettings extends ActiveRecord
     {
         $field_value = $this->{$field_name};
 
-        switch ($field_name) {
-            case "is_online":
-            case "allow_edit":
-                return ($field_value ? 1 : 0);
-            default:
-                return null;
-        }
+        return match ($field_name) {
+            "is_online", "allow_edit" => $field_value ? 1 : 0,
+            default => null,
+        };
     }
 
     /**

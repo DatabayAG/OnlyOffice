@@ -43,23 +43,17 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
 class StorageService
 {
     protected Container $dic;
-    protected FileVersionRepository $file_version_repository;
     protected FileSystemService $file_system_service;
-    protected FileRepository $file_repository;
-    protected FileChangeRepository $file_change_repository;
-    private UUIDFactory $uuidFactory;
+    private readonly UUIDFactory $uuidFactory;
 
     public function __construct(
         Container $dic,
-        FileVersionRepository $file_version_repository,
-        FileRepository $file_repository,
-        FileChangeRepository $file_change_repository
+        protected FileVersionRepository $file_version_repository,
+        protected FileRepository $file_repository,
+        protected FileChangeRepository $file_change_repository
     ) {
         $this->dic = $dic;
-        $this->file_version_repository = $file_version_repository;
-        $this->file_repository = $file_repository;
         $this->file_system_service = new FileSystemService($dic);
-        $this->file_change_repository = $file_change_repository;
         $this->uuidFactory = new UUIDFactory();
     }
 
@@ -74,7 +68,7 @@ class StorageService
         $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $this->file_repository->create($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
+        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
 
         // Create & Return FileVersion object
         $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
@@ -96,7 +90,7 @@ class StorageService
 
         // Create DB Entries for File & FileVersion
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
+        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
 
         // Create & Return FileVersion object
         $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
@@ -118,7 +112,7 @@ class StorageService
 
         // Create DB Entries for File & FileVersion
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
+        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
 
         // Create & Return FileVersion object
         $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);

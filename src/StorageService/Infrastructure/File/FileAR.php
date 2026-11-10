@@ -48,7 +48,7 @@ class FileAR extends ActiveRecord
      * @con_length       8
      * @con_is_primary   true
      */
-    protected ?int $obj_id;
+    protected ?int $obj_id = null;
 
     /**
      * @db_has_field        true
@@ -135,12 +135,10 @@ class FileAR extends ActiveRecord
 
     public function sleep($field_name): ?string
     {
-        switch ($field_name) {
-            case 'uuid':
-                return $this->uuid->toString();
-            default:
-                return parent::sleep($field_name);
-        }
+        return match ($field_name) {
+            'uuid' => $this->uuid->toString(),
+            default => parent::sleep($field_name),
+        };
     }
 
     /**
@@ -148,11 +146,9 @@ class FileAR extends ActiveRecord
      */
     public function wakeUp($field_name, $field_value): ?Uuid
     {
-        switch ($field_name) {
-            case 'uuid':
-                return (new UUIDFactory())->fromString($field_value);
-            default:
-                return parent::wakeUp($field_name, $field_value);
-        }
+        return match ($field_name) {
+            'uuid' => (new UUIDFactory())->fromString($field_value),
+            default => parent::wakeUp($field_name, $field_value),
+        };
     }
 }

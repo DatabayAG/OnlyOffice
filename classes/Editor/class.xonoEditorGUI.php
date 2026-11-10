@@ -38,26 +38,23 @@ class xonoEditorGUI extends xonoAbstractGUI
 {
     protected ilOnlyOfficePlugin $plugin;
     protected StorageService $storage_service;
-    protected int $file_id;
     public const CMD_EDIT = "editFile";
     public const CMD_STANDARD = "editFile";
     public const BASE_URL = ILIAS_HTTP_PATH;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
-    private Repository $repo;
-    private ilGlobalTemplateInterface $mainTpl;
+    private readonly Repository $repo;
+    private readonly ilGlobalTemplateInterface $mainTpl;
 
     public function __construct(
         Container $dic,
         ilOnlyOfficePlugin $plugin,
-        int $object_id
+        protected int $file_id
     ) {
         parent::__construct($dic, $plugin);
 
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
         $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
-
-        $this->file_id = $object_id;
         $this->repo = Repository::getInstance();
         $this->mainTpl = $this->dic->ui()->mainTemplate();
 
