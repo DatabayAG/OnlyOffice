@@ -23,7 +23,6 @@ use ILIAS\Plugin\OnlyOffice\Repository;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
     private readonly Container $dic;

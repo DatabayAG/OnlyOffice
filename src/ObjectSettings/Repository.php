@@ -21,11 +21,9 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\ObjectSettings;
 
 use ILIAS\DI\Container;
-use ilOnlyOfficePlugin;
 
 final class Repository
 {
-
     protected static ?Repository $instance = null;
     private readonly Container $dic;
 

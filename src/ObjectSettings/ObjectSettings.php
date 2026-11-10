@@ -24,7 +24,6 @@ use ilDateTime;
 use ActiveRecord;
 use arConnector;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
-use ilOnlyOfficePlugin;
 
 class ObjectSettings extends ActiveRecord
 {

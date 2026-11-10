@@ -21,11 +21,9 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice;
 
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\Repository as ObjectSettingsRepository;
-use ilOnlyOfficePlugin;
 
 final class Repository
 {
-
     protected static ?Repository $instance = null;
 
     public static function getInstance(): self
