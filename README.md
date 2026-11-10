@@ -55,10 +55,6 @@ Use `http://%onlyoffice_ip%` as `ONLYOFFICE root URL` in plugin configuration
 
 This plugin supports lucene indexing of the basic object data.
 
-Lucene indexing is broken for plugins since ILIAS 10.
-
-A Pr was created to fix this issue: https://github.com/ILIAS-eLearning/ILIAS/pull/11873
-
 ## Troubleshooting
 1. If the OnlyOffice window opens up but you can't access the file make sure that your webserver user has read and write access to the plugin folder and the data folder where the files are saved.
 
