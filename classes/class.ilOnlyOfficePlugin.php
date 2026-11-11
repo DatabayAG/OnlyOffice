@@ -29,9 +29,6 @@ use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepositor
 use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
-/**
- *         Sophie Pfister <sophie@fluxlabs.ch>
- */
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
     public const string ID = "xono";
