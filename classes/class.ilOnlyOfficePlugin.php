@@ -118,11 +118,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         );
     }
 
-    public function getRelativeDirectory(): string
-    {
-        return str_replace(ILIAS_ABSOLUTE_PATH . "/public/", "", realpath($this->getDirectory()));
-    }
-
     public function assetsFile(PluginAsset $assetType, string $file, bool $relative = true): string
     {
         $basePath = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
