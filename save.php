@@ -1,9 +1,36 @@
 <?php
 
+
+
+declare(strict_types=1);
+
+$ilias_root_dir = __DIR__;
+$i = 0;
+while (!file_exists("$ilias_root_dir/ilias.ini.php") && $i <= 15) {
+    $i++;
+    $ilias_root_dir .= '/..';
+}
+
+if (!file_exists("$ilias_root_dir/ilias.ini.php")) {
+    throw new RuntimeException('Could not find ilias.ini.php, are you sure this script is located within the ILIAS directory structure?');
+}
+
+chdir("$ilias_root_dir/public");
+
+require_once '../vendor/composer/vendor/autoload.php';
+require_once  '../artifacts/bootstrap_default.php';
+
+$cookie_path = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], $i));
+if ($cookie_path === '' || $cookie_path === '.') {
+    $cookie_path = '/';
+} elseif (!str_ends_with($cookie_path, '/')) {
+    $cookie_path .= '/';
+}
+
+define('IL_COOKIE_PATH', $cookie_path);
+
 use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
-
-require_once dirname(__DIR__, 8) . '/vendor/composer/vendor/autoload.php';
 
 initializeILIAS();
 global $DIC;
@@ -48,7 +75,7 @@ function initializeILIAS(): void
 {
     try {
         ilContext::init(ilContext::CONTEXT_SOAP_NO_AUTH);
-        ilInitialisation::initILIAS();
+        entry_point('ILIAS Legacy Initialisation Adapter');
     }
     catch (Exception $exception) {
         echo "Bad Request";
