@@ -19,11 +19,11 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
@@ -95,7 +95,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
             $this->dic,
             new FileVersionRepository(),
             new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
+            new FileChangeRepository()
         );
         $file = $storage->getFile($this->obj_id);
         if (is_null($file)) {

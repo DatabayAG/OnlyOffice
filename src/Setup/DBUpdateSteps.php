@@ -25,6 +25,7 @@ use ilDBConstants;
 use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 
@@ -72,6 +73,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $tables_to_drop = [
             ObjectSettingsRepository::TABLE_NAME,
             FileVersionRepository::TABLE_NAME,
+            FileChangeRepository::TABLE_NAME,
         ];
 
         foreach ($tables_to_drop as $table_name) {
@@ -176,6 +178,49 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             ],
         ]);
         $this->db->addPrimaryKey($table_name, ["id"]);
+        $this->db->createSequence($table_name);
+    }
+
+    public function step_3(): void
+    {
+        $table_name = "xono_file_change";
+
+        if ($this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->createTable($table_name, [
+            "change_id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "file_uuid" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+            "version" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "changes_object_string" => [
+                "type" => ilDBConstants::T_CLOB,
+                "notnull" => true,
+            ],
+            "changes_url" => [
+                "type" => ilDBConstants::T_TEXT,
+                "notnull" => true,
+                "length" => 256,
+            ],
+            "server_version" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 64,
+                "notnull" => true,
+            ],
+        ]);
+        $this->db->addPrimaryKey($table_name, ["change_id"]);
         $this->db->createSequence($table_name);
     }
 }

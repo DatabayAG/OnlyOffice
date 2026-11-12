@@ -9,7 +9,7 @@
 ?>
 <#3>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR::updateDB();
+//Kept empty for compatibility
 ?>
 <#4>
 <?php
@@ -49,10 +49,7 @@ if ($offering_admin) {
 <#12>
 <#13>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR::updateDB();
-global $DIC;
-$DIC->database()->query("CREATE TABLE IF NOT EXISTS xono_file_change_seq (sequence INT PRIMARY KEY AUTO_INCREMENT);");
-$DIC->database()->query("INSERT INTO xono_file_change_seq VALUES (1);");
+//Kept empty for compatibility
 ?>
 <#14>
 <?php
@@ -60,11 +57,7 @@ $DIC->database()->query("INSERT INTO xono_file_change_seq VALUES (1);");
 ?>
 <#15>
 <?php
-global $DIC;
-$file_change_table = \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR::TABLE_NAME;
-
-$DIC->database()->modifyTableColumn($file_change_table, 'changes_object_string',
-    array("type" => "clob"));
+//Kept empty for compatibility
 ?>
 <#16>
 <?php

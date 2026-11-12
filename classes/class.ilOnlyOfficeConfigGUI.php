@@ -26,9 +26,9 @@ use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Refinery\Factory;
@@ -70,7 +70,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->dic,
             new FileVersionRepository(),
             new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
+            new FileChangeRepository()
         );
 
         /** @var $component_factory ilComponentFactory */

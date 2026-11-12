@@ -26,10 +26,10 @@ use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
@@ -69,7 +69,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $this->dic,
             new FileVersionRepository(),
             new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
+            new FileChangeRepository()
         );
     }
 
@@ -222,7 +222,7 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     protected function history(FileVersion $latestVersion, array $all_versions): array
     {
-        $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid()->toString());
+        $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid());
         $history_array = [];
 
         // add all versions to history
@@ -253,7 +253,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->toString();
 
-            $change_url = $this->storage_service->getChangeUrl($uuid, $v);
+            $change_url = $this->storage_service->getChangeUrl($version->getFileUuid(), $v);
             $data_array['changesUrl'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($change_url), '.');
 
             $data_array['key'] = $uuid . '-' . $v;

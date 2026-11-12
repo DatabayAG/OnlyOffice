@@ -27,17 +27,16 @@ use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
 
 class StorageService
 {
@@ -154,13 +153,13 @@ class StorageService
             $version,
             $change_extension
         );
-        $this->file_change_repository->create(
+        $this->file_change_repository->create(new FileChange(
             $uuid,
             $version,
             $changes_object,
-            $serverVersion,
-            $change_path
-        );
+            $change_path,
+            $serverVersion
+        ));
 
         return $file_version;
     }
@@ -243,16 +242,17 @@ class StorageService
         }
 
         // clone file changes
-        $parent_changes = $this->file_change_repository->getAllChanges($parent_file->getUuid()->toString());
-        foreach ($parent_changes as $changes) {
-            $path = $this->file_system_service->storeChangeCopy($changes, $uuid->toString(), $child_id);
-            $this->file_change_repository->create(
+        $parent_changes = $this->file_change_repository->readAllByUuid($parent_file->getUuid());
+        foreach ($parent_changes as $file_change) {
+            $path = $this->file_system_service->storeChangeCopy($file_change, $uuid->toString(), $child_id);
+
+            $this->file_change_repository->create(new FileChange(
                 $uuid,
-                $changes->getVersion(),
-                $changes->getChangesObjectString(),
-                $changes->getServerVersion(),
-                $path
-            );
+                $file_change->getVersion(),
+                $file_change->getChangesObjectString(),
+                $path,
+                $file_change->getServerVersion(),
+            ));
         }
 
     }
@@ -275,8 +275,7 @@ class StorageService
         $this->file_version_repository->deleteByFileUuid($uuid);
 
         // delete FileChange entries
-        $query = 'DELETE FROM xono_file_change WHERE file_uuid="' . $uuid->toString() . '";';
-        $this->dic->database()->query($query);
+        $this->file_change_repository->deleteByFileUuid($uuid);
 
     }
 
@@ -295,14 +294,14 @@ class StorageService
     /**
      * @return array<int, FileChange>
      */
-    public function getAllChanges(string $uuid): array
+    public function getAllChanges(Uuid $uuid): array
     {
-        return $this->file_change_repository->getAllChanges($uuid);
+        return $this->file_change_repository->readAllByUuid($uuid);
     }
 
-    public function getChangeUrl(string $uuid, int $version): string
+    public function getChangeUrl(Uuid $uuid, int $version): string
     {
-        return $this->file_change_repository->getChange($uuid, $version)->getChangesUrl();
+        return $this->file_change_repository->readByUuid($uuid, $version)->getChangesUrl();
 
     }
 
@@ -333,7 +332,6 @@ class StorageService
             $this->deleteFile($file->getObjId());
         }
         FileAR::truncateDB();
-        FileChangeAR::truncateDB();
     }
 
     /**
@@ -360,13 +358,14 @@ class StorageService
                 "name" => $this->dic->user()->getFullname()
             ]
         ], JSON_THROW_ON_ERROR);
-        $this->file_change_repository->create(
+        $this->file_change_repository->create(new FileChange(
             $new_file_id,
             $file_version->getVersion(),
             $changes,
-            FileChangeRepository::DEFAULT_SERVER_VERSION,
-            $path
-        );
+            $path,
+            FileChange::DEFAULT_SERVER_VERSION
+        ));
+
         return $file_version;
     }
 }

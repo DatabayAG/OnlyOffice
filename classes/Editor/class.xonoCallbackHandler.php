@@ -19,10 +19,10 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Data\UUID\Uuid;
 use Matrix\Exception;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
@@ -81,7 +81,7 @@ class xonoCallbackHandler
             $this->dic,
             new FileVersionRepository(),
             new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
+            new FileChangeRepository()
         );
     }
 

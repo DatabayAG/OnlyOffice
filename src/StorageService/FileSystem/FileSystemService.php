@@ -27,10 +27,10 @@ use ILIAS\Filesystem\Stream\Stream;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Location;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Filesystem\Stream\Streams;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 
 class FileSystemService
 {
