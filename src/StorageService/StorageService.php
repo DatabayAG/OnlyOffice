@@ -27,17 +27,16 @@ use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
 
 class StorageService
@@ -68,10 +67,8 @@ class StorageService
         $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $this->file_repository->create($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
-        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
 
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
+        $file_version = $this->createNewFileVersion($new_file_id, $path);
         $file = new File($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
         return $file;
     }
@@ -90,10 +87,7 @@ class StorageService
 
         // Create DB Entries for File & FileVersion
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
-
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
+        $file_version = $this->createNewFileVersion($new_file_id, $path);
         $file = new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
         return $file;
     }
@@ -112,10 +106,7 @@ class StorageService
 
         // Create DB Entries for File & FileVersion
         $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        [$created_at, $version] = $this->createNewFile($new_file_id, $path);
-
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
+        $file_version = $this->createNewFileVersion($new_file_id, $path);
         return new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
     }
 
@@ -145,7 +136,15 @@ class StorageService
             $version,
             $file_extension
         );
-        $this->file_version_repository->create($uuid, $editor_id, $created_at, $path);
+
+        $file_version = new FileVersion(
+            $uuid,
+            $editor_id,
+            $created_at,
+            $path
+        );
+
+        $this->file_version_repository->create($file_version);
 
         //Store Changes and Create Database Entry
         $change_path = $this->file_system_service->storeChanges(
@@ -163,8 +162,7 @@ class StorageService
             $change_path
         );
 
-        // Return FileVersion object
-        return new FileVersion($version, $created_at, $editor_id, $path, $uuid);
+        return $file_version;
     }
 
     /**
@@ -232,17 +230,16 @@ class StorageService
         $this->file_repository->create($uuid, $child_id, $parent_file->getTitle(), $parent_file->getFileType(), $parent_file->getMimeType());
 
         // clone file versions
-        $parent_file_versions = $this->file_version_repository->getAllVersions($parent_file->getFileUuid());
-        foreach ($parent_file_versions as $version) {
-            $path = $this->file_system_service->storeVersionCopy($version, $uuid->toString(), $child_id);
-            $created_at = new ilDateTime(time(), IL_CAL_UNIX);
-            $this->file_version_repository->create(
+        $parent_file_versions = $this->file_version_repository->readAllByUuid($parent_file->getFileUuid());
+        foreach ($parent_file_versions as $file_version) {
+            $path = $this->file_system_service->storeVersionCopy($file_version, $uuid->toString(), $child_id);
+            $this->file_version_repository->create(new FileVersion(
                 $uuid,
                 $this->dic->user()->getId(),
-                $created_at,
+                new ilDateTime(time(), IL_CAL_UNIX),
                 $path,
-                $version->getVersion()
-            );
+                $file_version->getVersion()
+            ));
         }
 
         // clone file changes
@@ -275,8 +272,7 @@ class StorageService
         $this->dic->database()->query($query);
 
         // delete FileVersion entries
-        $query = 'DELETE FROM xono_file_version WHERE file_uuid="' . $uuid->toString() . '";';
-        $this->dic->database()->query($query);
+        $this->file_version_repository->deleteByFileUuid($uuid);
 
         // delete FileChange entries
         $query = 'DELETE FROM xono_file_change WHERE file_uuid="' . $uuid->toString() . '";';
@@ -284,13 +280,16 @@ class StorageService
 
     }
 
-    public function getAllVersions(int $object_id): array
+    /**
+     * @return list<FileVersion>
+     */
+    public function getAllVersions(int $obj_id): array
     {
-        $file = $this->file_repository->getFile($object_id);
+        $file = $this->file_repository->getFile($obj_id);
         if (is_null($file)) {
             return [];
         }
-        return $this->file_version_repository->getAllVersions($file->getFileUuid());
+        return $this->file_version_repository->readAllByUuid($file->getFileUuid());
     }
 
     /**
@@ -307,9 +306,9 @@ class StorageService
 
     }
 
-    public function getPreviousVersion(string $uuid, int $version): FileVersion
+    public function getPreviousVersion(Uuid $uuid, int $version): FileVersion
     {
-        return $this->file_version_repository->getPreviousVersion($uuid, $version);
+        return $this->file_version_repository->readByUuid($uuid, $version - 1);
     }
 
     public function getFile(int $file_id): ?File
@@ -319,7 +318,7 @@ class StorageService
 
     public function getLatestVersion(Uuid $file_uuid): ?FileVersion
     {
-        return $this->file_version_repository->getLatestVersion($file_uuid);
+        return $this->file_version_repository->readLatestByUuid($file_uuid);
     }
 
     /**
@@ -334,22 +333,24 @@ class StorageService
             $this->deleteFile($file->getObjId());
         }
         FileAR::truncateDB();
-        FileVersionAR::truncateDB();
         FileChangeAR::truncateDB();
     }
 
     /**
      * @throws ilDateTimeException
      */
-    private function createNewFile(Uuid $new_file_id, string $path): array
+    private function createNewFileVersion(Uuid $new_file_id, string $path): FileVersion
     {
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
-        $version = $this->file_version_repository->create(
+
+        $file_version = new FileVersion(
             $new_file_id,
             $this->dic->user()->getId(),
             $created_at,
             $path
         );
+
+        $this->file_version_repository->create($file_version);
 
         // Create DB Entry for FileChange
         $changes = json_encode([
@@ -361,11 +362,11 @@ class StorageService
         ], JSON_THROW_ON_ERROR);
         $this->file_change_repository->create(
             $new_file_id,
-            $version,
+            $file_version->getVersion(),
             $changes,
             FileChangeRepository::DEFAULT_SERVER_VERSION,
             $path
         );
-        return [$created_at, $version];
+        return $file_version;
     }
 }

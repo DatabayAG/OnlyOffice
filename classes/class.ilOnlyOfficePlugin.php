@@ -21,9 +21,9 @@ declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
@@ -91,7 +91,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         $all_files = FileAR::get();
         $storage = new StorageService(
             $DIC,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );

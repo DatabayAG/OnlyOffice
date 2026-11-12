@@ -19,9 +19,9 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 
@@ -93,7 +93,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
     {
         $storage = new StorageService(
             $this->dic,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );

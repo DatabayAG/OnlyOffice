@@ -25,6 +25,7 @@ use ilDBConstants;
 use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 
 class DBUpdateSteps implements ilDatabaseUpdateSteps
@@ -69,7 +70,8 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         );
 
         $tables_to_drop = [
-            ObjectSettingsRepository::TABLE_NAME
+            ObjectSettingsRepository::TABLE_NAME,
+            FileVersionRepository::TABLE_NAME,
         ];
 
         foreach ($tables_to_drop as $table_name) {
@@ -133,5 +135,47 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             ],
         ]);
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
+    }
+
+    public function step_2(): void
+    {
+        $table_name = "xono_file_version";
+
+        if ($this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->createTable($table_name, [
+            "id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "file_uuid" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+            "user_id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "created_at" => [
+                "type" => ilDBConstants::T_TIMESTAMP,
+                "notnull" => true,
+            ],
+            "url" => [
+                "type" => ilDBConstants::T_TEXT,
+                "notnull" => true,
+            ],
+            "version" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+        ]);
+        $this->db->addPrimaryKey($table_name, ["id"]);
+        $this->db->createSequence($table_name);
     }
 }

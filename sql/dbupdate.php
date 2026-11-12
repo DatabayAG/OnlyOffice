@@ -6,10 +6,6 @@
 <#2>
 <?php
 \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::updateDB();
 ?>
 <#3>
 <?php
@@ -60,15 +56,7 @@ $DIC->database()->query("INSERT INTO xono_file_change_seq VALUES (1);");
 ?>
 <#14>
 <?php
-global $DIC;
-$file_versions = \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::get();
-$table_to_update = \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR::TABLE_NAME;
-foreach ($file_versions as $file_version) {
-    $file_version->getCreatedAt()->increment(ilDateTime::HOUR, -2);
-    $file_uuid = $file_version->getFileUuid()->toString();
-    $new_date_time = $file_version->getCreatedAt()->get(IL_CAL_DATETIME, 'd.m.Y H:i', ilTimeZone::UTC);
-    $DIC->database()->manipulate(sprintf("UPDATE %s SET created_at = '%s' WHERE file_uuid = '%s'", $table_to_update, $new_date_time, $file_uuid));
-}
+//Kept empty for compatibility
 ?>
 <#15>
 <?php

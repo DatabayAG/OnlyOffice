@@ -24,13 +24,13 @@ use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
@@ -67,7 +67,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     {
         $this->storage_service = new StorageService(
             $this->dic,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
@@ -309,7 +309,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     {
         $result = [];
         $previous = $this->storage_service->getPreviousVersion(
-            $version->getFileUuid()->toString(),
+            $version->getFileUuid(),
             $version->getVersion()
         );
         $key = $previous->getFileUuid()->toString() . '-' . $previous->getVersion();

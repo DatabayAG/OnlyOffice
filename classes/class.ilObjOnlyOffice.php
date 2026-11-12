@@ -27,10 +27,10 @@ use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Refinery\Factory;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
@@ -194,7 +194,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $storage = new StorageService(
             $this->dic,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
@@ -226,7 +226,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $storage = new StorageService(
             $this->dic,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );

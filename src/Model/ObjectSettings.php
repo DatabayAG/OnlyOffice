@@ -48,9 +48,10 @@ class ObjectSettings
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(string $title): self
     {
         $this->title = $title;
+        return $this;
     }
 
     public function getDescription(): string
@@ -58,9 +59,10 @@ class ObjectSettings
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(string $description): self
     {
         $this->description = $description;
+        return $this;
     }
 
 
@@ -69,9 +71,10 @@ class ObjectSettings
         return $this->online;
     }
 
-    public function setOnline(bool $online): void
+    public function setOnline(bool $online): self
     {
         $this->online = $online;
+        return $this;
     }
 
     public function isAllowEdit(): bool
@@ -79,9 +82,10 @@ class ObjectSettings
         return $this->allow_edit;
     }
 
-    public function setAllowEdit(bool $allow_edit): void
+    public function setAllowEdit(bool $allow_edit): self
     {
         $this->allow_edit = $allow_edit;
+        return $this;
     }
 
     public function isLimitedPeriod(): bool
@@ -89,9 +93,10 @@ class ObjectSettings
         return $this->limited_period;
     }
 
-    public function setLimitedPeriod(bool $limited_period): void
+    public function setLimitedPeriod(bool $limited_period): self
     {
         $this->limited_period = $limited_period;
+        return $this;
     }
 
     public function getOpenSetting(): OpenSetting
@@ -99,9 +104,10 @@ class ObjectSettings
         return $this->open_setting;
     }
 
-    public function setOpenSetting(OpenSetting $open_setting): void
+    public function setOpenSetting(OpenSetting $open_setting): self
     {
         $this->open_setting = $open_setting;
+        return $this;
     }
 
     public function getStartTime(): ?ilDateTime
@@ -109,9 +115,10 @@ class ObjectSettings
         return $this->start_time;
     }
 
-    public function setStartTime(?ilDateTime $start_time): void
+    public function setStartTime(?ilDateTime $start_time): self
     {
         $this->start_time = $start_time;
+        return $this;
     }
 
     public function getEndTime(): ?ilDateTime
@@ -119,8 +126,9 @@ class ObjectSettings
         return $this->end_time;
     }
 
-    public function setEndTime(?ilDateTime $end_time): void
+    public function setEndTime(?ilDateTime $end_time): self
     {
         $this->end_time = $end_time;
+        return $this;
     }
 }

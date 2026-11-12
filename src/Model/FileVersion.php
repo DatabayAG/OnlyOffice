@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
+namespace ILIAS\Plugin\OnlyOffice\Model;
 
 use ilDateTime;
 use ILIAS\Data\UUID\Uuid;
@@ -29,53 +29,26 @@ class FileVersion implements JsonSerializable
 {
     public const int FIRST_VERSION = 1;
 
-    protected ilDateTime $created_at;
-    protected Uuid $file_uuid;
+    private int $id;
 
-    public function __construct(protected int $version, ilDateTime $created_at, protected int $user_id, protected string $url, Uuid $file_uuid)
-    {
-        $this->created_at = $created_at;
-        $this->file_uuid = $file_uuid;
+    public function __construct(
+        private readonly Uuid $file_uuid,
+        private readonly int $user_id,
+        private readonly ilDateTime $created_at,
+        private readonly string $url,
+        private int $version = -1,
+    ) {
     }
 
-    public function getVersion(): int
+    public function setId(int $id): self
     {
-        return $this->version;
+        $this->id = $id;
+        return $this;
     }
 
-    public function setVersion(int $version): void
+    public function getId(): int
     {
-        $this->version = $version;
-    }
-
-    public function getCreatedAt(): ilDateTime
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(ilDateTime $date): void
-    {
-        $this->created_at = $date;
-    }
-
-    public function getUserId(): int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): void
-    {
-        $this->user_id = $user_id;
-    }
-
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(string $url): void
-    {
-        $this->url = $url;
+        return $this->id;
     }
 
     public function getFileUuid(): Uuid
@@ -83,9 +56,30 @@ class FileVersion implements JsonSerializable
         return $this->file_uuid;
     }
 
-    public function setFileUuid(Uuid $uuid): void
+    public function getUserId(): int
     {
-        $this->file_uuid = $uuid;
+        return $this->user_id;
+    }
+
+    public function getCreatedAt(): ilDateTime
+    {
+        return $this->created_at;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
+    public function setVersion(int $version): self
+    {
+        $this->version = $version;
+        return $this;
     }
 
     public function jsonSerialize(): array
@@ -100,5 +94,4 @@ class FileVersion implements JsonSerializable
             'uuid' => $this->file_uuid->toString()
         ];
     }
-
 }

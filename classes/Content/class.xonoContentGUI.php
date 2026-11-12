@@ -22,12 +22,11 @@ use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Refinery\Factory;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
@@ -67,7 +66,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         $this->storage_service = new StorageService(
             $this->dic,
-            new ilDBFileVersionRepository(),
+            new FileVersionRepository(),
             new ilDBFileRepository(),
             new ilDBFileChangeRepository()
         );
@@ -103,7 +102,6 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function showVersions(): void
     {
-        /** @var FileVersion[] $fileVersions */
         $fileVersions = $this->storage_service->getAllVersions($this->file_id);
         $file = $this->storage_service->getFile($this->file_id);
         if (is_null($file)) {
@@ -171,7 +169,6 @@ class xonoContentGUI extends xonoAbstractGUI
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
-        /** @var FileVersion $version */
         $fileVersion = null;
         foreach ($this->storage_service->getAllVersions($this->file_id) as $version) {
             if ($version->getVersion() === $requestedVersion) {
