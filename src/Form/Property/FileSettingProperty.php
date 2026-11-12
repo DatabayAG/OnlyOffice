@@ -29,7 +29,7 @@ use ILIAS\ILIASObject\Properties\Property;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\Upload\UploadHandler;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;

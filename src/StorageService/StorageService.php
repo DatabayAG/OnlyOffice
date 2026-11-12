@@ -31,7 +31,7 @@ use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;

@@ -29,7 +29,7 @@ use ILIAS\FileUpload\Location;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Filesystem\Stream\Streams;
 
 class FileSystemService
@@ -127,22 +127,21 @@ class FileSystemService
             $extension = pathinfo($full_path, PATHINFO_EXTENSION);
             $title = pathinfo($full_path, PATHINFO_FILENAME);
 
-            $template = new FileTemplate();
-            $template->setTitle($title);
-            $template->setType($type);
-            $template->setPath($full_path);
-            $template->setExtension($extension);
 
-            $description_path = $path . "descriptions/" . $title . ".txt";
-
+            $description = "";
             try {
-                $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
-                $template->setDescription($description_stream->getContents());
+                $description_stream = $this->dic->filesystem()->web()->readStream($path . "descriptions/" . $title . ".txt");
+                $description = $description_stream->getContents();
             } catch (FileNotFoundException) {
-                $template->setDescription("");
             }
 
-            return $template;
+            return new FileTemplate(
+                $title,
+                $description,
+                $extension,
+                $type,
+                $full_path
+            );
         }
         return null;
     }
@@ -165,22 +164,21 @@ class FileSystemService
 
                 $title = pathinfo($file, PATHINFO_FILENAME);
 
-                $converted_file = new FileTemplate();
-                $converted_file->setTitle($title);
-                $converted_file->setType($type);
-                $converted_file->setPath($file);
-                $converted_file->setExtension($extension);
-
-                $description_path = $path . "descriptions/" . $title . ".txt";
+                $description = "";
 
                 try {
-                    $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
-                    $converted_file->setDescription($description_stream->getContents());
+                    $description_stream = $this->dic->filesystem()->web()->readStream($path . "descriptions/" . $title . ".txt");
+                    $description = $description_stream->getContents();
                 } catch (FileNotFoundException) {
-                    $converted_file->setDescription("");
                 }
 
-                $converted_files[] = $converted_file;
+                $converted_files[] = new FileTemplate(
+                    $title,
+                    $description,
+                    $extension,
+                    $type,
+                    $file
+                );
             }
         }
 
