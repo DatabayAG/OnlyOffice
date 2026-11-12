@@ -22,6 +22,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -76,18 +77,24 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return false;
     }
 
-    protected function beforeUninstallCustom(): bool
-    {
-        require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
-        $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
-        $type = ilDBUpdateNewObjectType::getObjectTypeId(self::ID);
-        ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
 
-        return parent::beforeUninstallCustom();
+    public function install(): void
+    {
+        (new DBUpdateSteps())->install($this->db);
+        parent::install();
+    }
+
+    public function update(): bool
+    {
+        //DbUpdateSteps should be execuded before the parent update so potential exceptions result in no il_plugin db changes
+        (new DBUpdateSteps())->install($this->db);
+
+        return parent::update();
     }
 
     protected function uninstallCustom(): void
     {
+        (new DBUpdateSteps())->uninstall($this->db);
         // Delete all file data
         global $DIC;
         $all_files = FileAR::get();
@@ -99,7 +106,16 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         );
         $storage->deleteAll();
         ObjectSettings::truncateDB();
+    }
 
+    protected function beforeUninstallCustom(): bool
+    {
+        require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
+        $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
+        $type = ilDBUpdateNewObjectType::getObjectTypeId(self::ID);
+        ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
+
+        return parent::beforeUninstallCustom();
     }
 
     public function allowCopy(): bool
