@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
-use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
@@ -83,13 +83,13 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 
     public static function _isOffline(?int $obj_id): bool
     {
-        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById(intval($obj_id));
+        $object_settings = (new ObjectSettingsRepository())->read((int) $obj_id);
 
-        if ($object_settings !== null) {
-            return (!$object_settings->isOnline());
+        if (!$object_settings) {
+            return true;
         }
 
-        return true;
+        return !$object_settings->isOnline();
     }
 
     public static function hasVisibleAccess(?int $ref_id = null): bool

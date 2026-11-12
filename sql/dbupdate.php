@@ -1,8 +1,7 @@
 <#1>
 <?php
 /** @var ilDBInterface $ilDB */
-
-\ILIAS\Plugin\OnlyOffice\Repository::getInstance()->installTables();
+//Kept empty for compatibility
 ?>
 <#2>
 <?php
@@ -19,7 +18,6 @@
 <#4>
 <?php
 \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
 \ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
 ?>
 <#5>
@@ -42,15 +40,15 @@ if ($offering_admin) {
 ?>
 <#9>
 <?php
-\ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
+//Kept empty for compatibility
 ?>
 <#10>
 <?php
-\ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
+//Kept empty for compatibility
 ?>
 <#11>
 <?php
-\ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
+//Kept empty for compatibility
 ?>
 <#12>
 <#13>
@@ -82,7 +80,7 @@ $DIC->database()->modifyTableColumn($file_change_table, 'changes_object_string',
 ?>
 <#16>
 <?php
-\ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings::updateDB();
+//Kept empty for compatibility
 ?>
 <#17>
 <?php

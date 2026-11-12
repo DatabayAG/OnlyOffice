@@ -25,6 +25,7 @@ use ilDBConstants;
 use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
+use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 
 class DBUpdateSteps implements ilDatabaseUpdateSteps
 {
@@ -68,11 +69,69 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         );
 
         $tables_to_drop = [
+            ObjectSettingsRepository::TABLE_NAME
         ];
 
         foreach ($tables_to_drop as $table_name) {
             $this->db->dropTable($table_name, false);
 
         }
+    }
+
+    public function step_1(): void
+    {
+        $table_name = "rep_robj_xono_set";
+
+        if ($this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->createTable($table_name, [
+            "obj_id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "title" => [
+                "type" => ilDBConstants::T_TEXT,
+                "notnull" => true,
+            ],
+            "desc" => [
+                "type" => ilDBConstants::T_TEXT,
+                "notnull" => true,
+            ],
+            "open_setting" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 10,
+                "notnull" => true,
+            ],
+            "is_online" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 1,
+                "default" => false,
+                "notnull" => true,
+            ],
+            "limited_period" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 1,
+                "default" => false,
+                "notnull" => true,
+            ],
+            "allow_edit" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 1,
+                "default" => false,
+                "notnull" => true,
+            ],
+            "start_time" => [
+                "type" => ilDBConstants::T_TIMESTAMP,
+                "notnull" => false,
+            ],
+            "end_time" => [
+                "type" => ilDBConstants::T_TIMESTAMP,
+                "notnull" => false,
+            ],
+        ]);
+        $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
 }

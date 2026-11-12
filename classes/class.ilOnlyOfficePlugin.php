@@ -21,13 +21,11 @@ declare(strict_types=1);
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
-use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
@@ -35,7 +33,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     public const string ID = "xono";
 
     protected static ?ilOnlyOfficePlugin $instance = null;
-    private readonly Repository $repo;
     public ilSetting $settings;
 
     public static function getInstance(): self
@@ -61,15 +58,9 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     ) {
         global $DIC;
         parent::__construct($db, $component_repository, $id);
-        $this->repo = Repository::getInstance();
         $this->settings = new ilSetting(self::ID . "_config");
 
         $this->db = $DIC->database();
-    }
-
-    protected function deleteData(): void
-    {
-        $this->repo->dropTables();
     }
 
     protected function shouldUseOneUpdateStepOnly(): bool
@@ -105,7 +96,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
             new ilDBFileChangeRepository()
         );
         $storage->deleteAll();
-        ObjectSettings::truncateDB();
     }
 
     protected function beforeUninstallCustom(): bool

@@ -31,7 +31,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
-use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -74,7 +73,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected StorageService $storage_service;
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
-    private Repository $repo;
     private Container $dic;
     private UUIDFactory $uuidFactory;
 
@@ -82,7 +80,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     {
         global $DIC;
 
-        $this->repo = Repository::getInstance();
         $this->dic = $DIC;
 
         $this->uuidFactory = new UUIDFactory();
@@ -132,13 +129,14 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 switch ($cmd) {
                     case self::CMD_SHOW_CONTENTS:
                     case self::CMD_MANAGE_CONTENTS:
+
                         // Read commands
                         if (!ilObjOnlyOfficeAccess::hasReadAccess() &&
-                            !$this->repo->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
+                            !$this->object->object_settings->isAllowEdit()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                         }
 
-                        switch ($this->object->object_settings->getOpen()) {
+                        switch ($this->object->object_settings->getOpenSetting()) {
                             case OpenSetting::DOWNLOAD:
                                 $next_cmd = xonoContentGUI::CMD_DOWNLOAD;
                                 $file = $this->storage_service->getFile($this->obj_id);

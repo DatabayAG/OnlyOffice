@@ -22,7 +22,7 @@ use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
-use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -44,7 +44,7 @@ class xonoContentGUI extends xonoAbstractGUI
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
-    private readonly Repository $repo;
+    private readonly ObjectSettingsRepository $object_settings_repo;
 
     public function __construct(
         Container $dic,
@@ -57,7 +57,7 @@ class xonoContentGUI extends xonoAbstractGUI
 
         parent::__construct($dic, $plugin);
         $this->tpl = $dic->ui()->mainTemplate();
-        $this->repo = Repository::getInstance();
+        $this->object_settings_repo = new ObjectSettingsRepository($dic->database());
 
         $this->afterConstructor();
     }
@@ -213,12 +213,14 @@ class xonoContentGUI extends xonoAbstractGUI
             $allowEdit = true;
         }
 
+        $object_settings = $this->object_settings_repo->read($this->file_id);
+
         //setting ALLOW_EDIT is checked
         //setting EDITING_PERIOD is not configured
         if (
-            $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
-            &&
-            DateFetcher::editingPeriodIsFetchable($this->file_id) === false
+            $object_settings
+            && $object_settings->isAllowEdit()
+            && DateFetcher::editingPeriodIsFetchable($this->file_id) === false
         ) {
             $allowEdit = true;
         }
@@ -227,11 +229,10 @@ class xonoContentGUI extends xonoAbstractGUI
         //setting EDITING_PERIOD is configured
         //current time is within configured EDITING_PERIOD
         if (
-            $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit() === true
-            &&
-            DateFetcher::editingPeriodIsFetchable($this->file_id) === true
-            &&
-            DateFetcher::isWithinPotentialTimeLimit($this->file_id) === true
+            $object_settings
+            && $object_settings->isAllowEdit()
+            && DateFetcher::editingPeriodIsFetchable($this->file_id) === true
+            && DateFetcher::isWithinPotentialTimeLimit($this->file_id) === true
         ) {
             $allowEdit = true;
         }

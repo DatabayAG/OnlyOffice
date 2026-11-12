@@ -26,7 +26,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
-use ILIAS\Plugin\OnlyOffice\Repository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
@@ -57,7 +56,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
-    private readonly Repository $repo;
     private Container $dic;
     private readonly ilOnlyOfficePlugin $plugin;
 
@@ -80,7 +78,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         /** @var $plugin ilOnlyOfficePlugin */
         $this->plugin = ilOnlyOfficePlugin::getInstance();
         $this->tpl = $DIC->ui()->mainTemplate();
-        $this->repo = Repository::getInstance();
     }
 
     public function performCommand(string $cmd): void

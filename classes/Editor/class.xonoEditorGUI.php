@@ -24,8 +24,8 @@ use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
 use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
-use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
 use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
@@ -44,8 +44,8 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected StorageService $storage_service;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
-    private readonly Repository $repo;
     private readonly ilGlobalTemplateInterface $mainTpl;
+    private readonly ObjectSettingsRepository $object_settings_repo;
 
     public function __construct(
         Container $dic,
@@ -56,8 +56,9 @@ class xonoEditorGUI extends xonoAbstractGUI
 
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
         $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
-        $this->repo = Repository::getInstance();
         $this->mainTpl = $this->dic->ui()->mainTemplate();
+
+        $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
 
         $this->afterConstructor();
     }
@@ -95,7 +96,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function editFile(): void
     {
-        $object_settings = $this->repo->objectSettings()->getObjectSettingsById($this->file_id);
+        $object_settings = $this->object_settings_repo->read($this->file_id);
 
         $file = $this->storage_service->getFile($this->file_id);
         $latest_version = null;
@@ -332,14 +333,21 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     protected function determineAccessRights(bool $withinPotentialTimeLimit): string
     {
-        if (
-            (
-                $this->repo->objectSettings()->getObjectSettingsById($this->file_id)->allowEdit()
-                &&
-                $withinPotentialTimeLimit
-            )
-            || ilObjOnlyOfficeAccess::hasEditFileAccess()
-        ) {
+
+        $has_edit_access = ilObjOnlyOfficeAccess::hasEditFileAccess();
+
+        if (!$has_edit_access) {
+            $object_settings = $this->object_settings_repo->read($this->file_id);
+            if (
+                $object_settings
+                && $object_settings->isAllowEdit()
+                && $withinPotentialTimeLimit
+            ) {
+                $has_edit_access = true;
+            }
+        }
+
+        if ($has_edit_access) {
             return "edit";
         }
 

@@ -27,7 +27,7 @@ use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\OpenSettingProperty;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
+use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
@@ -114,13 +114,13 @@ class ObjectSettingsForm
             $openSettingProperty = new OpenSettingProperty();
         } else {
             $allowEditProperty = new AllowEditProperty(
-                $objectSettings->allowEdit(),
+                $objectSettings->isAllowEdit(),
                 $objectSettings->isLimitedPeriod(),
-                $objectSettings->getStartTime() ? new DateTimeImmutable($objectSettings->getStartTime()) : null,
-                $objectSettings->getEndTime() ? new DateTimeImmutable($objectSettings->getEndTime()) : null
+                $objectSettings->getStartTime() ? new DateTimeImmutable($objectSettings->getStartTime()->get(IL_CAL_DATETIME)) : null,
+                $objectSettings->getEndTime() ? new DateTimeImmutable($objectSettings->getEndTime()->get(IL_CAL_DATETIME)) : null
             );
 
-            $openSettingProperty = new OpenSettingProperty($objectSettings->getOpen());
+            $openSettingProperty = new OpenSettingProperty($objectSettings->getOpenSetting());
         }
 
         $items += [
