@@ -31,6 +31,18 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     protected static ?ilOnlyOfficePlugin $instance = null;
     public ilSetting $settings;
 
+    public function __construct(
+        ilDBInterface $db,
+        ilComponentRepositoryWrite $component_repository,
+        string $id
+    ) {
+        global $DIC;
+        parent::__construct($db, $component_repository, $id);
+        $this->settings = new ilSetting(self::ID . "_config");
+
+        $this->db = $DIC->database();
+    }
+
     public static function getInstance(): self
     {
         if (static::$instance === null) {
@@ -45,18 +57,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         }
 
         return self::$instance;
-    }
-
-    public function __construct(
-        ilDBInterface $db,
-        ilComponentRepositoryWrite $component_repository,
-        string $id
-    ) {
-        global $DIC;
-        parent::__construct($db, $component_repository, $id);
-        $this->settings = new ilSetting(self::ID . "_config");
-
-        $this->db = $DIC->database();
     }
 
     protected function shouldUseOneUpdateStepOnly(): bool

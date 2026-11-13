@@ -27,18 +27,18 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 
     private readonly Container $dic;
 
-    public static function getInstance(): self
-    {
-        self::$instance ??= new self();
-
-        return self::$instance;
-    }
-
     public function __construct()
     {
         parent::__construct();
         global $DIC;
         $this->dic = $DIC;
+    }
+
+    public static function getInstance(): self
+    {
+        self::$instance ??= new self();
+
+        return self::$instance;
     }
 
     public function _checkAccess(string $cmd, string $permission, ?int $ref_id = null, ?int $obj_id = null, ?int $user_id = null): bool
