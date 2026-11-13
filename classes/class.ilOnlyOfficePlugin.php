@@ -68,7 +68,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     public function update(): bool
     {
-        //DbUpdateSteps should be execuded before the parent update so potential exceptions result in no il_plugin db changes
+        //DbUpdateSteps should be executed before the parent update so potential exceptions result in no il_plugin db changes
         (new DBUpdateSteps())->install($this->db);
 
         return parent::update();
