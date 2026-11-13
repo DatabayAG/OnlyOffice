@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . "/../vendor/autoload.php";
 
+use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
@@ -28,19 +29,16 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
     public const string ID = "xono";
 
-    protected static ?self $instance = null;
+    private static ?self $instance = null;
+    public Container $dic;
     public ilSetting $settings;
 
-    public function __construct(
-        ilDBInterface $db,
-        ilComponentRepositoryWrite $component_repository,
-        string $id
+    public function __construct(ilDBInterface $db, ilComponentRepositoryWrite $component_repository, string $id
     ) {
         global $DIC;
-        parent::__construct($db, $component_repository, $id);
+        $this->dic = $DIC;
         $this->settings = new ilSetting(self::ID . "_config");
-
-        $this->db = $DIC->database();
+        parent::__construct($db, $component_repository, $id);
     }
 
     public static function getInstance(): self
