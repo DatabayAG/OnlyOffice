@@ -28,7 +28,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
     public const string ID = "xono";
 
-    protected static ?ilOnlyOfficePlugin $instance = null;
+    protected static ?self $instance = null;
     public ilSetting $settings;
 
     public function __construct(
@@ -45,17 +45,17 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     public static function getInstance(): self
     {
-        if (static::$instance === null) {
-            global $DIC;
-
-            /** @var $component_factory ilComponentFactory */
-            $component_factory = $DIC['component.factory'];
-            /** @var $plugin ilOnlyOfficePlugin */
-            $plugin = $component_factory->getPlugin(self::ID);
-
-            static::$instance = $plugin;
+        if (self::$instance) {
+            return self::$instance;
         }
 
+        global $DIC;
+
+        /**
+         * @var ilComponentFactory $component_factory
+         */
+        $component_factory = $DIC["component.factory"];
+        self::$instance = $component_factory->getPlugin(self::ID);
         return self::$instance;
     }
 
