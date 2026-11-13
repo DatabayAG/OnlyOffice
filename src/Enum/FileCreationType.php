@@ -44,4 +44,14 @@ enum FileCreationType: string
             self::PRESENTATION => "slide",
         };
     }
+
+    public static function determineDocType(string $extension): self
+    {
+        return match ($extension) {
+            "pptx", "fodp", "odp", "otp", "pot", "potm", "potx", "pps", "ppsm", "ppsx", "ppt", "pptm" => self::PRESENTATION,
+            "xlsx", "csv", "fods", "ods", "ots", "xls", "xlsm", "xlt", "xltm", "xltx" => self::TABLE,
+            "doc", "docx", "dotx", "fb2", "odt", "ott", "rtf", "txt", "pdf", "pdf/a", "html", "epub", "xps", "djvu", "xml", "docxf", "oform" => self::TEXT,
+            default => self::NONE // Should never be reached.
+        };
+    }
 }

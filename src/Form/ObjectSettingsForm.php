@@ -29,8 +29,8 @@ use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\OpenSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
@@ -80,7 +80,7 @@ class ObjectSettingsForm
         $this->storageService = new StorageService(
             $this->dic,
             new FileVersionRepository(),
-            new ilDBFileRepository(),
+            new FileRepository(),
             new FileChangeRepository()
         );
 

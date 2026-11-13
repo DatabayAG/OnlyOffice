@@ -26,6 +26,7 @@ use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 
@@ -72,6 +73,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
 
         $tables_to_drop = [
             ObjectSettingsRepository::TABLE_NAME,
+            FileRepository::TABLE_NAME,
             FileVersionRepository::TABLE_NAME,
             FileChangeRepository::TABLE_NAME,
         ];
@@ -222,5 +224,43 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         ]);
         $this->db->addPrimaryKey($table_name, ["change_id"]);
         $this->db->createSequence($table_name);
+    }
+
+    public function step_4(): void
+    {
+        $table_name = "xono_file";
+
+        if ($this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->createTable($table_name, [
+            "obj_id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "uuid" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+            "title" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+            "file_type" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+            "mime_type" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 256,
+                "notnull" => true,
+            ],
+        ]);
+        $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
 }

@@ -22,11 +22,10 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
 
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
@@ -85,17 +84,17 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected function uninstallCustom(): void
     {
-        (new DBUpdateSteps())->uninstall($this->db);
         // Delete all file data
         global $DIC;
-        $all_files = FileAR::get();
         $storage = new StorageService(
             $DIC,
             new FileVersionRepository(),
-            new ilDBFileRepository(),
+            new FileRepository(),
             new FileChangeRepository()
         );
         $storage->deleteAll();
+
+        (new DBUpdateSteps())->uninstall($this->db);
     }
 
     protected function beforeUninstallCustom(): bool

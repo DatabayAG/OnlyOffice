@@ -5,7 +5,7 @@
 ?>
 <#2>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
+//Kept empty for compatibility
 ?>
 <#3>
 <?php
@@ -13,8 +13,7 @@
 ?>
 <#4>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
+//Kept empty for compatibility
 ?>
 <#5>
 <#6>
@@ -32,7 +31,7 @@ if ($offering_admin) {
 ?>
 <#8>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
+//Kept empty for compatibility
 ?>
 <#9>
 <?php
@@ -65,10 +64,9 @@ if ($offering_admin) {
 ?>
 <#17>
 <?php
-\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::updateDB();
+//Kept empty for compatibility
 ?>
 <#18>
 <?php
-global $DIC;
-$DIC->database()->modifyTableColumn(\ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR::TABLE_NAME, 'mime_type', array('length' => 256));
+//Kept empty for compatibility
 ?>
