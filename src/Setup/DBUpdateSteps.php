@@ -84,7 +84,183 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         }
     }
 
+    /**
+     * Base migration to fix incorrect/malformed ActiveRecord db table structure for ObjectSettings
+     */
     public function step_1(): void
+    {
+        $table_name = "rep_robj_xono_set";
+
+        if (!$this->db->tableExists($table_name)) {
+            return;
+        }
+
+        if ($this->db->tableColumnExists($table_name, "title")) {
+            //- Title can only be a maximum of 255 characters since object_data table has a limit of 255
+            $this->db->modifyTableColumn(
+                $table_name,
+                "title",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "length" => 255,
+                    "notnull" => true,
+                    "default" => "",
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "desc")) {
+            //- description can only be a maximum of 128 characters since object_data table has a limit of 128
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "desc",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "length" => 128,
+                    "notnull" => true,
+                    "default" => "",
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "limited_period")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "limited_period",
+                [
+                    "type" => ilDBConstants::T_INTEGER,
+                    "length" => 1,
+                    "notnull" => true,
+                    "default" => false,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Base migration to fix incorrect/malformed ActiveRecord db table structure for FileChange
+     */
+    public function step_2(): void
+    {
+        $table_name = "xono_file_change";
+
+        if (!$this->db->tableExists($table_name)) {
+            return;
+        }
+
+        if ($this->db->tableColumnExists($table_name, "change_id")) {
+            //- Increase length from fallback/default to 8
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "change_id",
+                [
+                    "type" => ilDBConstants::T_INTEGER,
+                    "length" => 8,
+                    "notnull" => true,
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "file_uuid")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "file_uuid",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "length" => 256,
+                    "notnull" => true,
+                    "default" => "",
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "version")) {
+            //- Increase length from fallback/default to 8
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "version",
+                [
+                    "type" => ilDBConstants::T_INTEGER,
+                    "length" => 8,
+                    "notnull" => true,
+                    "default" => 1,
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "changes_object_string")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "changes_object_string",
+                [
+                    "type" => ilDBConstants::T_CLOB,
+                    "notnull" => true,
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "changes_url")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "changes_url",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "notnull" => true,
+                    "length" => 256,
+                    "default" => "",
+                ]
+            );
+        }
+
+        if ($this->db->tableColumnExists($table_name, "server_version")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "server_version",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "length" => 64,
+                    "notnull" => true,
+                    "default" => "6.3.1",
+                ]
+            );
+        }
+    }
+
+    /**
+     * Base migration to fix incorrect/malformed ActiveRecord db table structure for File
+     */
+    public function step_3(): void
+    {
+        $table_name = "xono_file";
+
+        if (!$this->db->tableExists($table_name)) {
+            return;
+        }
+
+        if ($this->db->tableColumnExists($table_name, "mime_type")) {
+            //- Can't be null
+            $this->db->modifyTableColumn(
+                $table_name,
+                "mime_type",
+                [
+                    "type" => ilDBConstants::T_TEXT,
+                    "length" => 256,
+                    "notnull" => true,
+                    "default" => "",
+                ]
+            );
+        }
+    }
+
+    public function step_4(): void
     {
         $table_name = "rep_robj_xono_set";
 
@@ -100,11 +276,15 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             ],
             "title" => [
                 "type" => ilDBConstants::T_TEXT,
+                "length" => 255,
                 "notnull" => true,
+                "default" => "",
             ],
             "desc" => [
                 "type" => ilDBConstants::T_TEXT,
+                "length" => 128,
                 "notnull" => true,
+                "default" => ""
             ],
             "open_setting" => [
                 "type" => ilDBConstants::T_TEXT,
@@ -114,20 +294,20 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             "is_online" => [
                 "type" => ilDBConstants::T_INTEGER,
                 "length" => 1,
-                "default" => false,
                 "notnull" => true,
+                "default" => false,
             ],
             "limited_period" => [
                 "type" => ilDBConstants::T_INTEGER,
                 "length" => 1,
-                "default" => false,
                 "notnull" => true,
+                "default" => false,
             ],
             "allow_edit" => [
                 "type" => ilDBConstants::T_INTEGER,
                 "length" => 1,
-                "default" => false,
                 "notnull" => true,
+                "default" => false,
             ],
             "start_time" => [
                 "type" => ilDBConstants::T_TIMESTAMP,
@@ -141,7 +321,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
 
-    public function step_2(): void
+    public function step_5(): void
     {
         $table_name = "xono_file_version";
 
@@ -183,7 +363,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->createSequence($table_name);
     }
 
-    public function step_3(): void
+    public function step_6(): void
     {
         $table_name = "xono_file_change";
 
@@ -201,11 +381,13 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
                 "type" => ilDBConstants::T_TEXT,
                 "length" => 256,
                 "notnull" => true,
+                "default" => "",
             ],
             "version" => [
                 "type" => ilDBConstants::T_INTEGER,
                 "length" => 8,
                 "notnull" => true,
+                "default" => 1,
             ],
             "changes_object_string" => [
                 "type" => ilDBConstants::T_CLOB,
@@ -215,18 +397,20 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
                 "type" => ilDBConstants::T_TEXT,
                 "notnull" => true,
                 "length" => 256,
+                "default" => "",
             ],
             "server_version" => [
                 "type" => ilDBConstants::T_TEXT,
                 "length" => 64,
                 "notnull" => true,
+                "default" => "6.3.1",
             ],
         ]);
         $this->db->addPrimaryKey($table_name, ["change_id"]);
         $this->db->createSequence($table_name);
     }
 
-    public function step_4(): void
+    public function step_7(): void
     {
         $table_name = "xono_file";
 
@@ -259,6 +443,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
                 "type" => ilDBConstants::T_TEXT,
                 "length" => 256,
                 "notnull" => true,
+                "default" => "",
             ],
         ]);
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
