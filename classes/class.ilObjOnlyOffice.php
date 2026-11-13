@@ -27,9 +27,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
-use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Refinery\Factory;
@@ -192,12 +189,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     {
         $this->object_settings_repo->delete($this->object_settings);
 
-        $storage = new StorageService(
-            $this->dic,
-            new FileVersionRepository(),
-            new FileRepository(),
-            new FileChangeRepository()
-        );
+        $storage = new StorageService();
         $storage->deleteFile($this->getId());
 
     }
@@ -224,12 +216,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $this->object_settings_repo->store($new_obj->object_settings);
 
-        $storage = new StorageService(
-            $this->dic,
-            new FileVersionRepository(),
-            new FileRepository(),
-            new FileChangeRepository()
-        );
+        $storage = new StorageService();
         $storage->createClone($new_obj->getId(), $this->getId());
     }
 

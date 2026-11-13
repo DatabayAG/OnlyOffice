@@ -28,9 +28,6 @@ use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Model\File;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
-use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
@@ -66,12 +63,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function afterConstructor(): void
     {
-        $this->storage_service = new StorageService(
-            $this->dic,
-            new FileVersionRepository(),
-            new FileRepository(),
-            new FileChangeRepository()
-        );
+        $this->storage_service = new StorageService();
     }
 
     final public function getType(): string

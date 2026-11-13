@@ -39,19 +39,28 @@ use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 
 class StorageService
 {
-    protected Container $dic;
+    private readonly Container $dic;
+    private readonly FileRepository $file_repository;
+    private readonly FileVersionRepository $file_version_repository;
+    private readonly FileChangeRepository $file_change_repository;
     protected FileSystemService $file_system_service;
     private readonly UUIDFactory $uuidFactory;
 
     public function __construct(
-        Container $dic,
-        protected FileVersionRepository $file_version_repository,
-        protected FileRepository $file_repository,
-        protected FileChangeRepository $file_change_repository
+        ?Container $dic = null,
+        ?FileRepository $file_repository = null,
+        ?FileVersionRepository $file_version_repository = null,
+        ?FileChangeRepository $file_change_repository = null,
+        ?FileSystemService $file_system_service = null,
+        ?UUIDFactory $uuid_factory = null
     ) {
-        $this->dic = $dic;
-        $this->file_system_service = new FileSystemService($dic);
-        $this->uuidFactory = new UUIDFactory();
+        global $DIC;
+        $this->dic = $dic ?? $DIC;
+        $this->file_repository = $file_repository ?? new FileRepository($this->dic->database());
+        $this->file_version_repository = $file_version_repository ?? new FileVersionRepository($this->dic->database());
+        $this->file_change_repository = $file_change_repository ?? new FileChangeRepository($this->dic->database());
+        $this->file_system_service = $file_system_service ?? new FileSystemService($this->dic);
+        $this->uuidFactory = $uuid_factory ?? new UUIDFactory();
     }
 
     /**

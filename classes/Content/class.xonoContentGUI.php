@@ -22,9 +22,6 @@ use ILIAS\DI\Container;
 use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
-use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
@@ -64,12 +61,7 @@ class xonoContentGUI extends xonoAbstractGUI
     protected function afterConstructor(): void
     {
 
-        $this->storage_service = new StorageService(
-            $this->dic,
-            new FileVersionRepository(),
-            new FileRepository(),
-            new FileChangeRepository()
-        );
+        $this->storage_service = new StorageService();
     }
 
     final public function getType(): string

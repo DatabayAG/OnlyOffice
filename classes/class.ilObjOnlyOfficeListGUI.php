@@ -19,9 +19,6 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
-use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 
@@ -91,12 +88,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     public function getProperties(): array
     {
-        $storage = new StorageService(
-            $this->dic,
-            new FileVersionRepository(),
-            new FileRepository(),
-            new FileChangeRepository()
-        );
+        $storage = new StorageService();
         $file = $storage->getFile($this->obj_id);
         if (is_null($file)) {
             return [];

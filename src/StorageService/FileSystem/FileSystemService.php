@@ -37,11 +37,8 @@ class FileSystemService
     public const string BASE_PATH = '/only_office/';
     public const string BASE_TEMPLATE_PATH = '/only_office/templates/';
 
-    protected Container $dic;
-
-    public function __construct(Container $dic)
+    public function __construct(private readonly Container $dic)
     {
-        $this->dic = $dic;
     }
 
     /**
