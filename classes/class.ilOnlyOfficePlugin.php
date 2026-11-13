@@ -59,11 +59,6 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return self::$instance;
     }
 
-    protected function shouldUseOneUpdateStepOnly(): bool
-    {
-        return false;
-    }
-
 
     public function install(): void
     {
