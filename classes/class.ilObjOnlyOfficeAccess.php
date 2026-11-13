@@ -26,7 +26,6 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
     private readonly Container $dic;
-
     public function __construct()
     {
         parent::__construct();
@@ -65,12 +64,8 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public static function redirectNonAccess($class, string $cmd = ""): void
     {
         global $DIC;
-        /** @var $component_factory ilComponentFactory */
-        $component_factory = $DIC['component.factory'];
-        /** @var $plugin ilOnlyOfficePlugin */
-        $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::ID);
         $tpl = $DIC->ui()->mainTemplate();
-        $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
+        $tpl->setOnScreenMessage('failure', ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"), true);
 
         if (is_object($class)) {
             $DIC->ctrl()->clearParameters($class);

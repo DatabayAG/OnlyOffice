@@ -19,7 +19,6 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Data\UUID\Uuid;
 use Matrix\Exception;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
@@ -41,7 +40,7 @@ class xonoCallbackHandler
     protected string $change_extension;
     protected string $fileUrl;
     protected string $changeUrl;
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     /**
      * @throws Exception if the data cannot be fetched

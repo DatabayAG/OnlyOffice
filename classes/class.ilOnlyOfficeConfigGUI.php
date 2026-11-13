@@ -47,7 +47,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     public const string TAB_CONFIGURATION = "configuration";
     public const string TAB_SUB_CONFIGURATION = "subConfiguration";
     public const string TAB_SUB_TEMPLATES = "templates";
-    private readonly ilPlugin $pl;
+
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
@@ -62,8 +62,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->httpWrapper = $DIC->http()->wrapper();
         $this->dic = $DIC;
 
-        /** @var $component_factory ilComponentFactory */
-        $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $this->plugin = ilOnlyOfficePlugin::getInstance();
         $this->tpl = $DIC->ui()->mainTemplate();

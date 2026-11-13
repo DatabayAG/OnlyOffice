@@ -36,7 +36,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 {
     public ObjectSettings $object_settings;
 
-    private readonly ilOnlyOfficePlugin $pl;
+    protected ilOnlyOfficePlugin|ilPlugin|null $plugin = null;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
@@ -49,17 +49,14 @@ class ilObjOnlyOffice extends ilObjectPlugin
     {
         global $DIC;
 
+        $this->plugin = ilOnlyOfficePlugin::getInstance();
+
         parent::__construct($a_ref_id);
 
         $this->dic = $DIC;
         $this->refinery = $DIC->refinery();
         $this->httpWrapper = $DIC->http()->wrapper();
         $this->upload = $DIC->upload();
-
-        /** @var $component_factory ilComponentFactory */
-        $component_factory = $DIC['component.factory'];
-        /** @var $plugin ilOnlyOfficePlugin */
-        $this->pl = $component_factory->getPlugin(ilOnlyOfficePlugin::ID);
         $this->tpl = $DIC->ui()->mainTemplate();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
@@ -187,7 +184,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public function doDelete(): void
     {
         $this->object_settings_repo->delete($this->object_settings);
-        $this->pl->getStorageService()->deleteFile($this->getId());
+        $this->plugin->getStorageService()->deleteFile($this->getId());
 
     }
 
@@ -213,7 +210,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $this->object_settings_repo->store($new_obj->object_settings);
 
-        $this->pl->getStorageService()->createClone($new_obj->getId(), $this->getId());
+        $this->plugin->getStorageService()->createClone($new_obj->getId(), $this->getId());
     }
 
     public function isOnline(): bool
