@@ -19,15 +19,7 @@
 <#6>
 <#7>
 <?php
-require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
-$xono_type_id = ilDBUpdateNewObjectType::addNewType(ilOnlyOfficePlugin::ID, 'Plugin OnlyOffice');
-
-//Adding a new Permission rep_robj_xono_editFile ("editFile")
-$offering_admin = ilDBUpdateNewObjectType::addCustomRBACOperation( //$a_id, $a_title, $a_class, $a_pos
-    'rep_robj_xono_perm_editFile', 'editFile', 'object', 2010);
-if ($offering_admin) {
-    ilDBUpdateNewObjectType::addRBACOperation($xono_type_id, $offering_admin);
-}
+//Kept empty for compatibility
 ?>
 <#8>
 <?php

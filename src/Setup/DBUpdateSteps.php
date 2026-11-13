@@ -20,15 +20,21 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\Setup;
 
+use ilAccessRBACOperationDeletedObjective;
 use ilDatabaseUpdateSteps;
 use ilDBConstants;
 use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
+use ilDBUpdateNewObjectType;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
+use ILIAS\Setup\ArrayEnvironment;
+use ILIAS\Setup\Environment;
+use ilOnlyOfficePlugin;
+use ilRbacReview;
 
 class DBUpdateSteps implements ilDatabaseUpdateSteps
 {
@@ -60,6 +66,20 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             $this->$method();
             $execution_log->finished(self::class, $step);
         }
+
+        // Add new object type, ILIAS only adds this automatically if the plugin is ACTIVATED,
+        // if the plugin is uninstalled before it was ever activated this will result in an exception.
+        // => SetupAgent should usually do these next steps using NewTypeAddedObjective & ilAccessCustomRBACOperationAddedObjective objectives,
+        //    however SetupAgent objectives are only executed when installed/updated through CLI.
+
+        require_once dirname(__DIR__, 10) . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php";
+
+        $xono_type_id = ilDBUpdateNewObjectType::addNewType(ilOnlyOfficePlugin::ID, 'Plugin OnlyOffice');
+
+        $offering_admin = ilDBUpdateNewObjectType::addCustomRBACOperation('rep_robj_xono_perm_editFile', 'editFile', 'object', 2010);
+        if ($offering_admin) {
+            ilDBUpdateNewObjectType::addRBACOperation($xono_type_id, $offering_admin);
+        }
     }
 
     public function uninstall(ilDBInterface $db): void
@@ -80,7 +100,25 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
 
         foreach ($tables_to_drop as $table_name) {
             $this->db->dropTable($table_name, false);
+        }
 
+        $operation = "rep_robj_xono_perm_editFile";
+        $op_id = ilRbacReview::_getCustomRBACOperationId($operation);
+
+        if ($op_id !== null) {
+            $env = new ArrayEnvironment([
+                Environment::RESOURCE_DATABASE => $this->db
+            ]);
+
+            $objective = new ilAccessRBACOperationDeletedObjective(ilOnlyOfficePlugin::ID, $op_id);
+            $objective->achieve($env);
+
+            //ilAccessRBACOperationDeletedObjective doesn't delete the entry added to rbac_operations
+            $this->db->manipulateF(
+                "DELETE FROM rbac_operations WHERE operation = %s AND ops_id = %s",
+                [ilDBConstants::T_TEXT, ilDBConstants::T_INTEGER],
+                [$operation, $op_id]
+            );
         }
     }
 
