@@ -24,7 +24,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Refinery\Factory;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoContentGUI extends xonoAbstractGUI
@@ -36,7 +35,6 @@ class xonoContentGUI extends xonoAbstractGUI
     public const string CMD_EDIT = xonoEditorGUI::CMD_EDIT;
 
     protected ilOnlyOfficePlugin $plugin;
-    protected StorageService $storage_service;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
@@ -54,14 +52,6 @@ class xonoContentGUI extends xonoAbstractGUI
         parent::__construct($dic, $plugin);
         $this->tpl = $dic->ui()->mainTemplate();
         $this->object_settings_repo = new ObjectSettingsRepository($dic->database());
-
-        $this->afterConstructor();
-    }
-
-    protected function afterConstructor(): void
-    {
-
-        $this->storage_service = new StorageService();
     }
 
     final public function getType(): string
@@ -94,8 +84,10 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function showVersions(): void
     {
-        $fileVersions = $this->storage_service->getAllVersions($this->file_id);
-        $file = $this->storage_service->getFile($this->file_id);
+        $storage_service = $this->plugin->getStorageService();
+
+        $fileVersions = $storage_service->getAllVersions($this->file_id);
+        $file = $storage_service->getFile($this->file_id);
         if (is_null($file)) {
             $this->dic->ui()->mainTemplate()->setContent("");
             return;
@@ -149,6 +141,8 @@ class xonoContentGUI extends xonoAbstractGUI
      */
     protected function downloadFileVersion(): never
     {
+        $storage_service = $this->plugin->getStorageService();
+
         $requestedVersion = $this->httpWrapper->query()->retrieve(
             "version",
             $this->refinery->byTrying([
@@ -162,14 +156,14 @@ class xonoContentGUI extends xonoAbstractGUI
         }
 
         $fileVersion = null;
-        foreach ($this->storage_service->getAllVersions($this->file_id) as $version) {
+        foreach ($storage_service->getAllVersions($this->file_id) as $version) {
             if ($version->getVersion() === $requestedVersion) {
                 $fileVersion = $version;
                 break;
             }
         }
 
-        $file = $this->storage_service->getFile($this->file_id);
+        $file = $storage_service->getFile($this->file_id);
 
         if (!$fileVersion || !$file) {
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);

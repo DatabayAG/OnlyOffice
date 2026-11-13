@@ -29,7 +29,6 @@ use ILIAS\Plugin\OnlyOffice\Model\File;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
 
 class xonoEditorGUI extends xonoAbstractGUI
@@ -39,7 +38,6 @@ class xonoEditorGUI extends xonoAbstractGUI
     public const string BASE_URL = ILIAS_HTTP_PATH;
 
     protected ilOnlyOfficePlugin $plugin;
-    protected StorageService $storage_service;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
     private readonly ilGlobalTemplateInterface $mainTpl;
@@ -57,13 +55,6 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->mainTpl = $this->dic->ui()->mainTemplate();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
-
-        $this->afterConstructor();
-    }
-
-    protected function afterConstructor(): void
-    {
-        $this->storage_service = new StorageService();
     }
 
     final public function getType(): string
@@ -89,15 +80,17 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function editFile(): void
     {
+        $storage_service = $this->plugin->getStorageService();
+
         $object_settings = $this->object_settings_repo->read($this->file_id);
 
-        $file = $this->storage_service->getFile($this->file_id);
+        $file = $storage_service->getFile($this->file_id);
         $latest_version = null;
         $all_versions = null;
 
         if (!is_null($file)) {
-            $all_versions = $this->storage_service->getAllVersions($this->file_id);
-            $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
+            $all_versions = $storage_service->getAllVersions($this->file_id);
+            $latest_version = $storage_service->getLatestVersion($file->getUuid());
         }
 
         $this->mainTpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
@@ -215,7 +208,7 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     protected function history(FileVersion $latestVersion, array $all_versions): array
     {
-        $all_changes = $this->storage_service->getAllChanges($latestVersion->getFileUuid());
+        $all_changes = $this->plugin->getStorageService()->getAllChanges($latestVersion->getFileUuid());
         $history_array = [];
 
         // add all versions to history
@@ -246,7 +239,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->toString();
 
-            $change_url = $this->storage_service->getChangeUrl($version->getFileUuid(), $v);
+            $change_url = $this->plugin->getStorageService()->getChangeUrl($version->getFileUuid(), $v);
             $data_array['changesUrl'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($change_url), '.');
 
             $data_array['key'] = $uuid . '-' . $v;
@@ -301,7 +294,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected function buildPreviousArray(FileVersion $version): array
     {
         $result = [];
-        $previous = $this->storage_service->getPreviousVersion(
+        $previous = $this->plugin->getStorageService()->getPreviousVersion(
             $version->getFileUuid(),
             $version->getVersion()
         );

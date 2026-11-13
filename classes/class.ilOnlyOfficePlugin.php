@@ -32,8 +32,12 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     private static ?self $instance = null;
     public Container $dic;
     public ilSetting $settings;
+    private ?StorageService $storage_service = null;
 
-    public function __construct(ilDBInterface $db, ilComponentRepositoryWrite $component_repository, string $id
+    public function __construct(
+        ilDBInterface $db,
+        ilComponentRepositoryWrite $component_repository,
+        string $id
     ) {
         global $DIC;
         $this->dic = $DIC;
@@ -57,6 +61,14 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         return self::$instance;
     }
 
+    public function getStorageService(): StorageService
+    {
+        if (!$this->storage_service) {
+            $this->storage_service = new StorageService();
+        }
+        return $this->storage_service;
+    }
+
 
     public function install(): void
     {
@@ -74,8 +86,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected function uninstallCustom(): void
     {
-        $storage = new StorageService();
-        $storage->deleteAll();
+        $this->getStorageService()->deleteAll();
 
         (new DBUpdateSteps())->uninstall($this->db);
     }

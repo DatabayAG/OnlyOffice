@@ -31,7 +31,6 @@ use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
@@ -68,7 +67,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public const string TAB_SHOW_CONTENTS = "show_contents";
 
     public ilObjOnlyOffice|ilObject|null $object = null;
-    protected StorageService $storage_service;
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
     private Container $dic;
     private UUIDFactory $uuidFactory;
@@ -80,8 +78,6 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $this->dic = $DIC;
 
         $this->uuidFactory = new UUIDFactory();
-
-        $this->storage_service = new StorageService();
     }
 
     final public function getType(): string
@@ -130,12 +126,14 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
                         switch ($this->object->object_settings->getOpenSetting()) {
                             case OpenSetting::DOWNLOAD:
+                                $storage_service = $this->plugin->getStorageService();
+
                                 $next_cmd = xonoContentGUI::CMD_DOWNLOAD;
-                                $file = $this->storage_service->getFile($this->obj_id);
+                                $file = $storage_service->getFile($this->obj_id);
                                 if (is_null($file)) {
                                     return;
                                 }
-                                $file_version = $this->storage_service->getLatestVersion($file->getUuid());
+                                $file_version = $storage_service->getLatestVersion($file->getUuid());
                                 $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
                                     "version",
@@ -297,6 +295,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function afterSave(ilObjOnlyOffice|ilObject $new_object): void
     {
+        $storage_service = $this->plugin->getStorageService();
+
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->request);
 
         /** @var array{
@@ -323,7 +323,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 if (!$this->dic->upload()->hasBeenProcessed()) {
                     $this->dic->upload()->process();
                 }
-                $this->storage_service->createNewFileFromUpload(
+                $storage_service->createNewFileFromUpload(
                     $uploadResult,
                     $new_object->getId()
                 );
@@ -336,13 +336,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
             $fileCreationType = $fileSetting->getFileCreationType();
 
-            $this->storage_service->createNewFileFromDraft(
+            $storage_service->createNewFileFromDraft(
                 FileSanitizer::sanitizeFileName($title),
                 $fileCreationType->toDocumentType(),
                 $new_object->getId()
             );
         } elseif ($fileSetting->getFileMode() === FileMode::TEMPLATE) {
-            $this->storage_service->createNewFileFromTemplate(
+            $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
                 $fileSetting->getFileTemplate(),
                 $new_object->getId()

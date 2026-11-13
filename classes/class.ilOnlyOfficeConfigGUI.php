@@ -47,14 +47,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     public const string TAB_CONFIGURATION = "configuration";
     public const string TAB_SUB_CONFIGURATION = "subConfiguration";
     public const string TAB_SUB_TEMPLATES = "templates";
-
-    protected StorageService $storage_service;
     private readonly ilPlugin $pl;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
     private Container $dic;
     private readonly ilOnlyOfficePlugin $plugin;
+    private readonly StorageService $storage_service;
 
     public function __construct()
     {
@@ -63,13 +62,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->httpWrapper = $DIC->http()->wrapper();
         $this->dic = $DIC;
 
-        $this->storage_service = new StorageService();
-
         /** @var $component_factory ilComponentFactory */
         $component_factory = $DIC['component.factory'];
         /** @var $plugin ilOnlyOfficePlugin */
         $this->plugin = ilOnlyOfficePlugin::getInstance();
         $this->tpl = $DIC->ui()->mainTemplate();
+
+        $this->storage_service = $this->plugin->getStorageService();
     }
 
     public function performCommand(string $cmd): void

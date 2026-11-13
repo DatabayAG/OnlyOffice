@@ -28,7 +28,6 @@ use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\OpenSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ilLanguage;
@@ -58,7 +57,6 @@ class ObjectSettingsForm
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly Container $dic;
     private readonly Factory $uiFactory;
-    private readonly StorageService $storageService;
     private readonly ilCtrlInterface $ctrl;
     private readonly ilLanguage $lng;
     private readonly \ILIAS\Refinery\Factory $refinery;
@@ -74,8 +72,6 @@ class ObjectSettingsForm
         $this->lng = $this->dic->language();
         $this->refinery = $this->dic->refinery();
 
-        $this->storageService = new StorageService();
-
         $this->form = $this->buildForm($objectSettings, $newObject);
     }
 
@@ -86,11 +82,15 @@ class ObjectSettingsForm
 
     private function buildForm(?ObjectSettings $objectSettings, bool $newObject): StandardForm
     {
-        $templates = array_merge(
-            $this->storageService->fetchTemplates(FileCreationType::TEXT),
-            $this->storageService->fetchTemplates(FileCreationType::TABLE),
-            $this->storageService->fetchTemplates(FileCreationType::PRESENTATION)
-        );
+        $storage_service = $this->plugin->getStorageService();
+        $templates = [];
+
+        foreach (FileCreationType::cases() as $type) {
+            if ($type === FileCreationType::NONE) {
+                continue;
+            }
+            $templates = [...$templates, ...$storage_service->fetchTemplates($type)];
+        }
 
         $items = [
             "title_and_description" => $this->buildTitleAndDescriptionInput($objectSettings),

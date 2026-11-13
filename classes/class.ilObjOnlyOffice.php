@@ -28,7 +28,6 @@ use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Refinery\Factory;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
@@ -37,7 +36,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 {
     public ObjectSettings $object_settings;
 
-    private readonly ilPlugin $pl;
+    private readonly ilOnlyOfficePlugin $pl;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $httpWrapper;
@@ -188,9 +187,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public function doDelete(): void
     {
         $this->object_settings_repo->delete($this->object_settings);
-
-        $storage = new StorageService();
-        $storage->deleteFile($this->getId());
+        $this->pl->getStorageService()->deleteFile($this->getId());
 
     }
 
@@ -216,8 +213,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $this->object_settings_repo->store($new_obj->object_settings);
 
-        $storage = new StorageService();
-        $storage->createClone($new_obj->getId(), $this->getId());
+        $this->pl->getStorageService()->createClone($new_obj->getId(), $this->getId());
     }
 
     public function isOnline(): bool

@@ -31,7 +31,6 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
 class xonoCallbackHandler
 {
     protected Container $dic;
-    protected StorageService $storage_service;
     protected string $file_data;
     protected Uuid $uuid;
     protected int $editor_id;
@@ -42,6 +41,7 @@ class xonoCallbackHandler
     protected string $change_extension;
     protected string $fileUrl;
     protected string $changeUrl;
+    private ilOnlyOfficePlugin $plugin;
 
     /**
      * @throws Exception if the data cannot be fetched
@@ -68,20 +68,14 @@ class xonoCallbackHandler
             throw new Exception("Data could not be fetched");
         }
 
-        $this->afterConstructor();
-
-    }
-
-    protected function afterConstructor(): void
-    {
-        $this->storage_service = new StorageService();
+        $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function handleCallback(): bool
     {
         try {
             // Upload the new file
-            $this->storage_service->updateFileFromUpload(
+            $this->plugin->getStorageService()->updateFileFromUpload(
                 $this->file_data,
                 $this->file_id,
                 $this->uuid,

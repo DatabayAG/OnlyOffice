@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
@@ -88,12 +87,12 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     public function getProperties(): array
     {
-        $storage = new StorageService();
-        $file = $storage->getFile($this->obj_id);
+        $storage_service = ilOnlyOfficePlugin::getInstance()->getStorageService();
+        $file = $storage_service->getFile($this->obj_id);
         if (is_null($file)) {
             return [];
         }
-        $last_version = $storage->getLatestVersion($file->getUuid());
+        $last_version = $storage_service->getLatestVersion($file->getUuid());
         $props = [];
 
         if (ilObjOnlyOfficeAccess::_isOffline($this->obj_id)) {
