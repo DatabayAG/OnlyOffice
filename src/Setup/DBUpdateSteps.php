@@ -111,7 +111,9 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             ]);
 
             $objective = new ilAccessRBACOperationDeletedObjective(ilOnlyOfficePlugin::ID, $op_id);
-            $objective->achieve($env);
+            if ($objective->isApplicable($env)) {
+                $objective->achieve($env);
+            }
 
             //ilAccessRBACOperationDeletedObjective doesn't delete the entry added to rbac_operations
             $this->db->manipulateF(
