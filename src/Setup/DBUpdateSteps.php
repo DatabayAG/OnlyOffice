@@ -504,4 +504,31 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             $this->db->renameTableColumn($table_name, "changes_url", "url");
         }
     }
+
+    public function step_9(): void
+    {
+        $file_version_table_name = "xono_file_version";
+        $file_change_table_name = "xono_file_change";
+        $new_column_name = "rid";
+
+        if (
+            $this->db->tableExists($file_version_table_name)
+            && !$this->db->tableColumnExists($file_version_table_name, $new_column_name)
+        ) {
+            $this->db->addTableColumn($file_version_table_name, $new_column_name, [
+                "type" => ilDBConstants::T_CLOB,
+                "notnull" => false
+            ]);
+        }
+
+        if (
+            $this->db->tableExists($file_change_table_name)
+            && !$this->db->tableColumnExists($file_change_table_name, $new_column_name)
+        ) {
+            $this->db->addTableColumn($file_change_table_name, $new_column_name, [
+                "type" => ilDBConstants::T_CLOB,
+                "notnull" => false
+            ]);
+        }
+    }
 }

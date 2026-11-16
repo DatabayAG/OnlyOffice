@@ -26,6 +26,7 @@ use ilDBInterface;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class FileVersionRepository
 {
@@ -127,7 +128,7 @@ class FileVersionRepository
                 "file_uuid" => [ilDBConstants::T_TEXT, $file_version->getFileUuid()],
                 "user_id" => [ilDBConstants::T_INTEGER, $file_version->getUserId()],
                 "created_at" => [ilDBConstants::T_TIMESTAMP, $file_version->getCreatedAt()->get(IL_CAL_DATETIME)],
-                "url" => [ilDBConstants::T_TEXT, $file_version->getUrl()],
+                "rid" => [ilDBConstants::T_TEXT, $file_version->getRid()?->serialize()],
                 "version" => [ilDBConstants::T_INTEGER, $file_version->getVersion()],
             ]
         ) === 1;
@@ -141,7 +142,7 @@ class FileVersionRepository
                 "file_uuid" => [ilDBConstants::T_TEXT, $file_version->getFileUuid()],
                 "user_id" => [ilDBConstants::T_INTEGER, $file_version->getUserId()],
                 "created_at" => [ilDBConstants::T_TIMESTAMP, $file_version->getCreatedAt()->get(IL_CAL_DATETIME)],
-                "url" => [ilDBConstants::T_TEXT, $file_version->getUrl()],
+                "rid" => [ilDBConstants::T_TEXT, $file_version->getRid()?->serialize()],
                 "version" => [ilDBConstants::T_INTEGER, $file_version->getVersion()],
             ],
             ["id" => [ilDBConstants::T_INTEGER, $file_version->getId()]]
@@ -197,7 +198,7 @@ class FileVersionRepository
             (new UUIDFactory())->fromString($row["file_uuid"]),
             (int) $row["user_id"],
             new ilDateTime($row["created_at"], IL_CAL_DATETIME),
-            $row["url"],
+            $row["rid"] ? new ResourceIdentification($row["rid"]) : null,
             (int) $row["version"]
         ))->setId((int) $row["id"]);
     }

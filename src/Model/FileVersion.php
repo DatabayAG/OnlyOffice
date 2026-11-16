@@ -22,6 +22,7 @@ namespace ILIAS\Plugin\OnlyOffice\Model;
 
 use ilDateTime;
 use ILIAS\Data\UUID\Uuid;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 use ilObjUser;
 use JsonSerializable;
 
@@ -35,7 +36,7 @@ class FileVersion implements JsonSerializable
         private readonly Uuid $file_uuid,
         private readonly int $user_id,
         private readonly ilDateTime $created_at,
-        private readonly string $url,
+        private readonly ?ResourceIdentification $rid,
         private int $version = -1,
     ) {
     }
@@ -66,9 +67,9 @@ class FileVersion implements JsonSerializable
         return $this->created_at;
     }
 
-    public function getUrl(): string
+    public function getRid(): ?ResourceIdentification
     {
-        return $this->url;
+        return $this->rid;
     }
 
     public function getVersion(): int
@@ -86,12 +87,12 @@ class FileVersion implements JsonSerializable
     {
         $user = new ilObjUser($this->user_id);
         return [
-            'version' => $this->version,
-            'createdAt' => $this->created_at->get(1),
-            'userId' => $this->user_id,
+            'version' => $this->getVersion(),
+            'createdAt' => $this->getCreatedAt()->get(1),
+            'userId' => $this->getUserId(),
             'user' => $user->getPublicName(),
-            'url' => $this->url,
-            'uuid' => $this->file_uuid->toString()
+            'rid' => $this->getRid()?->serialize(),
+            'uuid' => $this->getFileUuid()->toString()
         ];
     }
 }

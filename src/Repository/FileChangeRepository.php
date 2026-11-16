@@ -25,6 +25,7 @@ use ilDBInterface;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\Model\FileChange;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class FileChangeRepository
 {
@@ -126,7 +127,7 @@ class FileChangeRepository
                     "file_uuid" => [ilDBConstants::T_TEXT, $file_change->getFileUuid()->toString()],
                     "version" => [ilDBConstants::T_INTEGER, $file_change->getVersion()],
                     "changes_object_string" => [ilDBConstants::T_CLOB, $file_change->getChangesObjectString()],
-                    "url" => [ilDBConstants::T_TEXT, $file_change->getUrl()],
+                    "rid" => [ilDBConstants::T_TEXT, $file_change->getRid()?->serialize()],
                     "server_version" => [ilDBConstants::T_TEXT, $file_change->getServerVersion()],
                 ]
         ) === 1;
@@ -141,7 +142,7 @@ class FileChangeRepository
                     "file_uuid" => [ilDBConstants::T_TEXT, $file_change->getFileUuid()->toString()],
                     "version" => [ilDBConstants::T_INTEGER, $file_change->getVersion()],
                     "changes_object_string" => [ilDBConstants::T_CLOB, $file_change->getChangesObjectString()],
-                    "url" => [ilDBConstants::T_TEXT, $file_change->getUrl()],
+                    "rid" => [ilDBConstants::T_TEXT, $file_change->getRid()?->serialize()],
                     "server_version" => [ilDBConstants::T_TEXT, $file_change->getServerVersion()],
                 ],
             ["id" => [ilDBConstants::T_INTEGER, $file_change->getId()]]
@@ -197,7 +198,7 @@ class FileChangeRepository
             (new UUIDFactory())->fromString($row["file_uuid"]),
             (int) $row["version"],
             $row["changes_object_string"],
-            $row["url"],
+            $row["rid"] ? new ResourceIdentification($row["rid"]) : null,
             $row["server_version"]
         ))->setId((int) $row["id"]);
     }

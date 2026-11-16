@@ -23,8 +23,10 @@ use ILIAS\HTTP\Wrapper\WrapperFactory;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
+use ILIAS\ResourceStorage\Services;
 
 class xonoContentGUI extends xonoAbstractGUI
 {
@@ -39,6 +41,8 @@ class xonoContentGUI extends xonoAbstractGUI
     private readonly Factory $refinery;
     private readonly WrapperFactory $http_wrapper;
     private readonly ObjectSettingsRepository $object_settings_repo;
+    private Services $resource_storage;
+    private UiUtil $ui_util;
 
     public function __construct(
         Container $dic,
@@ -51,7 +55,10 @@ class xonoContentGUI extends xonoAbstractGUI
 
         parent::__construct($dic, $plugin);
         $this->tpl = $dic->ui()->mainTemplate();
+        $this->resource_storage = $dic->resourceStorage();
+
         $this->object_settings_repo = new ObjectSettingsRepository($dic->database());
+        $this->ui_util = new UiUtil($dic);
     }
 
     final public function getType(): string
@@ -165,19 +172,23 @@ class xonoContentGUI extends xonoAbstractGUI
 
         $file = $storage_service->getFile($this->file_id);
 
-        if (!$file_version || !$file) {
+        if (!$file_version || !$file || !$file_version->getRid()) {
+            $this->ui_util->sendFailure($this->plugin->txt("file.not_found"));
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
-
         }
 
-        $path = ILIAS_ABSOLUTE_PATH . '/public/data/' . CLIENT_ID . $file_version->getUrl();
+        $download = $this->resource_storage->consume()->download($file_version->getRid());
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
         $file_name = rtrim($file->getTitle(), '.' . $ext);
-        ilFileDelivery::deliverFileAttached(
-            $path,
-            "{$file_name}_V{$file_version->getVersion()}.$ext",
-            $file->getMimeType()
-        );
+
+        try {
+            $download->overrideFileName(
+                "{$file_name}_V{$file_version->getVersion()}.$ext"
+            )->run();
+        } catch (Throwable $ex) {
+            $this->ui_util->sendFailure($this->plugin->txt("file.not_found"));
+            $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
+        }
         exit;
     }
 

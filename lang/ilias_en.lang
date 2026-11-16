@@ -100,3 +100,4 @@ editor_edit_timeup#:#The editing period for the document has expired. The docume
 editor_edit_timewasup#:#The current time does not match the editing period for the document. The document is now in read-only mode.
 editor_edit_period#:#The editing period for the document is %s.
 
+file.not_found#:#File not found

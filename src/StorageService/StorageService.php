@@ -36,6 +36,7 @@ use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class StorageService
 {
@@ -71,19 +72,18 @@ class StorageService
     {
         // Create DB Entries for File & FileVersion
         $new_file_id = $this->uuid_factory->uuid4();
-        $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $rid = $this->file_system_service->storeUploadResult($upload_result);
 
         $file = new File(
             $obj_id,
             $new_file_id,
             $upload_result->getName(),
-            $extension,
+            pathinfo($upload_result->getPath(), PATHINFO_EXTENSION),
             $upload_result->getMimeType()
         );
 
         $this->file_repository->create($file);
-        $file_version = $this->createNewFileVersion($new_file_id, $path);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
 
         return $file;
     }
@@ -159,7 +159,7 @@ class StorageService
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->getLatestVersion($uuid)->getVersion() + 1;
         echo $version;
-        $path = $this->file_system_service->storeNewVersionFromString(
+        $rid = $this->file_system_service->storeNewVersionFromString(
             $file_content,
             $file_id,
             $uuid->toString(),
@@ -171,7 +171,7 @@ class StorageService
             $uuid,
             $editor_id,
             $created_at,
-            $path
+            $rid
         );
 
         $this->file_version_repository->create($file_version);
@@ -270,12 +270,12 @@ class StorageService
         // clone file versions
         $parent_file_versions = $this->file_version_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_file_versions as $file_version) {
-            $path = $this->file_system_service->storeVersionCopy($file_version, $uuid->toString(), $child_id);
+            $rid = $this->file_system_service->storeVersionCopy($file_version, $uuid->toString(), $child_id);
             $this->file_version_repository->create(new FileVersion(
                 $uuid,
                 $this->dic->user()->getId(),
                 new ilDateTime(time(), IL_CAL_UNIX),
-                $path,
+                $rid,
                 $file_version->getVersion()
             ));
         }
@@ -283,13 +283,13 @@ class StorageService
         // clone file changes
         $parent_changes = $this->file_change_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_changes as $file_change) {
-            $path = $this->file_system_service->storeChangeCopy($file_change, $uuid->toString(), $child_id);
+            $rid = $this->file_system_service->storeChangeCopy($file_change, $uuid->toString(), $child_id);
 
             $this->file_change_repository->create(new FileChange(
                 $uuid,
                 $file_change->getVersion(),
                 $file_change->getChangesObjectString(),
-                $path,
+                $rid,
                 $file_change->getServerVersion(),
             ));
         }
@@ -331,9 +331,13 @@ class StorageService
         return $this->file_change_repository->readAllByUuid($uuid);
     }
 
-    public function getChangeUrl(Uuid $uuid, int $version): string
+    public function getChangeUrl(FileVersion $file_version): ?string
     {
-        return $this->file_change_repository->readByUuid($uuid, $version)->getUrl();
+        $file_change = $this->file_change_repository->readByUuid($file_version->getFileUuid(), $file_version->getVersion());
+        if (!$file_change) {
+            return null;
+        }
+        return $this->file_system_service->getChangeUrl($file_change);
 
     }
 
@@ -366,7 +370,7 @@ class StorageService
     /**
      * @throws ilDateTimeException
      */
-    private function createNewFileVersion(Uuid $new_file_id, string $path): FileVersion
+    private function createNewFileVersion(Uuid $new_file_id, ResourceIdentification $rid): FileVersion
     {
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
 
@@ -374,7 +378,7 @@ class StorageService
             $new_file_id,
             $this->dic->user()->getId(),
             $created_at,
-            $path
+            $rid
         );
 
         $this->file_version_repository->create($file_version);
@@ -391,7 +395,7 @@ class StorageService
             $new_file_id,
             $file_version->getVersion(),
             $changes,
-            $path,
+            $rid,
             FileChange::DEFAULT_SERVER_VERSION
         ));
 

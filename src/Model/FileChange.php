@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Model;
 
 use ILIAS\Data\UUID\Uuid;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class FileChange
 {
@@ -32,7 +33,7 @@ class FileChange
         private readonly Uuid $file_uuid,
         private readonly int $version,
         private readonly string $changes_object_string,
-        private readonly string $url,
+        private readonly ?ResourceIdentification $rid,
         private string $server_version = self::DEFAULT_SERVER_VERSION
     ) {
     }
@@ -63,9 +64,9 @@ class FileChange
         return $this->changes_object_string;
     }
 
-    public function getUrl(): string
+    public function getRid(): ?ResourceIdentification
     {
-        return $this->url;
+        return $this->rid;
     }
 
     public function getServerVersion(): string

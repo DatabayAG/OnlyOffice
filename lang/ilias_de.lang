@@ -105,3 +105,5 @@ settings_allow_edit_info#:#Alle Benutzer mit Leserecht dürfen die Datei auch be
 editor_edit_timeup#:#Der Bearbeitungszeitraum für das Dokument ist abgelaufen. Das Dokument befindet sich nun im Lesemodus.
 editor_edit_timewasup#:#Die aktuelle Zeit liegt ausserhalb des Bearbeitungszeitraumes für das Dokument. Das Dokument befindet sich nun im Lesemodus.
 editor_edit_period#:#Der Bearbeitungszeitraum für das Dokument ist %s.
+
+file.not_found#:#Datei nicht gefunden

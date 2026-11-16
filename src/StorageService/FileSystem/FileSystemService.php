@@ -33,6 +33,7 @@ use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Filesystem\Stream\Streams;
+use ILIAS\ResourceStorage\Services;
 use ilLogger;
 
 class FileSystemService
@@ -42,34 +43,23 @@ class FileSystemService
     private Filesystem $web_file_system;
     private ilLogger $logger;
     private FileUpload $upload;
+    private Services $resource_storage;
 
     public function __construct(private readonly Container $dic)
     {
         $this->upload = $this->dic->upload();
         $this->web_file_system = $this->dic->filesystem()->web();
+        $this->resource_storage = $this->dic->resourceStorage();
         $this->logger = $this->dic->logger()->root();
     }
 
     /**
      * @throws IOException
      */
-    public function storeUploadResult(
-        UploadResult $upload_result,
-        int $obj_id,
-        string $file_id,
-        ?string $file_name = null
-    ): string {
-        $file_name ??= (string) FileVersion::FIRST_VERSION;
-        $ext = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
-        $file_name .= '.' . $ext;
-
-        $path = $this->createAndGetPath($obj_id, $file_id);
-
-        $filesystem = $this->web_file_system;
-        $path = rtrim($path, "/") . '/' . ($file_name === "" ? $upload_result->getName() : $file_name);
+    public function storeUploadResult(UploadResult $upload_result
+    ): ?ResourceIdentification {
         $stream = fopen($upload_result->getPath(), 'rb');
-        $filesystem->writeStream($path, new Stream($stream));
-        return $path;
+        return $this->resource_storage->manage()->stream(new Stream($stream), new FileStakeholder());
     }
 
     public function storeNewVersionFromString(
@@ -78,13 +68,8 @@ class FileSystemService
         string $uuid,
         int $version,
         string $extension
-    ): string {
-        $path = $this->createAndGetPath($obj_id, $uuid) . $version . '.' . $extension;
-        $this->logger->info('Storing as: ' . $path);
-        $stream = Streams::ofString($content);
-        $web = $this->web_file_system;
-        $web->writeStream($path, $stream);
-        return $path;
+    ): ResourceIdentification {
+        return $this->resource_storage->manage()->stream(Streams::ofString($content), new FileStakeholder());
     }
 
     /**
@@ -291,29 +276,26 @@ class FileSystemService
         return $path;
     }
 
-    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id): string
+    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id): ?ResourceIdentification
     {
-        $parent_path = $parent_version->getUrl();
-        $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath(
-            $file_id,
-            $uuid
-        ) . $parent_version->getVersion() . '.' . $extension;
-        ;
-        $web = $this->web_file_system;
-        $web->copy($parent_path, $child_path);
-        return $child_path;
+        $parent_rid = $parent_version->getRid();
+
+        if (!$parent_rid) {
+            return null;
+        }
+
+        return $this->resource_storage->manage()->clone($parent_rid);
     }
 
-    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): string
+    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): ?ResourceIdentification
     {
-        $parent_path = $parent_change->getUrl();
-        $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;
-        ;
-        $web = $this->web_file_system;
-        $web->copy($parent_path, $child_path);
-        return $child_path;
+        $parent_rid = $parent_change->getRid();
+
+        if (!$parent_rid) {
+            return null;
+        }
+
+        return $this->resource_storage->manage()->clone($parent_rid);
     }
 
     public function deletePath(int $file_id): void
@@ -374,5 +356,14 @@ class FileSystemService
         if ($this->web_file_system->has($full_path_description)) {
             $this->web_file_system->delete($full_path_description);
         }
+    }
+
+    public function getChangeUrl(FileChange $file_change): ?string
+    {
+        if (!$file_change->getRid()) {
+            return null;
+        }
+
+        return $this->resource_storage->consume()->src($file_change->getRid())->getSrc();
     }
 }

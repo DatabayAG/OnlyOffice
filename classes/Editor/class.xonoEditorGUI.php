@@ -30,6 +30,7 @@ use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
+use ILIAS\ResourceStorage\Services;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
@@ -42,6 +43,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected string $onlyoffice_key;
     private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly ObjectSettingsRepository $object_settings_repo;
+    private Services $resource_storage;
 
     public function __construct(
         Container $dic,
@@ -53,6 +55,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
         $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
         $this->main_tpl = $this->dic->ui()->mainTemplate();
+        $this->resource_storage = $this->dic->resourceStorage();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
     }
@@ -160,17 +163,16 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected function config(File $file, FileVersion $file_version, ObjectSettings $object_settings, bool $within_potential_time_limit): array
     {
         $as_array = []; // Config Array
-        $extension = pathinfo($file_version->getUrl(), PATHINFO_EXTENSION);
 
         // general config
-        $as_array['documentType'] = FileCreationType::determineDocType($extension)->getEditorType();
+        $as_array['documentType'] = FileCreationType::determineDocType($file->getFileType())->getEditorType();
 
         // document config
         $document = []; // SubArray "document"
         $document['fileType'] = $file->getFileType();
         $document['key'] = $this->generateDocumentKey($file_version);
         $document['title'] = $file->getTitle();
-        $document['url'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($file_version->getUrl()), ".");
+        $document['url'] = $this->resource_storage->consume()->src($file_version->getRid())->getSrc();
         $as_array['document'] = $document;
 
         // editor config
@@ -178,7 +180,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $editor['callbackUrl'] = $this->generateCallbackUrl(
             $file->getUuid(),
             $file->getObjId(),
-            $extension
+            $file->getFileType()
         );
         $editor['user'] = $this->buildUserArray($this->dic->user()->getId());
         $editor['mode'] = $this->determineAccessRights($within_potential_time_limit);
@@ -239,8 +241,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->toString();
 
-            $change_url = $this->plugin->getStorageService()->getChangeUrl($version->getFileUuid(), $v);
-            $data_array['changesUrl'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($change_url), '.');
+            $data_array['changesUrl'] = $this->plugin->getStorageService()->getChangeUrl($version);
 
             $data_array['key'] = $uuid . '-' . $v;
 
@@ -248,7 +249,7 @@ class xonoEditorGUI extends xonoAbstractGUI
                 $data_array['previous'] = $this->buildPreviousArray($version);
             }
 
-            $data_array['url'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($version->getUrl()), '.');
+            $data_array['url'] = $this->resource_storage->consume()->src($version->getRid())->getSrc();
 
             $data_array['version'] = $v;
 
@@ -300,8 +301,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         );
         $key = $previous->getFileUuid()->toString() . '-' . $previous->getVersion();
         $result['key'] = $key;
-        $url = self::BASE_URL . ltrim(WebAccessService::getWACUrl($previous->getUrl()), '.');
-        $result['url'] = $url;
+        $result['url'] = $this->resource_storage->consume()->src($previous->getRid())->getSrc();
         return $result;
     }
 
