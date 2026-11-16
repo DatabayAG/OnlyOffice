@@ -307,7 +307,7 @@ class FileSystemService
 
     public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): string
     {
-        $parent_path = $parent_change->getChangesUrl();
+        $parent_path = $parent_change->getUrl();
         $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
         $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;
         ;

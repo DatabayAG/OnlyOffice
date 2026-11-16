@@ -26,25 +26,25 @@ class FileChange
 {
     public const string DEFAULT_SERVER_VERSION = "6.3.1";
 
-    private int $change_id;
+    private int $id;
 
     public function __construct(
         private readonly Uuid $file_uuid,
         private readonly int $version,
         private readonly string $changes_object_string,
-        private readonly string $changes_url,
+        private readonly string $url,
         private string $server_version = self::DEFAULT_SERVER_VERSION
     ) {
     }
 
-    public function getChangeId(): int
+    public function getId(): int
     {
-        return $this->change_id;
+        return $this->id;
     }
 
-    public function setChangeId(int $change_id): self
+    public function setId(int $id): self
     {
-        $this->change_id = $change_id;
+        $this->id = $id;
         return $this;
     }
 
@@ -63,9 +63,9 @@ class FileChange
         return $this->changes_object_string;
     }
 
-    public function getChangesUrl(): string
+    public function getUrl(): string
     {
-        return $this->changes_url;
+        return $this->url;
     }
 
     public function getServerVersion(): string

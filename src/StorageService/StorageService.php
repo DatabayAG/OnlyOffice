@@ -333,7 +333,7 @@ class StorageService
 
     public function getChangeUrl(Uuid $uuid, int $version): string
     {
-        return $this->file_change_repository->readByUuid($uuid, $version)->getChangesUrl();
+        return $this->file_change_repository->readByUuid($uuid, $version)->getUrl();
 
     }
 

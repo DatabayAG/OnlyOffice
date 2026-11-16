@@ -488,4 +488,20 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         ]);
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
+
+    public function step_8(): void
+    {
+        $table_name = "xono_file_change";
+        if (!$this->db->tableExists($table_name)) {
+            return;
+        }
+
+        if ($this->db->tableColumnExists($table_name, "change_id")) {
+            $this->db->renameTableColumn($table_name, "change_id", "id");
+        }
+
+        if ($this->db->tableColumnExists($table_name, "changes_url")) {
+            $this->db->renameTableColumn($table_name, "changes_url", "url");
+        }
+    }
 }

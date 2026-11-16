@@ -41,7 +41,7 @@ class FileChangeRepository
     public function read(int $obj_id): ?FileChange
     {
         $result = $this->db->queryF(
-            "SELECT * FROM " . self::TABLE_NAME . " WHERE change_id = %s",
+            "SELECT * FROM " . self::TABLE_NAME . " WHERE id = %s",
             [ilDBConstants::T_INTEGER],
             [$obj_id]
         );
@@ -113,7 +113,7 @@ class FileChangeRepository
 
     public function create(FileChange $file_change): bool
     {
-        $file_change->setChangeId($this->db->nextId(self::TABLE_NAME));
+        $file_change->setId($this->db->nextId(self::TABLE_NAME));
 
         if (!$file_change->getServerVersion()) {
             $file_change->setServerVersion(FileChange::DEFAULT_SERVER_VERSION);
@@ -122,11 +122,11 @@ class FileChangeRepository
         return $this->db->insert(
             self::TABLE_NAME,
             [
-                    "change_id" => [ilDBConstants::T_INTEGER, $file_change->getChangeId()],
+                    "id" => [ilDBConstants::T_INTEGER, $file_change->getId()],
                     "file_uuid" => [ilDBConstants::T_TEXT, $file_change->getFileUuid()->toString()],
                     "version" => [ilDBConstants::T_INTEGER, $file_change->getVersion()],
                     "changes_object_string" => [ilDBConstants::T_CLOB, $file_change->getChangesObjectString()],
-                    "changes_url" => [ilDBConstants::T_TEXT, $file_change->getChangesUrl()],
+                    "url" => [ilDBConstants::T_TEXT, $file_change->getUrl()],
                     "server_version" => [ilDBConstants::T_TEXT, $file_change->getServerVersion()],
                 ]
         ) === 1;
@@ -137,20 +137,20 @@ class FileChangeRepository
         return $this->db->update(
             self::TABLE_NAME,
             [
-                    "change_id" => [ilDBConstants::T_INTEGER, $file_change->getChangeId()],
+                    "id" => [ilDBConstants::T_INTEGER, $file_change->getId()],
                     "file_uuid" => [ilDBConstants::T_TEXT, $file_change->getFileUuid()->toString()],
                     "version" => [ilDBConstants::T_INTEGER, $file_change->getVersion()],
                     "changes_object_string" => [ilDBConstants::T_CLOB, $file_change->getChangesObjectString()],
-                    "changes_url" => [ilDBConstants::T_TEXT, $file_change->getChangesUrl()],
+                    "url" => [ilDBConstants::T_TEXT, $file_change->getUrl()],
                     "server_version" => [ilDBConstants::T_TEXT, $file_change->getServerVersion()],
                 ],
-            ["change_id" => [ilDBConstants::T_INTEGER, $file_change->getChangeId()]]
+            ["id" => [ilDBConstants::T_INTEGER, $file_change->getId()]]
         ) === 1;
     }
 
     public function store(FileChange $file_change): bool
     {
-        if ($this->exists($file_change->getChangeId())) {
+        if ($this->exists($file_change->getId())) {
             return $this->update($file_change);
         }
 
@@ -159,13 +159,13 @@ class FileChangeRepository
 
     public function delete(FileChange $file_change): bool
     {
-        return $this->deleteById($file_change->getChangeId());
+        return $this->deleteById($file_change->getId());
     }
 
     public function deleteById(int $obj_id): bool
     {
         return $this->db->manipulateF(
-            "DELETE FROM " . self::TABLE_NAME . " WHERE change_id = %s",
+            "DELETE FROM " . self::TABLE_NAME . " WHERE id = %s",
             [ilDBConstants::T_INTEGER],
             [$obj_id]
         ) === 1;
@@ -183,7 +183,7 @@ class FileChangeRepository
     public function exists(int $obj_id): bool
     {
         $result = $this->db->queryF(
-            "SELECT EXISTS(SELECT 1 FROM " . self::TABLE_NAME . " WHERE change_id = %s) AS does_exist",
+            "SELECT EXISTS(SELECT 1 FROM " . self::TABLE_NAME . " WHERE id = %s) AS does_exist",
             [ilDBConstants::T_INTEGER],
             [$obj_id]
         );
@@ -197,8 +197,8 @@ class FileChangeRepository
             (new UUIDFactory())->fromString($row["file_uuid"]),
             (int) $row["version"],
             $row["changes_object_string"],
-            $row["changes_url"],
+            $row["url"],
             $row["server_version"]
-        ))->setChangeId((int) $row["change_id"]);
+        ))->setId((int) $row["id"]);
     }
 }
