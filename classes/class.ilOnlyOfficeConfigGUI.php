@@ -60,7 +60,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private ilCtrlInterface $ctrl;
     private ilTabsGUI $tabs;
     private ilLocatorGUI $locator;
-    private \ILIAS\UI\Factory $ui_factory;
+    private ILIAS\UI\Factory $ui_factory;
     private Renderer $ui_renderer;
     private FileUpload $upload;
     private ilLanguage $lng;
