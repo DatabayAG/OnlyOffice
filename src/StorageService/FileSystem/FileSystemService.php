@@ -23,22 +23,31 @@ namespace ILIAS\Plugin\OnlyOffice\StorageService\FileSystem;
 use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\FileNotFoundException;
 use ILIAS\Filesystem\Exception\IOException;
+use ILIAS\Filesystem\Filesystem;
 use ILIAS\Filesystem\Stream\Stream;
 use ILIAS\FileUpload\DTO\UploadResult;
+use ILIAS\FileUpload\FileUpload;
 use ILIAS\FileUpload\Location;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Filesystem\Stream\Streams;
+use ilLogger;
 
 class FileSystemService
 {
     public const string BASE_PATH = '/only_office/';
     public const string BASE_TEMPLATE_PATH = '/only_office/templates/';
+    private Filesystem $web_file_system;
+    private ilLogger $logger;
+    private FileUpload $upload;
 
     public function __construct(private readonly Container $dic)
     {
+        $this->upload = $this->dic->upload();
+        $this->web_file_system = $this->dic->filesystem()->web();
+        $this->logger = $this->dic->logger()->root();
     }
 
     /**
@@ -56,7 +65,7 @@ class FileSystemService
 
         $path = $this->createAndGetPath($obj_id, $file_id);
 
-        $filesystem = $this->dic->filesystem()->web();
+        $filesystem = $this->web_file_system;
         $path = rtrim($path, "/") . '/' . ($file_name === "" ? $upload_result->getName() : $file_name);
         $stream = fopen($upload_result->getPath(), 'rb');
         $filesystem->writeStream($path, new Stream($stream));
@@ -71,9 +80,9 @@ class FileSystemService
         string $extension
     ): string {
         $path = $this->createAndGetPath($obj_id, $uuid) . $version . '.' . $extension;
-        $this->dic->logger()->root()->info('Storing as: ' . $path);
+        $this->logger->info('Storing as: ' . $path);
         $stream = Streams::ofString($content);
-        $web = $this->dic->filesystem()->web();
+        $web = $this->web_file_system;
         $web->writeStream($path, $stream);
         return $path;
     }
@@ -87,19 +96,19 @@ class FileSystemService
         // Define path and create it if it does not exist
         $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
 
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
+        if (!$this->web_file_system->hasDir($path)) {
+            $this->web_file_system->createDir($path);
         }
 
         $file_name = $title . "." . $extension;
         $full_path = $path . $file_name;
 
         // delete the old template file if it already exists
-        if ($this->dic->filesystem()->web()->has($full_path)) {
-            $this->dic->filesystem()->web()->delete($full_path);
+        if ($this->web_file_system->has($full_path)) {
+            $this->web_file_system->delete($full_path);
         }
 
-        $this->dic->upload()->moveOneFileTo(
+        $this->upload->moveOneFileTo(
             $upload_result,
             $path,
             Location::WEB,
@@ -119,7 +128,7 @@ class FileSystemService
         $file_name = $target . "." . $extension;
         $full_path = $path . $file_name;
 
-        if ($this->dic->filesystem()->web()->has($full_path)) {
+        if ($this->web_file_system->has($full_path)) {
             /** @noinspection CallableParameterUseCaseInTypeContextInspection */
             $extension = pathinfo($full_path, PATHINFO_EXTENSION);
             $title = pathinfo($full_path, PATHINFO_FILENAME);
@@ -127,7 +136,7 @@ class FileSystemService
 
             $description = "";
             try {
-                $description_stream = $this->dic->filesystem()->web()->readStream($path . "descriptions/" . $title . ".txt");
+                $description_stream = $this->web_file_system->readStream($path . "descriptions/" . $title . ".txt");
                 $description = $description_stream->getContents();
             } catch (FileNotFoundException) {
             }
@@ -148,8 +157,8 @@ class FileSystemService
         $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
         $converted_files = [];
 
-        if ($this->dic->filesystem()->web()->hasDir($path)) {
-            $files = $this->dic->filesystem()->web()->listContents($path);
+        if ($this->web_file_system->hasDir($path)) {
+            $files = $this->web_file_system->listContents($path);
 
             foreach ($files as $file) {
                 $file = $file->getPath();
@@ -164,7 +173,7 @@ class FileSystemService
                 $description = "";
 
                 try {
-                    $description_stream = $this->dic->filesystem()->web()->readStream($path . "descriptions/" . $title . ".txt");
+                    $description_stream = $this->web_file_system->readStream($path . "descriptions/" . $title . ".txt");
                     $description = $description_stream->getContents();
                 } catch (FileNotFoundException) {
                 }
@@ -188,9 +197,9 @@ class FileSystemService
         $file_name = $target . "." . $extension;
         $full_path = $path . $file_name;
 
-        if ($this->dic->filesystem()->web()->has($full_path)) {
+        if ($this->web_file_system->has($full_path)) {
             // Delete template
-            $this->dic->filesystem()->web()->delete($full_path);
+            $this->web_file_system->delete($full_path);
             $this->deleteTemplateDescription($path, $target);
 
             return true;
@@ -210,9 +219,9 @@ class FileSystemService
 
         if (
             !empty($title)
-            && $this->dic->filesystem()->web()->has($full_old_path) && $full_old_path !== $full_new_path
+            && $this->web_file_system->has($full_old_path) && $full_old_path !== $full_new_path
         ) {
-            $this->dic->filesystem()->web()->rename($full_old_path, $full_new_path);
+            $this->web_file_system->rename($full_old_path, $full_new_path);
         }
 
         if (!empty($description)) {
@@ -232,19 +241,19 @@ class FileSystemService
         $path = $this->createAndGetPath($obj_id, $new_file_id);
 
         // Define path and create it if it does not exist
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
+        if (!$this->web_file_system->hasDir($path)) {
+            $this->web_file_system->createDir($path);
         }
         $file_name = $name . "." . $extension;
         $path .= $file_name;
 
         // delete the old draft file if it already exists
-        if ($this->dic->filesystem()->web()->has($path)) {
-            $this->dic->filesystem()->web()->delete($path);
+        if ($this->web_file_system->has($path)) {
+            $this->web_file_system->delete($path);
         }
         // store the new draft file
         $stream = Streams::ofString("");
-        $this->dic->filesystem()->web()->writeStream($path, $stream);
+        $this->web_file_system->writeStream($path, $stream);
         return $path;
 
     }
@@ -261,14 +270,14 @@ class FileSystemService
         $path = $this->createAndGetPath($obj_id, $new_file_id);
 
         // Define path and create it if it does not exist
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
+        if (!$this->web_file_system->hasDir($path)) {
+            $this->web_file_system->createDir($path);
         }
 
         $file_name = $new_title . "." . $extension;
         $path .= $file_name;
 
-        $this->dic->filesystem()->web()->copy($template_path, $path);
+        $this->web_file_system->copy($template_path, $path);
 
         return $path;
     }
@@ -277,7 +286,7 @@ class FileSystemService
     {
         $path = $this->createAndGetPath($obj_id, $uuid, true) . $version . '.' . $extension;
         $stream = Streams::ofString($content);
-        $web = $this->dic->filesystem()->web();
+        $web = $this->web_file_system;
         $web->writeStream($path, $stream);
         return $path;
     }
@@ -291,7 +300,7 @@ class FileSystemService
             $uuid
         ) . $parent_version->getVersion() . '.' . $extension;
         ;
-        $web = $this->dic->filesystem()->web();
+        $web = $this->web_file_system;
         $web->copy($parent_path, $child_path);
         return $child_path;
     }
@@ -302,7 +311,7 @@ class FileSystemService
         $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
         $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;
         ;
-        $web = $this->dic->filesystem()->web();
+        $web = $this->web_file_system;
         $web->copy($parent_path, $child_path);
         return $child_path;
     }
@@ -310,7 +319,7 @@ class FileSystemService
     public function deletePath(int $file_id): void
     {
         $path = self::BASE_PATH . $file_id;
-        $web = $this->dic->filesystem()->web();
+        $web = $this->web_file_system;
         $web->deleteDir($path);
 
     }
@@ -326,8 +335,8 @@ class FileSystemService
             $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR . 'changes' . DIRECTORY_SEPARATOR;
         }
 
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
+        if (!$this->web_file_system->hasDir($path)) {
+            $this->web_file_system->createDir($path);
         }
 
         return $path;
@@ -341,15 +350,15 @@ class FileSystemService
         if (!empty($description)) {
             $description_path = self::BASE_TEMPLATE_PATH . $type->value . "/descriptions/";
 
-            if (!$this->dic->filesystem()->web()->hasDir($description_path)) {
-                $this->dic->filesystem()->web()->createDir($description_path);
+            if (!$this->web_file_system->hasDir($description_path)) {
+                $this->web_file_system->createDir($description_path);
             }
 
             // Add file name to path
             $description_path .= $title . ".txt";
 
             $stream = Streams::ofString($description);
-            $this->dic->filesystem()->web()->writeStream($description_path, $stream);
+            $this->web_file_system->writeStream($description_path, $stream);
         }
     }
 
@@ -362,8 +371,8 @@ class FileSystemService
         // Delete template description
         $full_path_description = $path . "descriptions/" . $target . ".txt";
 
-        if ($this->dic->filesystem()->web()->has($full_path_description)) {
-            $this->dic->filesystem()->web()->delete($full_path_description);
+        if ($this->web_file_system->has($full_path_description)) {
+            $this->web_file_system->delete($full_path_description);
         }
     }
 }

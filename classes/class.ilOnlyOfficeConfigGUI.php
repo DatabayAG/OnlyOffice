@@ -54,17 +54,20 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private Container $dic;
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly StorageService $storage_service;
+    private ilToolbarGUI $toolbar;
 
     public function __construct()
     {
         global $DIC;
-        $this->refinery = $DIC->refinery();
-        $this->httpWrapper = $DIC->http()->wrapper();
         $this->dic = $DIC;
+
+        $this->refinery = $this->dic->refinery();
+        $this->httpWrapper = $this->dic->http()->wrapper();
 
         /** @var $plugin ilOnlyOfficePlugin */
         $this->plugin = ilOnlyOfficePlugin::getInstance();
-        $this->tpl = $DIC->ui()->mainTemplate();
+        $this->tpl = $this->dic->ui()->mainTemplate();
+        $this->toolbar = $this->dic->toolbar();
 
         $this->storage_service = $this->plugin->getStorageService();
     }
@@ -140,9 +143,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->dic->tabs()->activateTab(self::TAB_CONFIGURATION);
         $this->dic->tabs()->activateSubTab(self::TAB_SUB_TEMPLATES);
 
-        global $ilToolbar;
-
-        $ilToolbar->addButton(
+        $this->toolbar->addButton(
             $this->plugin->txt("config_create_template"),
             $this->dic->ctrl()->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
         );

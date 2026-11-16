@@ -37,16 +37,17 @@ class DateFetcher
 
     public static function fetchEditingPeriod($obj_id): string
     {
-        global $DIC;
-
         $object_settings = (new ObjectSettingsRepository())->read($obj_id);
 
         if (!$object_settings) {
             return "-";
         }
 
-        $converted_start_time = $object_settings->getStartTime()?->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
-        $converted_end_time = $object_settings->getEndTime()?->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $DIC->user()->getTimeZone());
+        global $DIC;
+        $user = $DIC->user();
+
+        $converted_start_time = $object_settings->getStartTime()?->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $user->getTimeZone());
+        $converted_end_time = $object_settings->getEndTime()?->get(IL_CAL_FKT_DATE, 'd.m.Y H:i', $user->getTimeZone());
 
         if (!$converted_start_time || !$converted_end_time) {
             return "-";

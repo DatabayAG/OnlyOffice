@@ -54,10 +54,10 @@ class ilObjOnlyOffice extends ilObjectPlugin
         parent::__construct($a_ref_id);
 
         $this->dic = $DIC;
-        $this->refinery = $DIC->refinery();
-        $this->httpWrapper = $DIC->http()->wrapper();
-        $this->upload = $DIC->upload();
-        $this->tpl = $DIC->ui()->mainTemplate();
+        $this->refinery = $this->dic->refinery();
+        $this->httpWrapper = $this->dic->http()->wrapper();
+        $this->upload = $this->dic->upload();
+        $this->tpl = $this->dic->ui()->mainTemplate();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
     }

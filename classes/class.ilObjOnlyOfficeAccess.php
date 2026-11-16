@@ -65,14 +65,16 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     {
         global $DIC;
         $tpl = $DIC->ui()->mainTemplate();
+        $ctrl = $DIC->ctrl();
+
         $tpl->setOnScreenMessage('failure', ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"), true);
 
         if (is_object($class)) {
-            $DIC->ctrl()->clearParameters($class);
-            $DIC->ctrl()->redirect($class, $cmd);
+            $ctrl->clearParameters($class);
+            $ctrl->redirect($class, $cmd);
         } else {
-            $DIC->ctrl()->clearParametersByClass($class);
-            $DIC->ctrl()->redirectByClass($class, $cmd);
+            $ctrl->clearParametersByClass($class);
+            $ctrl->redirectByClass($class, $cmd);
         }
     }
 
