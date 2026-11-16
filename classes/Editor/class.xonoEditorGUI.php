@@ -40,7 +40,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected ilOnlyOfficePlugin $plugin;
     protected string $onlyoffice_url;
     protected string $onlyoffice_key;
-    private readonly ilGlobalTemplateInterface $mainTpl;
+    private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly ObjectSettingsRepository $object_settings_repo;
 
     public function __construct(
@@ -52,7 +52,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
         $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
-        $this->mainTpl = $this->dic->ui()->mainTemplate();
+        $this->main_tpl = $this->dic->ui()->mainTemplate();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
     }
@@ -93,51 +93,51 @@ class xonoEditorGUI extends xonoAbstractGUI
             $latest_version = $storage_service->getLatestVersion($file->getUuid());
         }
 
-        $this->mainTpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
-        $this->mainTpl->addCss($this->plugin->assetsFile(PluginAsset::Css, "editor.css"));
+        $this->main_tpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
+        $this->main_tpl->addCss($this->plugin->assetsFile(PluginAsset::Css, "editor.css"));
 
         $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.editor.html", false), true, true);
 
         $tpl->setVariable("BACK_BUTTON", $this->plugin->txt("xono_back_button"));
         $tpl->setVariable("API_SCRIPT_SRC", $this->onlyoffice_url . "/web-apps/apps/api/documents/api.js");
 
-        $withinPotentialTimeLimit = true;
+        $within_potential_time_limit = true;
 
         $editing_period = null;
         if (!is_null($object_settings)) {
-            $withinPotentialTimeLimit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
+            $within_potential_time_limit = DateFetcher::isWithinPotentialTimeLimit($file->getObjId());
             if (DateFetcher::editingPeriodIsFetchable($this->file_id)) {
                 $editing_period = DateFetcher::fetchEditingPeriod($this->file_id);
             }
         }
 
-        $currentVersion = null;
-        $historyData = [];
+        $current_version = null;
+        $history_data = [];
         $history = [];
-        $onlyOfficeConfig = [];
+        $only_office_config = [];
         if (!is_null($file) && !is_null($latest_version) && !is_null($all_versions)) {
             $tpl->setVariable('FILE_TITLE', $file->getTitle());
-            $onlyOfficeConfig = $this->config($file, $latest_version, $object_settings, $withinPotentialTimeLimit);
-            $currentVersion = $latest_version->getVersion();
-            $historyData = $this->historyData($all_versions);
+            $only_office_config = $this->config($file, $latest_version, $object_settings, $within_potential_time_limit);
+            $current_version = $latest_version->getVersion();
+            $history_data = $this->historyData($all_versions);
             $history = $this->history($latest_version, $all_versions);
         }
 
-        $this->mainTpl->addOnLoadCode(
+        $this->main_tpl->addOnLoadCode(
             "window." . "config_" . ilOnlyOfficePlugin::ID . " = "
             . json_encode([
                 "editing" => [
                     "limited" => $object_settings->isLimitedPeriod(),
-                    "withinTimeLimit" => $withinPotentialTimeLimit,
+                    "withinTimeLimit" => $within_potential_time_limit,
                     "startTime" => $object_settings->getStartTime(),
                     "endTime" => $object_settings->getEndTime(),
                 ],
                 "file" => [
-                    "currentVersion" => $currentVersion,
-                    "historyData" => $historyData,
+                    "currentVersion" => $current_version,
+                    "historyData" => $history_data,
                     "history" => $history
                 ],
-                "onlyOfficeConfig" => $onlyOfficeConfig,
+                "onlyOfficeConfig" => $only_office_config,
                 "backTarget" => $this->generateReturnUrl(),
             ], JSON_THROW_ON_ERROR)
         );
@@ -151,16 +151,16 @@ class xonoEditorGUI extends xonoAbstractGUI
         ]);
 
         $content = $tpl->get();
-        $this->mainTpl->setContent($content);
+        $this->main_tpl->setContent($content);
     }
 
     /**
      * Builds and returns the config array
      */
-    protected function config(File $file, FileVersion $fileVersion, ObjectSettings $objectSettings, bool $withinPotentialTimeLimit): array
+    protected function config(File $file, FileVersion $file_version, ObjectSettings $object_settings, bool $within_potential_time_limit): array
     {
         $as_array = []; // Config Array
-        $extension = pathinfo($fileVersion->getUrl(), PATHINFO_EXTENSION);
+        $extension = pathinfo($file_version->getUrl(), PATHINFO_EXTENSION);
 
         // general config
         $as_array['documentType'] = FileCreationType::determineDocType($extension)->getEditorType();
@@ -168,9 +168,9 @@ class xonoEditorGUI extends xonoAbstractGUI
         // document config
         $document = []; // SubArray "document"
         $document['fileType'] = $file->getFileType();
-        $document['key'] = $this->generateDocumentKey($fileVersion);
+        $document['key'] = $this->generateDocumentKey($file_version);
         $document['title'] = $file->getTitle();
-        $document['url'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($fileVersion->getUrl()), ".");
+        $document['url'] = self::BASE_URL . ltrim(WebAccessService::getWACUrl($file_version->getUrl()), ".");
         $as_array['document'] = $document;
 
         // editor config
@@ -181,7 +181,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $extension
         );
         $editor['user'] = $this->buildUserArray($this->dic->user()->getId());
-        $editor['mode'] = $this->determineAccessRights($withinPotentialTimeLimit);
+        $editor['mode'] = $this->determineAccessRights($within_potential_time_limit);
         $editor['lang'] = $this->dic->user()->getLanguage();
         $editor['customization'] = [
             "plugins" => false,
@@ -206,9 +206,9 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Builds and returns an array containing the version history of a file
      */
-    protected function history(FileVersion $latestVersion, array $all_versions): array
+    protected function history(FileVersion $latest_version, array $all_versions): array
     {
-        $all_changes = $this->plugin->getStorageService()->getAllChanges($latestVersion->getFileUuid());
+        $all_changes = $this->plugin->getStorageService()->getAllChanges($latest_version->getFileUuid());
         $history_array = [];
 
         // add all versions to history
@@ -231,10 +231,10 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Builds and returns an array containing information about all file versions
      */
-    protected function historyData(array $allVersions): array
+    protected function historyData(array $all_versions): array
     {
         $result = [];
-        foreach ($allVersions as $version) {
+        foreach ($all_versions as $version) {
             $data_array = [];
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->toString();
@@ -317,7 +317,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     /**
      * Determines access rights based on object settings and RBAC
      */
-    protected function determineAccessRights(bool $withinPotentialTimeLimit): string
+    protected function determineAccessRights(bool $within_potential_time_limit): string
     {
 
         $has_edit_access = ilObjOnlyOfficeAccess::hasEditFileAccess();
@@ -327,7 +327,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             if (
                 $object_settings
                 && $object_settings->isAllowEdit()
-                && $withinPotentialTimeLimit
+                && $within_potential_time_limit
             ) {
                 $has_edit_access = true;
             }

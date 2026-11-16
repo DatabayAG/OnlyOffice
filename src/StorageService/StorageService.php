@@ -44,7 +44,7 @@ class StorageService
     private readonly FileVersionRepository $file_version_repository;
     private readonly FileChangeRepository $file_change_repository;
     protected FileSystemService $file_system_service;
-    private readonly UUIDFactory $uuidFactory;
+    private readonly UUIDFactory $uuid_factory;
 
     public function __construct(
         ?Container $dic = null,
@@ -60,7 +60,7 @@ class StorageService
         $this->file_version_repository = $file_version_repository ?? new FileVersionRepository($this->dic->database());
         $this->file_change_repository = $file_change_repository ?? new FileChangeRepository($this->dic->database());
         $this->file_system_service = $file_system_service ?? new FileSystemService($this->dic);
-        $this->uuidFactory = $uuid_factory ?? new UUIDFactory();
+        $this->uuid_factory = $uuid_factory ?? new UUIDFactory();
     }
 
     /**
@@ -70,7 +70,7 @@ class StorageService
     public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): File
     {
         // Create DB Entries for File & FileVersion
-        $new_file_id = $this->uuidFactory->uuid4();
+        $new_file_id = $this->uuid_factory->uuid4();
         $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
         $extension = pathinfo($path, PATHINFO_EXTENSION);
 
@@ -90,7 +90,7 @@ class StorageService
 
     public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
     {
-        $new_file_id = $this->uuidFactory->uuid4();
+        $new_file_id = $this->uuid_factory->uuid4();
         $path = $this->createFileDraft(
             $title,
             $extension,
@@ -116,7 +116,7 @@ class StorageService
 
     public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
     {
-        $new_file_id = $this->uuidFactory->uuid4();
+        $new_file_id = $this->uuid_factory->uuid4();
         $extension = pathinfo($template_path, PATHINFO_EXTENSION);
 
         $path = $this->createFileFromTemplate(
@@ -150,7 +150,7 @@ class StorageService
         int $editor_id,
         string $file_extension,
         string $changes_object,
-        string $serverVersion,
+        string $server_version,
         string $change_content,
         string $change_extension
     ): FileVersion {
@@ -189,7 +189,7 @@ class StorageService
             $version,
             $changes_object,
             $change_path,
-            $serverVersion
+            $server_version
         ));
 
         return $file_version;
@@ -230,10 +230,10 @@ class StorageService
         return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
     }
 
-    public function modifyFileTemplate(string $prevTitle, string $prevExtension, string $title, string $description): bool
+    public function modifyFileTemplate(string $prev_title, string $prev_extension, string $title, string $description): bool
     {
-        $prevType = FileCreationType::determineDocType($prevExtension);
-        return $this->file_system_service->modifyTemplate($prevType, $prevTitle, $prevExtension, $title, $description);
+        $prev_type = FileCreationType::determineDocType($prev_extension);
+        return $this->file_system_service->modifyTemplate($prev_type, $prev_title, $prev_extension, $title, $description);
     }
 
     /**
@@ -253,7 +253,7 @@ class StorageService
     public function createClone(int $child_id, int $parent_id): void
     {
         // create new file
-        $uuid = $this->uuidFactory->uuid4();
+        $uuid = $this->uuid_factory->uuid4();
         $parent_file = $this->file_repository->read($parent_id);
         if (!$parent_file) {
             return;

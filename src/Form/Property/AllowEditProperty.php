@@ -34,10 +34,10 @@ class AllowEditProperty implements Property
     private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly bool $allowEdit = true,
-        private readonly bool $limitedPeriod = false,
-        private readonly ?DateTimeImmutable $startTime = null,
-        private readonly ?DateTimeImmutable $endTime = null
+        private readonly bool $allow_edit = true,
+        private readonly bool $limited_period = false,
+        private readonly ?DateTimeImmutable $start_time = null,
+        private readonly ?DateTimeImmutable $end_time = null
     ) {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
@@ -49,12 +49,12 @@ class AllowEditProperty implements Property
     ): FormInput {
         $trafo = $refinery->custom()->transformation(
             function ($vs): Property {
-                $editLimited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
+                $edit_limited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
                 return new AllowEditProperty(
                     isset($vs[ObjectSettingsForm::POST_VAR_EDIT]),
-                    $editLimited !== [],
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
+                    $edit_limited !== [],
+                    $edit_limited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
+                    $edit_limited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
                 );
             }
         );
@@ -89,21 +89,21 @@ class AllowEditProperty implements Property
 
     public function isAllowEdit(): bool
     {
-        return $this->allowEdit;
+        return $this->allow_edit;
     }
 
     public function isLimitedPeriod(): bool
     {
-        return $this->limitedPeriod;
+        return $this->limited_period;
     }
 
     public function getStartTime(): ?DateTimeImmutable
     {
-        return $this->startTime;
+        return $this->start_time;
     }
 
     public function getEndTime(): ?DateTimeImmutable
     {
-        return $this->endTime;
+        return $this->end_time;
     }
 }

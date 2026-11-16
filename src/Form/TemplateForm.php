@@ -37,7 +37,7 @@ class TemplateForm extends ilPropertyFormGUI
      * @var Container|mixed
      */
     private readonly mixed $dic;
-    private readonly WrapperFactory $httpWrapper;
+    private readonly WrapperFactory $http_wrapper;
 
     public function __construct(bool $edit = false)
     {
@@ -45,7 +45,7 @@ class TemplateForm extends ilPropertyFormGUI
         global $DIC;
         $this->dic = $DIC;
         $this->plugin = ilOnlyOfficePlugin::getInstance();
-        $this->httpWrapper = $this->dic->http()->wrapper();
+        $this->http_wrapper = $this->dic->http()->wrapper();
 
         $this->setId("onlyoffice_template_form");
         $this->setTitle($this->plugin->txt("config_configuration"));
@@ -55,7 +55,7 @@ class TemplateForm extends ilPropertyFormGUI
         ));
         $this->setTarget("_top");
 
-        $ooTarget = $this->httpWrapper->query()->retrieve(
+        $oo_target = $this->http_wrapper->query()->retrieve(
             "ootarget",
             $this->refinery->byTrying([
                 $this->refinery->kindlyTo()->string(),
@@ -63,7 +63,7 @@ class TemplateForm extends ilPropertyFormGUI
             ])
         );
 
-        $ooExtension = $this->httpWrapper->query()->retrieve(
+        $oo_extension = $this->http_wrapper->query()->retrieve(
             "ooextension",
             $this->refinery->byTrying([
                 $this->refinery->kindlyTo()->string(),
@@ -71,8 +71,8 @@ class TemplateForm extends ilPropertyFormGUI
             ])
         );
 
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevTitle", $ooTarget);
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevExtension", $ooExtension);
+        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevTitle", $oo_target);
+        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevExtension", $oo_extension);
         $this->setFormAction($this->ctrl->getFormActionByClass(ilOnlyOfficeConfigGUI::class));
 
         // title

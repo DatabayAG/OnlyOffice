@@ -37,7 +37,7 @@ class xonoContentGUI extends xonoAbstractGUI
     protected ilOnlyOfficePlugin $plugin;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
-    private readonly WrapperFactory $httpWrapper;
+    private readonly WrapperFactory $http_wrapper;
     private readonly ObjectSettingsRepository $object_settings_repo;
 
     public function __construct(
@@ -47,7 +47,7 @@ class xonoContentGUI extends xonoAbstractGUI
     ) {
 
         $this->refinery = $dic->refinery();
-        $this->httpWrapper = $dic->http()->wrapper();
+        $this->http_wrapper = $dic->http()->wrapper();
 
         parent::__construct($dic, $plugin);
         $this->tpl = $dic->ui()->mainTemplate();
@@ -86,7 +86,7 @@ class xonoContentGUI extends xonoAbstractGUI
     {
         $storage_service = $this->plugin->getStorageService();
 
-        $fileVersions = $storage_service->getAllVersions($this->file_id);
+        $file_versions = $storage_service->getAllVersions($this->file_id);
         $file = $storage_service->getFile($this->file_id);
         if (is_null($file)) {
             $this->dic->ui()->mainTemplate()->setContent("");
@@ -104,25 +104,25 @@ class xonoContentGUI extends xonoAbstractGUI
         $tpl->setVariable('BUTTON', $this->buttonName());
 
         $limit = (int) $this->plugin->settings->get(PluginConfigForm::KEY_NUM_VERSIONS, "10");
-        $fileVersionsAdded = 0;
-        foreach ($fileVersions as $fileVersion) {
-            if ($fileVersionsAdded >= $limit) {
+        $file_versions_added = 0;
+        foreach ($file_versions as $file_version) {
+            if ($file_versions_added >= $limit) {
                 break;
             }
-            $user = new ilObjUser($fileVersion->getUserId());
-            $tpl->setVariable('TABLE_ROW_VERSION', $fileVersion->getVersion());
+            $user = new ilObjUser($file_version->getUserId());
+            $tpl->setVariable('TABLE_ROW_VERSION', $file_version->getVersion());
             $tpl->setVariable(
                 'TABLE_ROW_CREATED_AT',
-                $fileVersion->getCreatedAt()->get(
+                $file_version->getCreatedAt()->get(
                     IL_CAL_FKT_DATE,
                     'd.m.Y H:i',
                     $this->dic->user()->getTimeZone()
                 )
             );
             $tpl->setVariable('TABLE_ROW_USER', $user->getPublicName());
-            $this->dic->ctrl()->setParameter($this, "version", $fileVersion->getVersion());
+            $this->dic->ctrl()->setParameter($this, "version", $file_version->getVersion());
             $tpl->setVariable('TABLE_ROW_DOWNLOAD_URL', $this->dic->ctrl()->getLinkTarget($this, self::CMD_DOWNLOAD));
-            $fileVersionsAdded++;
+            $file_versions_added++;
             $tpl->setCurrentBlock("table_row");
             $tpl->parseCurrentBlock("table_row");
         }
@@ -143,7 +143,7 @@ class xonoContentGUI extends xonoAbstractGUI
     {
         $storage_service = $this->plugin->getStorageService();
 
-        $requestedVersion = $this->httpWrapper->query()->retrieve(
+        $requested_version = $this->http_wrapper->query()->retrieve(
             "version",
             $this->refinery->byTrying([
                 $this->refinery->kindlyTo()->int(),
@@ -151,31 +151,31 @@ class xonoContentGUI extends xonoAbstractGUI
             ])
         );
 
-        if ($requestedVersion === null) {
+        if ($requested_version === null) {
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
-        $fileVersion = null;
+        $file_version = null;
         foreach ($storage_service->getAllVersions($this->file_id) as $version) {
-            if ($version->getVersion() === $requestedVersion) {
-                $fileVersion = $version;
+            if ($version->getVersion() === $requested_version) {
+                $file_version = $version;
                 break;
             }
         }
 
         $file = $storage_service->getFile($this->file_id);
 
-        if (!$fileVersion || !$file) {
+        if (!$file_version || !$file) {
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
 
         }
 
-        $path = ILIAS_ABSOLUTE_PATH . '/public/data/' . CLIENT_ID . $fileVersion->getUrl();
+        $path = ILIAS_ABSOLUTE_PATH . '/public/data/' . CLIENT_ID . $file_version->getUrl();
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
-        $fileName = rtrim($file->getTitle(), '.' . $ext);
+        $file_name = rtrim($file->getTitle(), '.' . $ext);
         ilFileDelivery::deliverFileAttached(
             $path,
-            "{$fileName}_V{$fileVersion->getVersion()}.$ext",
+            "{$file_name}_V{$file_version->getVersion()}.$ext",
             $file->getMimeType()
         );
         exit;
@@ -189,11 +189,11 @@ class xonoContentGUI extends xonoAbstractGUI
         //
         //todo if works place this to ilObjOnlyOfficeAccess
 
-        $allowEdit = false;
+        $allow_edit = false;
 
         //ILIAS RBAC EDIT_FILE Access is granted
         if (ilObjOnlyOfficeAccess::hasEditFileAccess() === true) {
-            $allowEdit = true;
+            $allow_edit = true;
         }
 
         $object_settings = $this->object_settings_repo->read($this->file_id);
@@ -205,7 +205,7 @@ class xonoContentGUI extends xonoAbstractGUI
             && $object_settings->isAllowEdit()
             && DateFetcher::editingPeriodIsFetchable($this->file_id) === false
         ) {
-            $allowEdit = true;
+            $allow_edit = true;
         }
 
         //setting ALLOW_EDIT is checked
@@ -217,10 +217,10 @@ class xonoContentGUI extends xonoAbstractGUI
             && DateFetcher::editingPeriodIsFetchable($this->file_id) === true
             && DateFetcher::isWithinPotentialTimeLimit($this->file_id) === true
         ) {
-            $allowEdit = true;
+            $allow_edit = true;
         }
 
-        if ($allowEdit === true) {
+        if ($allow_edit === true) {
             return $this->plugin->txt('xono_edit_button');
         }
 

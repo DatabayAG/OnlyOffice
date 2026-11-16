@@ -39,7 +39,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     protected ilOnlyOfficePlugin|ilPlugin|null $plugin = null;
     private readonly ilGlobalTemplateInterface $tpl;
     private readonly Factory $refinery;
-    private readonly WrapperFactory $httpWrapper;
+    private readonly WrapperFactory $http_wrapper;
     private readonly FileUpload $upload;
 
     private readonly Container $dic;
@@ -55,7 +55,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
         $this->dic = $DIC;
         $this->refinery = $this->dic->refinery();
-        $this->httpWrapper = $this->dic->http()->wrapper();
+        $this->http_wrapper = $this->dic->http()->wrapper();
         $this->upload = $this->dic->upload();
         $this->tpl = $this->dic->ui()->mainTemplate();
 
@@ -81,44 +81,44 @@ class ilObjOnlyOffice extends ilObjectPlugin
          *     online: bool,
          *     allow_edit: AllowEditProperty,
          *     open_setting: OpenSetting
-         * } $formData
+         * } $form_data
          */
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        /** @var TitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
-        $description = $titleAndDescription->getDescription();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
+        $description = $title_and_description->getDescription();
 
-        /** @var FileSettingProperty $fileSetting */
-        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
-        /** @var AllowEditProperty $allowEdit */
-        $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
-        /** @var OpenSetting $openSetting */
-        $openSetting = $formData[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
+        /** @var FileSettingProperty $file_setting */
+        $file_setting = $form_data[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var AllowEditProperty $allow_edit */
+        $allow_edit = $form_data[ObjectSettingsForm::POST_VAR_EDIT];
+        /** @var OpenSetting $open_setting */
+        $open_setting = $form_data[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
 
-        $uploadResult = $fileSetting->getUploadResult();
+        $upload_result = $file_setting->getUploadResult();
         if (
-            $fileSetting->getFileMode() === FileMode::UPLOAD
+            $file_setting->getFileMode() === FileMode::UPLOAD
             && $title === ""
-            && $uploadResult
+            && $upload_result
         ) {
-            $title = pathinfo($uploadResult->getName(), PATHINFO_FILENAME);
+            $title = pathinfo($upload_result->getName(), PATHINFO_FILENAME);
         }
 
         $this->object_settings = new ObjectSettings(
             $this->getId(),
             $title,
             $description,
-            $openSetting,
-            (bool) $formData[ObjectSettingsForm::POST_VAR_ONLINE],
-            $allowEdit->isAllowEdit(),
-            $allowEdit->isLimitedPeriod(),
-            ($allowEdit->isLimitedPeriod() && $allowEdit->getStartTime())
-                ? new ilDateTime($allowEdit->getStartTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME)
+            $open_setting,
+            (bool) $form_data[ObjectSettingsForm::POST_VAR_ONLINE],
+            $allow_edit->isAllowEdit(),
+            $allow_edit->isLimitedPeriod(),
+            ($allow_edit->isLimitedPeriod() && $allow_edit->getStartTime())
+                ? new ilDateTime($allow_edit->getStartTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME)
                 : null,
-            ($allowEdit->isLimitedPeriod() && $allowEdit->getEndTime())
-                ? new ilDateTime($allowEdit->getEndTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME)
+            ($allow_edit->isLimitedPeriod() && $allow_edit->getEndTime())
+                ? new ilDateTime($allow_edit->getEndTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME)
                 : null,
         );
 
@@ -142,37 +142,37 @@ class ilObjOnlyOffice extends ilObjectPlugin
          *     online: bool,
          *     allow_edit: AllowEditProperty,
          *     open_setting: OpenSetting
-         * }|null $formData
+         * }|null $form_data
          */
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        if (!$formData) {
+        if (!$form_data) {
             return;
         }
 
-        /** @var TitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
 
-        /** @var AllowEditProperty $allowEdit */
-        $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
-        /** @var OpenSetting $openSetting */
-        $openSetting = $formData[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
+        /** @var AllowEditProperty $allow_edit */
+        $allow_edit = $form_data[ObjectSettingsForm::POST_VAR_EDIT];
+        /** @var OpenSetting $open_setting */
+        $open_setting = $form_data[ObjectSettingsForm::POST_VAR_OPEN_SETTING];
 
-        if ($allowEdit->isLimitedPeriod() && $allowEdit->getStartTime()) {
-            $this->object_settings->setStartTime(new ilDateTime($allowEdit->getStartTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME));
+        if ($allow_edit->isLimitedPeriod() && $allow_edit->getStartTime()) {
+            $this->object_settings->setStartTime(new ilDateTime($allow_edit->getStartTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME));
         }
 
-        if ($allowEdit->isLimitedPeriod() && $allowEdit->getEndTime()) {
-            $this->object_settings->setEndTime(new ilDateTime($allowEdit->getEndTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME));
+        if ($allow_edit->isLimitedPeriod() && $allow_edit->getEndTime()) {
+            $this->object_settings->setEndTime(new ilDateTime($allow_edit->getEndTime()->format("Y-m-d H:i:s"), IL_CAL_DATETIME));
         }
 
         $this->object_settings->setTitle($title);
-        $this->object_settings->setDescription($titleAndDescription->getDescription());
-        $this->object_settings->setAllowEdit($allowEdit->isAllowEdit());
-        $this->object_settings->setOpenSetting($openSetting);
-        $this->object_settings->setOnline((bool) $formData["online"]);
-        $this->object_settings->setLimitedPeriod($allowEdit->isLimitedPeriod());
+        $this->object_settings->setDescription($title_and_description->getDescription());
+        $this->object_settings->setAllowEdit($allow_edit->isAllowEdit());
+        $this->object_settings->setOpenSetting($open_setting);
+        $this->object_settings->setOnline((bool) $form_data["online"]);
+        $this->object_settings->setLimitedPeriod($allow_edit->isLimitedPeriod());
         $this->object_settings_repo->update($this->object_settings);
 
         $this->setTitle($this->object_settings->getTitle());

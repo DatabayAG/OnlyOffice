@@ -33,7 +33,7 @@ class OpenSettingProperty implements Property
     private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly OpenSetting $openMode = OpenSetting::EDITOR
+        private readonly OpenSetting $open_mode = OpenSetting::EDITOR
     ) {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
@@ -60,7 +60,7 @@ class OpenSettingProperty implements Property
 
     public function getOpenMode(): OpenSetting
     {
-        return $this->openMode;
+        return $this->open_mode;
     }
 
 }

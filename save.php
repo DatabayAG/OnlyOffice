@@ -50,12 +50,12 @@ $data = json_decode($decrypted, true);
 
 if ($data["status"] === 2) {
     $DIC->logger()->root()->info("Save File");
-    $httpWrapper = $DIC->http()->wrapper();
+    $http_wrapper = $DIC->http()->wrapper();
     $refinery = $DIC->refinery();
 
-    $uuid = $httpWrapper->query()->retrieve("uuid", $refinery->kindlyTo()->string());
-    $file_id = $httpWrapper->query()->retrieve("file_id", $refinery->kindlyTo()->int());
-    $file_ext = $httpWrapper->query()->retrieve("ext", $refinery->kindlyTo()->string());
+    $uuid = $http_wrapper->query()->retrieve("uuid", $refinery->kindlyTo()->string());
+    $file_id = $http_wrapper->query()->retrieve("file_id", $refinery->kindlyTo()->int());
+    $file_ext = $http_wrapper->query()->retrieve("ext", $refinery->kindlyTo()->string());
 
     try {
         $callback_handler = new xonoCallbackHandler($DIC, $uuid, $file_id, $data);

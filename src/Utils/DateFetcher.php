@@ -64,17 +64,17 @@ class DateFetcher
             return false;
         }
 
-        $withinPotentialTimeLimit = true;
+        $within_potential_time_limit = true;
 
         if ($object_settings->isLimitedPeriod()) {
-            $currentTime = new ilDateTime(time(), IL_CAL_UNIX);
-            $startTime = new ilDateTime($object_settings->getStartTime()->get(IL_CAL_DATETIME), IL_CAL_DATETIME, ilTimeZone::UTC);
-            $endTime = new ilDateTime($object_settings->getEndTime()->get(IL_CAL_DATETIME), IL_CAL_DATETIME, ilTimeZone::UTC);
-            $isTimeWithin = ilDateTime::_within($currentTime, $startTime, $endTime);
+            $current_time = new ilDateTime(time(), IL_CAL_UNIX);
+            $start_time = new ilDateTime($object_settings->getStartTime()->get(IL_CAL_DATETIME), IL_CAL_DATETIME, ilTimeZone::UTC);
+            $end_time = new ilDateTime($object_settings->getEndTime()->get(IL_CAL_DATETIME), IL_CAL_DATETIME, ilTimeZone::UTC);
+            $is_time_within = ilDateTime::_within($current_time, $start_time, $end_time);
 
-            $withinPotentialTimeLimit = $isTimeWithin;
+            $within_potential_time_limit = $is_time_within;
         }
 
-        return $withinPotentialTimeLimit;
+        return $within_potential_time_limit;
     }
 }

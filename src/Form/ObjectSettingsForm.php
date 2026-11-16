@@ -56,23 +56,23 @@ class ObjectSettingsForm
 
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly Container $dic;
-    private readonly Factory $uiFactory;
+    private readonly Factory $ui_factory;
     private readonly ilCtrlInterface $ctrl;
     private readonly ilLanguage $lng;
     private readonly \ILIAS\Refinery\Factory $refinery;
     private readonly StandardForm $form;
 
-    public function __construct(?ObjectSettings $objectSettings = null, bool $newObject = false)
+    public function __construct(?ObjectSettings $object_settings = null, bool $new_object = false)
     {
         global $DIC;
         $this->dic = $DIC;
-        $this->uiFactory = $this->dic->ui()->factory();
+        $this->ui_factory = $this->dic->ui()->factory();
         $this->plugin = ilOnlyOfficePlugin::getInstance();
         $this->ctrl = $this->dic->ctrl();
         $this->lng = $this->dic->language();
         $this->refinery = $this->dic->refinery();
 
-        $this->form = $this->buildForm($objectSettings, $newObject);
+        $this->form = $this->buildForm($object_settings, $new_object);
     }
 
     public function getForm(): StandardForm
@@ -80,7 +80,7 @@ class ObjectSettingsForm
         return $this->form;
     }
 
-    private function buildForm(?ObjectSettings $objectSettings, bool $newObject): StandardForm
+    private function buildForm(?ObjectSettings $object_settings, bool $new_object): StandardForm
     {
         $storage_service = $this->plugin->getStorageService();
         $templates = [];
@@ -93,74 +93,74 @@ class ObjectSettingsForm
         }
 
         $items = [
-            "title_and_description" => $this->buildTitleAndDescriptionInput($objectSettings),
+            "title_and_description" => $this->buildTitleAndDescriptionInput($object_settings),
         ];
 
-        if (!$objectSettings) {
+        if (!$object_settings) {
             $items[self::POST_VAR_FILE_SETTING] = (new FileSettingProperty($templates))->toForm(
                 $this->lng,
-                $this->uiFactory->input()->field(),
+                $this->ui_factory->input()->field(),
                 $this->refinery
             );
-            $allowEditProperty = new AllowEditProperty();
-            $openSettingProperty = new OpenSettingProperty();
+            $allow_edit_property = new AllowEditProperty();
+            $open_setting_property = new OpenSettingProperty();
         } else {
-            $allowEditProperty = new AllowEditProperty(
-                $objectSettings->isAllowEdit(),
-                $objectSettings->isLimitedPeriod(),
-                $objectSettings->getStartTime() ? new DateTimeImmutable($objectSettings->getStartTime()->get(IL_CAL_DATETIME)) : null,
-                $objectSettings->getEndTime() ? new DateTimeImmutable($objectSettings->getEndTime()->get(IL_CAL_DATETIME)) : null
+            $allow_edit_property = new AllowEditProperty(
+                $object_settings->isAllowEdit(),
+                $object_settings->isLimitedPeriod(),
+                $object_settings->getStartTime() ? new DateTimeImmutable($object_settings->getStartTime()->get(IL_CAL_DATETIME)) : null,
+                $object_settings->getEndTime() ? new DateTimeImmutable($object_settings->getEndTime()->get(IL_CAL_DATETIME)) : null
             );
 
-            $openSettingProperty = new OpenSettingProperty($objectSettings->getOpenSetting());
+            $open_setting_property = new OpenSettingProperty($object_settings->getOpenSetting());
         }
 
         $items += [
-            self::POST_VAR_ONLINE => $this->buildOnlineInput($objectSettings),
-            self::POST_VAR_EDIT => $allowEditProperty->toForm(
+            self::POST_VAR_ONLINE => $this->buildOnlineInput($object_settings),
+            self::POST_VAR_EDIT => $allow_edit_property->toForm(
                 $this->lng,
-                $this->uiFactory->input()->field(),
+                $this->ui_factory->input()->field(),
                 $this->refinery
             ),
-            self::POST_VAR_OPEN_SETTING => $openSettingProperty->toForm(
+            self::POST_VAR_OPEN_SETTING => $open_setting_property->toForm(
                 $this->lng,
-                $this->uiFactory->input()->field(),
+                $this->ui_factory->input()->field(),
                 $this->refinery
             )
         ];
 
-        return $this->uiFactory->input()->container()->form()->standard(
+        return $this->ui_factory->input()->container()->form()->standard(
             $this->ctrl->getFormActionByClass(
                 ilObjOnlyOfficeGUI::class,
-                $newObject ? "save" : ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE
+                $new_object ? "save" : ilObjOnlyOfficeGUI::CMD_SETTINGS_STORE
             ),
             $items
         );
     }
 
-    private function buildTitleAndDescriptionInput(?ObjectSettings $objectSettings): FormInput
+    private function buildTitleAndDescriptionInput(?ObjectSettings $object_settings): FormInput
     {
         $input = (new ilObject())->getObjectProperties()->getPropertyTitleAndDescription()->toForm(
             $this->lng,
-            $this->uiFactory->input()->field(),
+            $this->ui_factory->input()->field(),
             $this->refinery
         )->withRequired(false);
 
-        if ($objectSettings) {
+        if ($object_settings) {
             $input = $input->withValue([
-                $objectSettings->getTitle(),
-                $objectSettings->getDescription()
+                $object_settings->getTitle(),
+                $object_settings->getDescription()
             ]);
         }
         return $input;
     }
 
-    private function buildOnlineInput(?ObjectSettings $objectSettings): FormInput
+    private function buildOnlineInput(?ObjectSettings $object_settings): FormInput
     {
-        $input = $this->uiFactory->input()->field()->checkbox($this->plugin->txt('settings_online'));
+        $input = $this->ui_factory->input()->field()->checkbox($this->plugin->txt('settings_online'));
 
-        if ($objectSettings) {
-            $input = $input->withValue($objectSettings->isOnline());
+        if ($object_settings) {
+            $input = $input->withValue($object_settings->isOnline());
         }
         return $input;
     }

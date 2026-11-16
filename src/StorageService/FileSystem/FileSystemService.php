@@ -208,10 +208,10 @@ class FileSystemService
         return false;
     }
 
-    public function modifyTemplate(FileCreationType $type, string $prevTitle, string $extension, string $title, string $description): bool
+    public function modifyTemplate(FileCreationType $type, string $prev_title, string $extension, string $title, string $description): bool
     {
         $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $old_file_name = $prevTitle . "." . $extension;
+        $old_file_name = $prev_title . "." . $extension;
         $full_old_path = $path . $old_file_name;
 
         $new_file_name = $title . "." . $extension;
@@ -225,7 +225,7 @@ class FileSystemService
         }
 
         if (!empty($description)) {
-            $this->deleteTemplateDescription($path, $prevTitle);
+            $this->deleteTemplateDescription($path, $prev_title);
             $this->generateTemplateDescription($description, $type, $title);
         }
 
@@ -327,9 +327,9 @@ class FileSystemService
     /**
      * @throws IOException
      */
-    protected function createAndGetPath(int $file_id, string $uuid, bool $isChange = false): string
+    protected function createAndGetPath(int $file_id, string $uuid, bool $is_change = false): string
     {
-        if (!$isChange) {
+        if (!$is_change) {
             $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR;
         } else {
             $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR . 'changes' . DIRECTORY_SEPARATOR;

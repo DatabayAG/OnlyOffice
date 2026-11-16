@@ -69,7 +69,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public ilObjOnlyOffice|ilObject|null $object = null;
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
     private Container $dic;
-    private UUIDFactory $uuidFactory;
+    private UUIDFactory $uuid_factory;
 
     protected function afterConstructor(): void
     {
@@ -77,7 +77,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         $this->dic = $DIC;
 
-        $this->uuidFactory = new UUIDFactory();
+        $this->uuid_factory = new UUIDFactory();
     }
 
     final public function getType(): string
@@ -100,8 +100,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 ) {
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
-                $xonoContentGUI = new xonoContentGUI($this->dic, $this->plugin, $this->object_id);
-                $this->dic->ctrl()->forwardCommand($xonoContentGUI);
+                $xono_content_gui = new xonoContentGUI($this->dic, $this->plugin, $this->object_id);
+                $this->dic->ctrl()->forwardCommand($xono_content_gui);
                 break;
             case strtolower(xonoEditorGUI::class):
                 if (
@@ -110,8 +110,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
 
-                $xonoEditorGUI = new xonoEditorGUI($this->dic, $this->plugin, $this->obj_id);
-                $this->dic->ctrl()->forwardCommand($xonoEditorGUI);
+                $xono_editor_gui = new xonoEditorGUI($this->dic, $this->plugin, $this->obj_id);
+                $this->dic->ctrl()->forwardCommand($xono_editor_gui);
                 break;
             default:
                 switch ($cmd) {
@@ -197,22 +197,22 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     public function save(): void
     {
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->dic->http()->request());
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        if ($formData === null) {
+        if ($form_data === null) {
             return;
         }
 
-        /** @var TitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
 
-        /** @var FileSettingProperty $fileSetting */
-        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
-        /** @var AllowEditProperty $allowEdit */
-        $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
+        /** @var FileSettingProperty $file_setting */
+        $file_setting = $form_data[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var AllowEditProperty $allow_edit */
+        $allow_edit = $form_data[ObjectSettingsForm::POST_VAR_EDIT];
 
-        if ($fileSetting->getFileMode() === FileMode::CREATE && $title === "") {
+        if ($file_setting->getFileMode() === FileMode::CREATE && $title === "") {
             $this->tpl->setOnScreenMessage(
                 'failure',
                 sprintf(
@@ -229,8 +229,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
 
         if (
-            $allowEdit->isLimitedPeriod()
-            && $allowEdit->getStartTime()->getTimestamp() >= $allowEdit->getEndTime()->getTimestamp()
+            $allow_edit->isLimitedPeriod()
+            && $allow_edit->getStartTime()->getTimestamp() >= $allow_edit->getEndTime()->getTimestamp()
         ) {
             $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("settings_time_greater_than"), true);
             $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
@@ -256,18 +256,18 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         /** @var UploadResult $result */
         $result = end($results);
 
-        $tempName = "";
+        $temp_name = "";
         if ($result instanceof UploadResult && $result->isOK()) {
             $status = HandlerResult::STATUS_OK;
             $message = 'Upload ok';
-            $uuid = $this->uuidFactory->uuid4();
+            $uuid = $this->uuid_factory->uuid4();
 
-            $tmpFilesystem = $this->dic->filesystem()->temp();
-            $tempName = $uuid->toString() . "/" . ilFileUtils::getValidFilename($result->getName());
-            $tmpFilesystem->createDir($uuid->toString());
+            $tmp_filesystem = $this->dic->filesystem()->temp();
+            $temp_name = $uuid->toString() . "/" . ilFileUtils::getValidFilename($result->getName());
+            $tmp_filesystem->createDir($uuid->toString());
 
-            $tmpFilesystem->put(
-                $tempName,
+            $tmp_filesystem->put(
+                $temp_name,
                 file_get_contents($result->getPath())
             );
         } else {
@@ -275,13 +275,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $message = $result->getStatus()->getMessage();
         }
 
-        $responseData = new BasicHandlerResult(
+        $response_data = new BasicHandlerResult(
             UploadHandlerInterface::DEFAULT_FILE_ID_PARAMETER,
             $status,
-            $tempName,
+            $temp_name,
             $message
         );
-        $content = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $content = json_encode($response_data, JSON_THROW_ON_ERROR);
 
         $response = $this->dic->http()->response()->withBody(Streams::ofString($content));
         $this->dic->http()->saveResponse($response);
@@ -305,46 +305,46 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
          *     online: bool,
          *     allow_edit: AllowEditProperty,
          *     open_setting: OpenSetting
-         * } $formData
+         * } $form_data
          */
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        /** @var TitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
 
-        /** @var FileSettingProperty $fileSetting */
-        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var FileSettingProperty $file_setting */
+        $file_setting = $form_data[ObjectSettingsForm::POST_VAR_FILE_SETTING];
 
         // Handle file upload, otherwise create new document
-        if ($fileSetting->getFileMode() === FileMode::UPLOAD) {
-            $uploadResult = $fileSetting->getUploadResult();
-            if ($uploadResult) {
+        if ($file_setting->getFileMode() === FileMode::UPLOAD) {
+            $upload_result = $file_setting->getUploadResult();
+            if ($upload_result) {
                 if (!$this->dic->upload()->hasBeenProcessed()) {
                     $this->dic->upload()->process();
                 }
                 $storage_service->createNewFileFromUpload(
-                    $uploadResult,
+                    $upload_result,
                     $new_object->getId()
                 );
 
                 if ($title === "") {
-                    $new_object->setTitle(pathinfo($uploadResult->getName(), PATHINFO_FILENAME));
+                    $new_object->setTitle(pathinfo($upload_result->getName(), PATHINFO_FILENAME));
                     $new_object->update();
                 }
             }
-        } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
-            $fileCreationType = $fileSetting->getFileCreationType();
+        } elseif ($file_setting->getFileMode() === FileMode::CREATE) {
+            $file_creation_type = $file_setting->getFileCreationType();
 
             $storage_service->createNewFileFromDraft(
                 FileSanitizer::sanitizeFileName($title),
-                $fileCreationType->toDocumentType(),
+                $file_creation_type->toDocumentType(),
                 $new_object->getId()
             );
-        } elseif ($fileSetting->getFileMode() === FileMode::TEMPLATE) {
+        } elseif ($file_setting->getFileMode() === FileMode::TEMPLATE) {
             $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
-                $fileSetting->getFileTemplate(),
+                $file_setting->getFileTemplate(),
                 $new_object->getId()
             );
         }

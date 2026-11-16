@@ -106,9 +106,9 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         );
     }
 
-    public function assetsFile(PluginAsset $assetType, string $file, bool $relative = true): string
+    public function assetsFile(PluginAsset $asset_type, string $file, bool $relative = true): string
     {
-        $basePath = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
-        return $basePath . "/assets/" . $assetType->value . "/" . $file;
+        $base_path = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
+        return $base_path . "/assets/" . $asset_type->value . "/" . $file;
     }
 }
