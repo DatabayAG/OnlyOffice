@@ -28,10 +28,10 @@ class FileTemplate
     private int $id;
 
     public function __construct(
-        private readonly string $title,
-        private readonly string $description,
-        private readonly string $extension,
-        private readonly FileCreationType $type,
+        private string $title,
+        private string $description,
+        private string $extension,
+        private FileCreationType $type,
         private readonly ResourceIdentification $rid,
     ) {
     }
@@ -52,9 +52,21 @@ class FileTemplate
         return $this->title;
     }
 
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+        return $this;
+    }
+
     public function getDescription(): string
     {
         return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+        return $this;
     }
 
     public function getExtension(): string
@@ -62,9 +74,21 @@ class FileTemplate
         return $this->extension;
     }
 
+    public function setExtension(string $extension): self
+    {
+        $this->extension = $extension;
+        return $this;
+    }
+
     public function getType(): FileCreationType
     {
         return $this->type;
+    }
+
+    public function setType(FileCreationType $type): self
+    {
+        $this->type = $type;
+        return $this;
     }
 
     public function getRid(): ResourceIdentification
