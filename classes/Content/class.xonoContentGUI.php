@@ -37,7 +37,7 @@ class xonoContentGUI extends xonoAbstractGUI
     public const string CMD_EDIT = xonoEditorGUI::CMD_EDIT;
 
     protected ilOnlyOfficePlugin $plugin;
-    private readonly ilGlobalTemplateInterface $tpl;
+    private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $http_wrapper;
     private readonly ObjectSettingsRepository $object_settings_repo;
@@ -54,7 +54,7 @@ class xonoContentGUI extends xonoAbstractGUI
         $this->http_wrapper = $dic->http()->wrapper();
 
         parent::__construct($dic, $plugin);
-        $this->tpl = $dic->ui()->mainTemplate();
+        $this->main_tpl = $dic->ui()->mainTemplate();
         $this->resource_storage = $dic->resourceStorage();
 
         $this->object_settings_repo = new ObjectSettingsRepository($dic->database());

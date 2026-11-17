@@ -37,7 +37,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public ObjectSettings $object_settings;
 
     protected ilOnlyOfficePlugin|ilPlugin|null $plugin = null;
-    private readonly ilGlobalTemplateInterface $tpl;
+    private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly Factory $refinery;
     private readonly WrapperFactory $http_wrapper;
     private readonly FileUpload $upload;
@@ -57,7 +57,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
         $this->refinery = $this->dic->refinery();
         $this->http_wrapper = $this->dic->http()->wrapper();
         $this->upload = $this->dic->upload();
-        $this->tpl = $this->dic->ui()->mainTemplate();
+        $this->main_tpl = $this->dic->ui()->mainTemplate();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
     }

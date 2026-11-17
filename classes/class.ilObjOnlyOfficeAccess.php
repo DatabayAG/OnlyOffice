@@ -65,7 +65,6 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public static function redirectNonAccess($class, string $cmd = ""): void
     {
         global $DIC;
-        $tpl = $DIC->ui()->mainTemplate();
         $ctrl = $DIC->ctrl();
 
         (new UiUtil())->sendFailure(ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"));

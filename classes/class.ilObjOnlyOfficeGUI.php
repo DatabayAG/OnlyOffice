@@ -194,7 +194,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             }
         }
 
-        $this->tpl->setContent($html);
+        $this->main_tpl->setContent($html);
     }
 
     public function save(): void
@@ -357,7 +357,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $form = (new ObjectSettingsForm($this->object->object_settings))->getForm();
         }
 
-        $this->tpl->setContent($this->ui_renderer->render($form));
+        $this->main_tpl->setContent($this->ui_renderer->render($form));
     }
 
     protected function settingsStore(): void
