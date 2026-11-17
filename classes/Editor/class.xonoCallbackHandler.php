@@ -33,11 +33,9 @@ class xonoCallbackHandler
     protected string $file_data;
     protected Uuid $uuid;
     protected int $editor_id;
-    protected string $file_extension;
     protected string $changes_object;
     protected string $server_version;
     protected string $change_data;
-    protected string $change_extension;
     protected string $file_url;
     protected string $change_url;
     private readonly ilOnlyOfficePlugin $plugin;
@@ -59,8 +57,6 @@ class xonoCallbackHandler
         $this->server_version = $data["history"]["serverVersion"];
         $this->change_url = $data["changesurl"];
         $this->changes_object = json_encode($data["history"]["changes"], JSON_THROW_ON_ERROR);
-        $this->file_extension = pathinfo($this->file_url, PATHINFO_EXTENSION);
-        $this->change_extension = pathinfo($this->change_url, PATHINFO_EXTENSION);
         $this->fetchData();
         if (!$this->file_data || !$this->change_data) {
             $this->dic->logger()->root()->error("Data could not be fetched - file data url:" . $this->file_url . " - change data url: " . $this->change_url);
@@ -76,14 +72,11 @@ class xonoCallbackHandler
             // Upload the new file
             $this->plugin->getStorageService()->updateFileFromUpload(
                 $this->file_data,
-                $this->file_id,
                 $this->uuid,
                 $this->editor_id,
-                $this->file_extension,
                 $this->changes_object,
                 $this->server_version,
                 $this->change_data,
-                $this->change_extension
             );
             return true;
         } catch (ilDateTimeException) {

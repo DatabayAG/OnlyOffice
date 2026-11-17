@@ -142,14 +142,11 @@ class StorageService
      */
     public function updateFileFromUpload(
         string $file_content,
-        int $file_id,
         Uuid $uuid,
         int $editor_id,
-        string $file_extension,
         string $changes_object,
         string $server_version,
         string $change_content,
-        string $change_extension
     ): FileVersion {
 
         // Store FileVersion and Create Database Entry
@@ -168,18 +165,12 @@ class StorageService
         $this->file_version_repository->create($file_version);
 
         //Store Changes and Create Database Entry
-        $change_path = $this->file_system_service->storeChanges(
-            $change_content,
-            $file_id,
-            $uuid->toString(),
-            $version,
-            $change_extension
-        );
+        $rid = $this->file_system_service->createFileFromString($change_content);
         $this->file_change_repository->create(new FileChange(
             $uuid,
             $version,
             $changes_object,
-            $change_path,
+            $rid,
             $server_version
         ));
 
