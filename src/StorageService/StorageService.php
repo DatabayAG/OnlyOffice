@@ -92,32 +92,6 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
-    {
-        $new_file_id = $this->uuid_factory->uuid4();
-        $path = $this->createFileDraft(
-            $title,
-            $extension,
-            $obj_id,
-            $new_file_id->toString()
-        );
-
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-        $file = new File(
-            $obj_id,
-            $new_file_id,
-            basename($path),
-            $extension,
-            $this->dic->filesystem()->web()->getMimeType($path)
-        );
-
-        $this->file_repository->create($file);
-        $file_version = $this->createNewFileVersion($new_file_id, $path);
-
-        return $file;
-    }
-
     public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
     {
         $new_file_id = $this->uuid_factory->uuid4();
@@ -193,6 +167,37 @@ class StorageService
         return $file_version;
     }
 
+    public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
+    {
+        $new_file_id = $this->uuid_factory->uuid4();
+        $path = $this->createFileDraft(
+            $title,
+            $extension,
+            $obj_id,
+            $new_file_id->toString()
+        );
+
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+
+        $file = new File(
+            $obj_id,
+            $new_file_id,
+            basename($path),
+            $extension,
+            $this->dic->filesystem()->web()->getMimeType($path)
+        );
+
+        $this->file_repository->create($file);
+        $file_version = $this->createNewFileVersion($new_file_id, $path);
+
+        return $file;
+    }
+
+    public function createFileDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
+    {
+        return $this->file_system_service->storeDraft($name, $extension, $obj_id, $new_file_id);
+    }
+
     /**
      * @throws IOException
      */
@@ -240,16 +245,6 @@ class StorageService
         return $this->file_template_repository->delete($file_template);
     }
 
-    public function createFileDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
-    {
-        return $this->file_system_service->storeDraft($name, $extension, $obj_id, $new_file_id);
-    }
-
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
-    {
-        return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
-    }
-
     public function modifyTemplate(FileTemplate $file_template, ?UploadResult $upload_result = null): bool
     {
         if ($upload_result) {
@@ -277,6 +272,11 @@ class StorageService
     public function fetchTemplate(int $template_id): ?FileTemplate
     {
         return $this->file_template_repository->read($template_id);
+    }
+
+    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
+    {
+        return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
     }
 
     public function createClone(int $child_id, int $parent_id): void
