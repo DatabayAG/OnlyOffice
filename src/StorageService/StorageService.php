@@ -92,28 +92,27 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
+    public function createNewFileFromTemplate(string $title, $template_id, int $obj_id): ?File
     {
-        $new_file_id = $this->uuid_factory->uuid4();
-        $extension = pathinfo($template_path, PATHINFO_EXTENSION);
+        $template = $this->file_template_repository->read($template_id);
 
-        $path = $this->createFileFromTemplate(
-            $title,
-            $template_path,
-            $obj_id,
-            $new_file_id->toString()
-        );
+        if (!$template) {
+            return null;
+        }
+
+        $new_file_id = $this->uuid_factory->uuid4();
+        $rid = $this->file_system_service->copyFile($template->getRid());
 
         $file = new File(
             $obj_id,
             $new_file_id,
-            basename($path),
-            $extension,
-            $this->dic->filesystem()->web()->getMimeType($path)
+            "$title.{$template->getExtension()}",
+            $template->getExtension(),
+            $this->file_system_service->getMimeType($rid)
         );
 
         $this->file_repository->create($file);
-        $file_version = $this->createNewFileVersion($new_file_id, $path);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
 
         return $file;
     }
@@ -272,11 +271,6 @@ class StorageService
     public function fetchTemplate(int $template_id): ?FileTemplate
     {
         return $this->file_template_repository->read($template_id);
-    }
-
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
-    {
-        return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
     }
 
     public function createClone(int $child_id, int $parent_id): void

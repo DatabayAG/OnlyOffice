@@ -83,6 +83,15 @@ class FileSystemService
         return $this->resource_storage->manage()->clone($rid);
     }
 
+    public function getMimeType(ResourceIdentification $rid): string
+    {
+        $stream = $this->resource_storage->consume()->stream($rid);
+        $resource = $stream->getStream()->detach();
+        $mime_type = mime_content_type($resource);
+        fclose($resource);
+        return $mime_type;
+    }
+
     public function replaceFileWithUpload(ResourceIdentification $rid, UploadResult $upload_result): bool
     {
         $stream = fopen($upload_result->getPath(), 'rb');
