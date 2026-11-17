@@ -72,7 +72,7 @@ class StorageService
     {
         // Create DB Entries for File & FileVersion
         $new_file_id = $this->uuid_factory->uuid4();
-        $rid = $this->file_system_service->storeUploadResult($upload_result);
+        $rid = $this->file_system_service->createFileFromUpload($upload_result);
 
         $file = new File(
             $obj_id,
@@ -159,13 +159,7 @@ class StorageService
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->getLatestVersion($uuid)->getVersion() + 1;
         echo $version;
-        $rid = $this->file_system_service->storeNewVersionFromString(
-            $file_content,
-            $file_id,
-            $uuid->toString(),
-            $version,
-            $file_extension
-        );
+        $rid = $this->file_system_service->createFileFromString($file_content);
 
         $file_version = new FileVersion(
             $uuid,

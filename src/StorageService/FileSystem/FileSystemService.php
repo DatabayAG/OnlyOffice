@@ -25,14 +25,14 @@ use ILIAS\Filesystem\Exception\FileNotFoundException;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\Filesystem\Filesystem;
 use ILIAS\Filesystem\Stream\Stream;
+use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\FileUpload;
-use ILIAS\FileUpload\Location;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
-use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
-use ILIAS\Filesystem\Stream\Streams;
+use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 use ILIAS\ResourceStorage\Services;
 use ilLogger;
 
@@ -56,165 +56,32 @@ class FileSystemService
     /**
      * @throws IOException
      */
-    public function storeUploadResult(UploadResult $upload_result
-    ): ?ResourceIdentification {
+    public function createFileFromUpload(UploadResult $upload_result): ?ResourceIdentification
+    {
         $stream = fopen($upload_result->getPath(), 'rb');
         return $this->resource_storage->manage()->stream(new Stream($stream), new FileStakeholder());
     }
 
-    public function storeNewVersionFromString(
-        string $content,
-        int $obj_id,
-        string $uuid,
-        int $version,
-        string $extension
-    ): ResourceIdentification {
+    public function createFileFromString(string $content): ResourceIdentification {
         return $this->resource_storage->manage()->stream(Streams::ofString($content), new FileStakeholder());
     }
 
-    /**
-     * Store a template from the config form
-     * @throws IOException
-     */
-    public function storeTemplate(UploadResult $upload_result, FileCreationType $type, string $title, string $description, string $extension): string
+    public function deleteFile(ResourceIdentification $rid): bool
     {
-        // Define path and create it if it does not exist
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-
-        if (!$this->web_file_system->hasDir($path)) {
-            $this->web_file_system->createDir($path);
-        }
-
-        $file_name = $title . "." . $extension;
-        $full_path = $path . $file_name;
-
-        // delete the old template file if it already exists
-        if ($this->web_file_system->has($full_path)) {
-            $this->web_file_system->delete($full_path);
-        }
-
-        $this->upload->moveOneFileTo(
-            $upload_result,
-            $path,
-            Location::WEB,
-            $file_name
-        );
-
-        // Create a description in a separate folder, if available
-
-        $this->generateTemplateDescription($description, $type, $title);
-
-        return $full_path;
+        $this->resource_storage->manage()->remove($rid, new FileStakeholder());
+        return !$this->resource_storage->manage()->find($rid->serialize());
     }
 
-    public function fetchTemplate(string $target, string $extension, FileCreationType $type): ?FileTemplate
+    public function replaceFile(ResourceIdentification $rid, Stream $stream): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $file_name = $target . "." . $extension;
-        $full_path = $path . $file_name;
-
-        if ($this->web_file_system->has($full_path)) {
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $extension = pathinfo($full_path, PATHINFO_EXTENSION);
-            $title = pathinfo($full_path, PATHINFO_FILENAME);
-
-
-            $description = "";
-            try {
-                $description_stream = $this->web_file_system->readStream($path . "descriptions/" . $title . ".txt");
-                $description = $description_stream->getContents();
-            } catch (FileNotFoundException) {
-            }
-
-            return new FileTemplate(
-                $title,
-                $description,
-                $extension,
-                $type,
-                $full_path
-            );
-        }
-        return null;
+        $revision = $this->resource_storage->manage()->replaceWithStream($rid, $stream, new FileStakeholder());
+        return $revision->isAvailable();
     }
 
-    public function fetchTemplates(FileCreationType $type): array
+    public function replaceFileWithUpload(ResourceIdentification $rid, UploadResult $upload_result): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $converted_files = [];
-
-        if ($this->web_file_system->hasDir($path)) {
-            $files = $this->web_file_system->listContents($path);
-
-            foreach ($files as $file) {
-                $file = $file->getPath();
-                $extension = pathinfo($file, PATHINFO_EXTENSION);
-
-                if (empty($extension)) {
-                    continue;
-                }
-
-                $title = pathinfo($file, PATHINFO_FILENAME);
-
-                $description = "";
-
-                try {
-                    $description_stream = $this->web_file_system->readStream($path . "descriptions/" . $title . ".txt");
-                    $description = $description_stream->getContents();
-                } catch (FileNotFoundException) {
-                }
-
-                $converted_files[] = new FileTemplate(
-                    $title,
-                    $description,
-                    $extension,
-                    $type,
-                    $file
-                );
-            }
-        }
-
-        return $converted_files;
-    }
-
-    public function deleteTemplate(string $target, string $extension, FileCreationType $type): bool
-    {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $file_name = $target . "." . $extension;
-        $full_path = $path . $file_name;
-
-        if ($this->web_file_system->has($full_path)) {
-            // Delete template
-            $this->web_file_system->delete($full_path);
-            $this->deleteTemplateDescription($path, $target);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public function modifyTemplate(FileCreationType $type, string $prev_title, string $extension, string $title, string $description): bool
-    {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $old_file_name = $prev_title . "." . $extension;
-        $full_old_path = $path . $old_file_name;
-
-        $new_file_name = $title . "." . $extension;
-        $full_new_path = $path . $new_file_name;
-
-        if (
-            !empty($title)
-            && $this->web_file_system->has($full_old_path) && $full_old_path !== $full_new_path
-        ) {
-            $this->web_file_system->rename($full_old_path, $full_new_path);
-        }
-
-        if (!empty($description)) {
-            $this->deleteTemplateDescription($path, $prev_title);
-            $this->generateTemplateDescription($description, $type, $title);
-        }
-
-        return true;
+        $stream = fopen($upload_result->getPath(), 'rb');
+        return $this->replaceFile($rid, new Stream($stream));
     }
 
     /**
