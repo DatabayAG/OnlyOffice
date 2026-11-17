@@ -53,17 +53,18 @@ class FileSystemService
         $this->logger = $this->dic->logger()->root();
     }
 
-    /**
-     * @throws IOException
-     */
+    public function createFileFromStream(Stream $stream): ResourceIdentification {
+        return $this->resource_storage->manage()->stream($stream, new FileStakeholder());
+    }
+
     public function createFileFromUpload(UploadResult $upload_result): ?ResourceIdentification
     {
         $stream = fopen($upload_result->getPath(), 'rb');
-        return $this->resource_storage->manage()->stream(new Stream($stream), new FileStakeholder());
+        return $this->createFileFromStream(new Stream($stream));
     }
 
     public function createFileFromString(string $content): ResourceIdentification {
-        return $this->resource_storage->manage()->stream(Streams::ofString($content), new FileStakeholder());
+        return $this->createFileFromStream(Streams::ofString($content));
     }
 
     public function deleteFile(ResourceIdentification $rid): bool
