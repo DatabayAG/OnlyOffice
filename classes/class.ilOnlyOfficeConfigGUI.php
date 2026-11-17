@@ -29,6 +29,7 @@ use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;
 use ILIAS\Plugin\OnlyOffice\Form\TemplateForm;
 use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 use ILIAS\Refinery\Factory;
 use ILIAS\UI\Renderer;
 
@@ -69,6 +70,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private Renderer $ui_renderer;
     private FileUpload $upload;
     private ilLanguage $lng;
+    private UiUtil $ui_util;
 
     public function __construct()
     {
@@ -90,6 +92,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->lng = $this->dic->language();
 
         $this->storage_service = $this->plugin->getStorageService();
+        $this->ui_util = new UiUtil();
     }
 
     public function performCommand(string $cmd): void
@@ -259,11 +262,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             (string) $form->getInput(PluginConfigForm::KEY_NUM_VERSIONS)
         );
 
-        $this->tpl->setOnScreenMessage(
-            ilGlobalTemplateInterface::MESSAGE_TYPE_SUCCESS,
-            $this->plugin->txt("config_configuration_saved"),
-            true
-        );
+        $this->ui_util->sendSuccess($this->plugin->txt("config_configuration_saved"));
         $this->ctrl->redirect($this, self::CMD_SHOW_CONFIGURATION);
     }
 
@@ -289,7 +288,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         // Return if file extension not whitelisted by ILIAS instance
         if (!in_array($extension, $file_service_settings->getWhiteListedSuffixes(), true) || in_array($extension, $file_service_settings->getBlackListedSuffixes(), true)) {
-            $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_invalid_extension"), true);
+            $this->ui_util->sendFailure($this->plugin->txt("config_template_invalid_extension"));
             $form->setValuesByPost();
             $this->tpl->setContent($form->getHTML());
             return;
@@ -309,13 +308,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         // Return if file extension not recognized by OnlyOffice
         if (!$file_template) {
-            $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
+            $this->ui_util->sendFailure($this->plugin->txt("config_template_unrecognised_extension"));
             $form->setValuesByPost();
             $this->tpl->setContent($form->getHTML());
             return;
         }
 
-        $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_saved"), true);
+        $this->ui_util->sendFailure($this->plugin->txt("config_template_saved"));
         $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
 
@@ -399,7 +398,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         if ($upload_result) {
             // Return if file extension not whitelisted by ILIAS instance
             if (!ilFileUtils::getValidFilename($upload_result->getName())) {
-                $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_invalid_extension"), true);
+                $this->ui_util->sendFailure($this->plugin->txt("config_template_invalid_extension"));
 
                 $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
                 $this->ctrl->redirectByClass(self::class, self::CMD_SHOW_EDIT_TEMPLATE);
@@ -411,7 +410,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
             // Return if file extension not recognized by OnlyOffice
             if ($file_type === FileCreationType::NONE) {
-                $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
+                $this->ui_util->sendFailure($this->plugin->txt("config_template_unrecognised_extension"));
 
                 $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
                 $this->ctrl->redirectByClass(self::class, self::CMD_SHOW_EDIT_TEMPLATE);
@@ -425,7 +424,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $this->storage_service->modifyTemplate($template, $upload_result);
 
-        $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_edited"), true);
+        $this->ui_util->sendSuccess($this->plugin->txt("config_template_edited"));
 
         $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
@@ -485,7 +484,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $success = $this->storage_service->deleteFileTemplate($template_id);
 
         if ($success) {
-            $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_deleted"), true);
+            $this->ui_util->sendSuccess($this->plugin->txt("config_template_deleted"));
         }
 
         $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);

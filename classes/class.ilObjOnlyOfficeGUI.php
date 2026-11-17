@@ -32,6 +32,7 @@ use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
@@ -70,6 +71,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
     private Container $dic;
     private UUIDFactory $uuid_factory;
+    private UiUtil $ui_util;
 
     protected function afterConstructor(): void
     {
@@ -78,6 +80,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $this->dic = $DIC;
 
         $this->uuid_factory = new UUIDFactory();
+        $this->ui_util = new UiUtil();
     }
 
     final public function getType(): string
@@ -213,14 +216,10 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         $allow_edit = $form_data[ObjectSettingsForm::POST_VAR_EDIT];
 
         if ($file_setting->getFileMode() === FileMode::CREATE && $title === "") {
-            $this->tpl->setOnScreenMessage(
-                'failure',
-                sprintf(
-                    $this->plugin->txt("settings_file_mode_create_title_required"),
-                    $this->plugin->txt("form_input_create_file")
-                ),
-                true
-            );
+            $this->ui_util->sendFailure(sprintf(
+                $this->plugin->txt("settings_file_mode_create_title_required"),
+                $this->plugin->txt("form_input_create_file")
+            ));
             $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
             $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
             $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
@@ -232,7 +231,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $allow_edit->isLimitedPeriod()
             && $allow_edit->getStartTime()->getTimestamp() >= $allow_edit->getEndTime()->getTimestamp()
         ) {
-            $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("settings_time_greater_than"), true);
+            $this->ui_util->sendFailure($this->plugin->txt("settings_time_greater_than"));
             $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
             $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
             $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
@@ -374,7 +373,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             return;
         }
 
-        $this->tpl->setOnScreenMessage('success', $this->plugin->txt("saved"), true);
+        $this->ui_util->sendSuccess($this->plugin->txt("saved"));
 
         $this->dic->ctrl()->redirect($this, self::CMD_SETTINGS);
     }

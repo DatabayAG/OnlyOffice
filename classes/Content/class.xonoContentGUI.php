@@ -100,7 +100,7 @@ class xonoContentGUI extends xonoAbstractGUI
             return;
         }
 
-        $this->tpl->setOnScreenMessage('info', $this->plugin->txt("xono_reload_info"), true);
+        $this->ui_util->sendInfo($this->plugin->txt("xono_reload_info"));
 
         $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.file_history.html", false), true, true);
         $tpl->setVariable('VERSION', $this->plugin->txt('xono_version'));

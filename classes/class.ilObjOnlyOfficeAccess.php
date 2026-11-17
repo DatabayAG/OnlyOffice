@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
@@ -67,7 +68,7 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         $tpl = $DIC->ui()->mainTemplate();
         $ctrl = $DIC->ctrl();
 
-        $tpl->setOnScreenMessage('failure', ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"), true);
+        (new UiUtil())->sendFailure(ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"));
 
         if (is_object($class)) {
             $ctrl->clearParameters($class);
