@@ -207,6 +207,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Builds and returns an array containing the version history of a file
+     * @param list<FileVersion> $all_versions
      */
     protected function history(FileVersion $latest_version, array $all_versions): array
     {
@@ -214,15 +215,20 @@ class xonoEditorGUI extends xonoAbstractGUI
         $history_array = [];
 
         // add all versions to history
-        foreach ($all_versions as $version) {
-            $v = $version->getVersion();
+        foreach ($all_versions as $file_version) {
+            $version = $file_version->getVersion();
+
+            if (!isset($all_changes[$version])) {
+                continue;
+            }
+
             $info_array = [
-                "changes" => json_decode($all_changes[$v]->getChangesObjectString(), true),
-                "created" => rtrim($version->getCreatedAt()->__toString(), '<br>'),
-                "key" => $this->generateDocumentKey($version),
-                "serverVersion" => $all_changes[$v]->getServerVersion(),
-                "user" => $this->buildUserArray($version->getUserId()),
-                "version" => $version->getVersion()
+                "changes" => json_decode($all_changes[$version]->getChangesObjectString(), true, 512, JSON_THROW_ON_ERROR),
+                "created" => rtrim($file_version->getCreatedAt()->__toString(), '<br>'),
+                "key" => $this->generateDocumentKey($file_version),
+                "serverVersion" => $all_changes[$version]->getServerVersion(),
+                "user" => $this->buildUserArray($file_version->getUserId()),
+                "version" => $file_version->getVersion()
             ];
             $history_array[] = $info_array;
         }
