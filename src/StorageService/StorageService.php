@@ -96,6 +96,9 @@ class StorageService
     {
         $extension = $file_type->toDocumentType();
         $new_file_id = $this->uuid_factory->uuid4();
+        //Empty string will cause the new file to not be opened with the correct application,
+        //when immediately downloaded because it's mime type will not be set correctly yet.
+        //It may be a good idea to set anything else than empty to avoid this.
         $rid = $this->file_system_service->createFileFromString("");
 
         $file = new File(
