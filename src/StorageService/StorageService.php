@@ -92,6 +92,26 @@ class StorageService
         return $file;
     }
 
+    public function createNewFileFromDraft(string $title, FileCreationType $file_type, int $obj_id): File
+    {
+        $extension = $file_type->toDocumentType();
+        $new_file_id = $this->uuid_factory->uuid4();
+        $rid = $this->file_system_service->createFileFromString("");
+
+        $file = new File(
+            $obj_id,
+            $new_file_id,
+            "$title.$extension",
+            $extension,
+            $file_type->toMimeType()
+        );
+
+        $this->file_repository->create($file);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
+
+        return $file;
+    }
+
     public function createNewFileFromTemplate(string $title, $template_id, int $obj_id): ?File
     {
         $template = $this->file_template_repository->read($template_id);
@@ -164,37 +184,6 @@ class StorageService
         ));
 
         return $file_version;
-    }
-
-    public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
-    {
-        $new_file_id = $this->uuid_factory->uuid4();
-        $path = $this->createFileDraft(
-            $title,
-            $extension,
-            $obj_id,
-            $new_file_id->toString()
-        );
-
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-
-        $file = new File(
-            $obj_id,
-            $new_file_id,
-            basename($path),
-            $extension,
-            $this->dic->filesystem()->web()->getMimeType($path)
-        );
-
-        $this->file_repository->create($file);
-        $file_version = $this->createNewFileVersion($new_file_id, $path);
-
-        return $file;
-    }
-
-    public function createFileDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
-    {
-        return $this->file_system_service->storeDraft($name, $extension, $obj_id, $new_file_id);
     }
 
     /**

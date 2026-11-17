@@ -98,31 +98,6 @@ class FileSystemService
         return $this->replaceFile($rid, new Stream($stream));
     }
 
-    /**
-     * Store a draft
-     * @throws IOException
-     */
-    public function storeDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
-    {
-        $path = $this->createAndGetPath($obj_id, $new_file_id);
-
-        // Define path and create it if it does not exist
-        if (!$this->web_file_system->hasDir($path)) {
-            $this->web_file_system->createDir($path);
-        }
-        $file_name = $name . "." . $extension;
-        $path .= $file_name;
-
-        // delete the old draft file if it already exists
-        if ($this->web_file_system->has($path)) {
-            $this->web_file_system->delete($path);
-        }
-        // store the new draft file
-        $stream = Streams::ofString("");
-        $this->web_file_system->writeStream($path, $stream);
-        return $path;
-
-    }
 
     public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
     {
