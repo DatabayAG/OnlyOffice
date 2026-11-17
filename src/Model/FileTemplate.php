@@ -21,16 +21,30 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Model;
 
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class FileTemplate
 {
+    private int $id;
+
     public function __construct(
         private readonly string $title,
         private readonly string $description,
         private readonly string $extension,
         private readonly FileCreationType $type,
-        private readonly string $path,
+        private readonly ResourceIdentification $rid,
     ) {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getTitle(): string
@@ -53,8 +67,8 @@ class FileTemplate
         return $this->type;
     }
 
-    public function getPath(): string
+    public function getRid(): ResourceIdentification
     {
-        return $this->path;
+        return $this->rid;
     }
 }

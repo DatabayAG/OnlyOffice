@@ -531,4 +531,47 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             ]);
         }
     }
+
+    public function step_10(): void
+    {
+        $table_name = "xono_file_template";
+        if ($this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->createTable($table_name, [
+            "id" => [
+                "type" => ilDBConstants::T_INTEGER,
+                "length" => 8,
+                "notnull" => true,
+            ],
+            "title" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 255,
+                "notnull" => true,
+            ],
+            "description" => [
+                "type" => ilDBConstants::T_CLOB,
+                "length" => 255,
+                "notnull" => true,
+            ],
+            "type" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 16,
+                "notnull" => true,
+            ],
+            "extension" => [
+                "type" => ilDBConstants::T_TEXT,
+                "length" => 16,
+                "notnull" => true,
+            ],
+            "rid" => [
+                "type" => ilDBConstants::T_CLOB,
+                "notnull" => true
+            ]
+        ]);
+
+        $this->db->addPrimaryKey($table_name, ["id"]);
+        $this->db->createSequence($table_name);
+    }
 }

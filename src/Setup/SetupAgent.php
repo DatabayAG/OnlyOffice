@@ -22,6 +22,7 @@ namespace ILIAS\Plugin\OnlyOffice\Setup;
 
 use ilDatabaseUpdateStepsExecutedObjective;
 use ILIAS\Plugin\OnlyOffice\Setup\Migration\FileIrssMigration;
+use ILIAS\Plugin\OnlyOffice\Setup\Migration\FileTemplateIrssMigration;
 use ILIAS\Refinery\Transformation;
 use ILIAS\Setup;
 use ILIAS\Setup\Agent;
@@ -78,7 +79,8 @@ class SetupAgent implements Agent
     public function getMigrations(): array
     {
         return [
-            new FileIrssMigration()
+            new FileIrssMigration(),
+            new FileTemplateIrssMigration()
         ];
     }
 
