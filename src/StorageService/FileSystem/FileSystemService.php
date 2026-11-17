@@ -78,6 +78,11 @@ class FileSystemService
         return $revision->isAvailable();
     }
 
+    public function copyFile(ResourceIdentification $rid): ResourceIdentification
+    {
+        return $this->resource_storage->manage()->clone($rid);
+    }
+
     public function replaceFileWithUpload(ResourceIdentification $rid, UploadResult $upload_result): bool
     {
         $stream = fopen($upload_result->getPath(), 'rb');
@@ -110,30 +115,6 @@ class FileSystemService
 
     }
 
-    /**
-     * Store a draft
-     * @throws IOException
-     */
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
-    {
-        $extension = pathinfo($template_path, PATHINFO_EXTENSION);
-        $name = pathinfo($template_path, PATHINFO_FILENAME);
-
-        $path = $this->createAndGetPath($obj_id, $new_file_id);
-
-        // Define path and create it if it does not exist
-        if (!$this->web_file_system->hasDir($path)) {
-            $this->web_file_system->createDir($path);
-        }
-
-        $file_name = $new_title . "." . $extension;
-        $path .= $file_name;
-
-        $this->web_file_system->copy($template_path, $path);
-
-        return $path;
-    }
-
     public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
     {
         $path = $this->createAndGetPath($obj_id, $uuid, true) . $version . '.' . $extension;
@@ -151,7 +132,7 @@ class FileSystemService
             return null;
         }
 
-        return $this->resource_storage->manage()->clone($parent_rid);
+        return $this->copyFile($parent_rid);
     }
 
     public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): ?ResourceIdentification
@@ -162,7 +143,7 @@ class FileSystemService
             return null;
         }
 
-        return $this->resource_storage->manage()->clone($parent_rid);
+        return $this->copyFile($parent_rid);
     }
 
     public function deletePath(int $file_id): void
