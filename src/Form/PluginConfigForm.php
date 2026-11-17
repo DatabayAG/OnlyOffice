@@ -44,7 +44,7 @@ class PluginConfigForm extends ilPropertyFormGUI
         $this->setTitle($this->plugin->txt("config_configuration"));
         $this->setFormAction($this->ctrl->getFormActionByClass(
             ilOnlyOfficeConfigGUI::class,
-            ilOnlyOfficeConfigGUI::CMD_CONFIGURE
+            ilOnlyOfficeConfigGUI::CMD_SHOW_CONFIGURATION
         ));
 
         $url = new ilTextInputGUI(
@@ -70,7 +70,7 @@ class PluginConfigForm extends ilPropertyFormGUI
         $this->addItem($versions);
 
         $this->addCommandButton(
-            ilOnlyOfficeConfigGUI::CMD_UPDATE_CONFIGURE,
+            ilOnlyOfficeConfigGUI::CMD_SAVE_CONFIGURATION,
             $this->plugin->txt("config_save")
         );
     }

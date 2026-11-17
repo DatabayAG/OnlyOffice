@@ -60,7 +60,7 @@ class TemplateForm extends ilPropertyFormGUI
 
         $this->setFormAction($this->ctrl->getFormActionByClass(
             ilOnlyOfficeConfigGUI::class,
-            ilOnlyOfficeConfigGUI::CMD_TEMPLATES
+            ilOnlyOfficeConfigGUI::CMD_SHOW_TEMPLATES
         ));
 
         // title
@@ -78,6 +78,7 @@ class TemplateForm extends ilPropertyFormGUI
 
         // file upload option
         $file_input = new ilFileInputGUI($this->plugin->txt("form_input_file"), "file");
+        $file_input->setRequired($template_id === null);
         $this->addItem($file_input);
 
         if ($template_id) {
@@ -85,9 +86,9 @@ class TemplateForm extends ilPropertyFormGUI
             $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SAVE_EDIT_TEMPLATE, $this->plugin->txt("config_save"));
         } else {
             $this->setTitle($this->plugin->txt("config_create_template"));
-            $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_UPDATE_TEMPLATES, $this->plugin->txt("config_save"));
+            $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SAVE_TEMPLATE, $this->plugin->txt("config_save"));
         }
 
-        $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_TEMPLATES, $this->plugin->txt("settings_cancel"));
+        $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SHOW_TEMPLATES, $this->plugin->txt("settings_cancel"));
     }
 }

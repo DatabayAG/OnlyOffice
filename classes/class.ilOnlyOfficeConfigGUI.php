@@ -37,15 +37,20 @@ use ILIAS\UI\Renderer;
  */
 class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 {
-    public const string CMD_CONFIGURE = "configure";
-    public const string CMD_TEMPLATES = "configureTemplates";
-    public const string CMD_CREATE_TEMPLATE = "createTemplate";
-    public const string CMD_EDIT_TEMPLATE = "editTemplate";
+    public const string CMD_SHOW_CONFIGURATION = "showConfiguration";
+    public const string CMD_SHOW_TEMPLATES = "showTemplates";
+    public const string CMD_SHOW_CREATE_TEMPLATE = "showCreateTemplate";
+    public const string CMD_SHOW_EDIT_TEMPLATE = "showEditTemplate";
+
+    public const string CMD_SHOW_CONFIRM_DELETE = "showConfirmDelete";
+
+
+
+    public const string CMD_SAVE_CONFIGURATION = "saveConfiguration";
     public const string CMD_SAVE_EDIT_TEMPLATE = "saveEditTemplate";
+    public const string CMD_SAVE_TEMPLATE = "saveTemplate";
     public const string CMD_DELETE_TEMPLATE = "deleteTemplate";
-    public const string CMD_UPDATE_CONFIGURE = "updateConfigure";
-    public const string CMD_UPDATE_TEMPLATES = "updateTemplates";
-    public const string CMD_CONFIRM_DELETE = "confirmDelete";
+
     public const string TAB_CONFIGURATION = "configuration";
     public const string TAB_SUB_CONFIGURATION = "subConfiguration";
     public const string TAB_SUB_TEMPLATES = "templates";
@@ -95,18 +100,18 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         switch (strtolower($next_class)) {
             default:
-                $cmd = $this->ctrl->getCmd();
+                $cmd = $cmd === "configure" ? $this->getDefaultCommand() : $cmd;
 
                 switch ($cmd) {
-                    case self::CMD_CONFIGURE:
-                    case self::CMD_TEMPLATES:
-                    case self::CMD_CREATE_TEMPLATE:
+                    case self::CMD_SHOW_CONFIGURATION:
+                    case self::CMD_SHOW_TEMPLATES:
+                    case self::CMD_SHOW_CREATE_TEMPLATE:
                     case self::CMD_SAVE_EDIT_TEMPLATE:
-                    case self::CMD_EDIT_TEMPLATE:
+                    case self::CMD_SHOW_EDIT_TEMPLATE:
                     case self::CMD_DELETE_TEMPLATE:
-                    case self::CMD_UPDATE_CONFIGURE:
-                    case self::CMD_UPDATE_TEMPLATES:
-                    case self::CMD_CONFIRM_DELETE:
+                    case self::CMD_SAVE_CONFIGURATION:
+                    case self::CMD_SAVE_TEMPLATE:
+                    case self::CMD_SHOW_CONFIRM_DELETE:
                         if (!ilObjOnlyOfficeAccess::hasWriteAccess()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess($this);
                         }
@@ -120,22 +125,27 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         }
     }
 
+    protected function getDefaultCommand(): string
+    {
+        return self::CMD_SHOW_CONFIGURATION;
+    }
+
     protected function setTabs(): void
     {
         $this->tabs->addTab(self::TAB_CONFIGURATION, $this->plugin->txt("config_configuration"), $this->ctrl
-            ->getLinkTargetByClass(self::class, self::CMD_CONFIGURE));
+            ->getLinkTargetByClass(self::class, self::CMD_SHOW_CONFIGURATION));
 
         $this->tabs->addSubTab(self::TAB_SUB_CONFIGURATION, $this->plugin->txt("config_tab_general"), $this->ctrl
-            ->getLinkTargetByClass(self::class, self::CMD_CONFIGURE));
+            ->getLinkTargetByClass(self::class, self::CMD_SHOW_CONFIGURATION));
 
         $this->tabs->addSubTab(self::TAB_SUB_TEMPLATES, $this->plugin->txt("config_tab_templates"), $this->ctrl
-            ->getLinkTargetByClass(self::class, self::CMD_TEMPLATES));
+            ->getLinkTargetByClass(self::class, self::CMD_SHOW_TEMPLATES));
 
 
-        $this->locator->addItem($this->plugin->getPluginName(), $this->ctrl->getLinkTarget($this, self::CMD_CONFIGURE));
+        $this->locator->addItem($this->plugin->getPluginName(), $this->ctrl->getLinkTarget($this, self::CMD_SHOW_CONFIGURATION));
     }
 
-    protected function configure(?PluginConfigForm $form = null): void
+    protected function showConfiguration(?PluginConfigForm $form = null): void
     {
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
         $this->tabs->activateSubTab(self::TAB_SUB_CONFIGURATION);
@@ -152,14 +162,14 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->tpl->setContent($form->getHTML());
     }
 
-    protected function configureTemplates(): void
+    protected function showTemplates(): void
     {
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
         $this->tabs->activateSubTab(self::TAB_SUB_TEMPLATES);
 
         $this->toolbar->addButton(
             $this->plugin->txt("config_create_template"),
-            $this->ctrl->getLinkTargetByClass(self::class, self::CMD_CREATE_TEMPLATE)
+            $this->ctrl->getLinkTargetByClass(self::class, self::CMD_SHOW_CREATE_TEMPLATE)
         );
 
         $tpl = new ilTemplate($this->plugin->assetsFile(PluginAsset::Templates, "tpl.config_create_template.html", false), true, true);
@@ -191,14 +201,14 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                     $this->plugin->txt("config_table_edit"),
                     $this->ctrl->getLinkTargetByClass(
                         self::class,
-                        self::CMD_EDIT_TEMPLATE
+                        self::CMD_SHOW_EDIT_TEMPLATE
                     )
                 ),
                 $this->ui_factory->link()->standard(
                     $this->plugin->txt("config_table_delete"),
                     $this->ctrl->getLinkTargetByClass(
                         self::class,
-                        self::CMD_CONFIRM_DELETE
+                        self::CMD_SHOW_CONFIRM_DELETE
                     )
                 )
             ])->withLabel($this->plugin->txt("config_table_options"));
@@ -211,7 +221,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->tpl->setContent($content);
     }
 
-    protected function createTemplate(?TemplateForm $form = null): void
+    protected function showCreateTemplate(?TemplateForm $form = null): void
     {
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
         $this->tabs->activateSubTab(self::TAB_SUB_TEMPLATES);
@@ -222,7 +232,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->tpl->setContent($form->getHTML());
     }
 
-    protected function updateConfigure(): void
+    protected function saveConfiguration(): void
     {
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
 
@@ -230,7 +240,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
-            $this->configure($form);
+            $this->showConfiguration($form);
             return;
         }
 
@@ -254,16 +264,16 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->plugin->txt("config_configuration_saved"),
             true
         );
-        $this->ctrl->redirect($this, self::CMD_CONFIGURE);
+        $this->ctrl->redirect($this, self::CMD_SHOW_CONFIGURATION);
     }
 
-    protected function updateTemplates(): void
+    protected function saveTemplate(): void
     {
         $form = new TemplateForm();
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
-            $this->createTemplate($form);
+            $this->showCreateTemplate($form);
             return;
         }
 
@@ -306,10 +316,10 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         }
 
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_saved"), true);
-        $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
 
-    protected function editTemplate(): void
+    protected function showEditTemplate(): void
     {
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
         $this->tabs->activateSubTab(self::TAB_SUB_TEMPLATES);
@@ -323,13 +333,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
 
         if (!$template_id) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $template = $this->storage_service->fetchTemplate($template_id);
 
         if (!$template) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
 
@@ -352,13 +362,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
 
         if (!$template_id) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $template = $this->storage_service->fetchTemplate($template_id);
 
         if (!$template) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $form = new TemplateForm($template->getId());
@@ -392,7 +402,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_invalid_extension"), true);
 
                 $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
-                $this->ctrl->redirectByClass(self::class, self::CMD_EDIT_TEMPLATE);
+                $this->ctrl->redirectByClass(self::class, self::CMD_SHOW_EDIT_TEMPLATE);
                 return;
             }
 
@@ -404,7 +414,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
 
                 $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
-                $this->ctrl->redirectByClass(self::class, self::CMD_EDIT_TEMPLATE);
+                $this->ctrl->redirectByClass(self::class, self::CMD_SHOW_EDIT_TEMPLATE);
                 return;
             }
 
@@ -417,10 +427,10 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_edited"), true);
 
-        $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
 
-    public function confirmDelete(): void
+    public function showConfirmDelete(): void
     {
         $conf = new ilConfirmationGUI();
         $conf->setFormAction($this->ctrl->getFormAction($this));
@@ -435,13 +445,13 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
 
         if (!$template_id) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $template = $this->storage_service->fetchTemplate($template_id);
 
         if (!$template) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $conf->addItem("template_id", (string) $template_id, sprintf(
@@ -453,7 +463,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         ));
 
         $conf->setConfirm($this->lng->txt('delete'), self::CMD_DELETE_TEMPLATE);
-        $conf->setCancel($this->lng->txt('cancel'), self::CMD_TEMPLATES);
+        $conf->setCancel($this->lng->txt('cancel'), self::CMD_SHOW_TEMPLATES);
 
         $this->tpl->setContent($conf->getHTML());
     }
@@ -469,7 +479,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         );
 
         if (!$template_id) {
-            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
         $success = $this->storage_service->deleteFileTemplate($template_id);
@@ -478,6 +488,6 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_deleted"), true);
         }
 
-        $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
 }
