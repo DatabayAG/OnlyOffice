@@ -36,6 +36,15 @@ enum FileCreationType: string
         };
     }
 
+    public function toMimeType(): string
+    {
+        return match ($this) {
+            self::TEXT => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            self::TABLE => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            self::PRESENTATION => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        };
+    }
+
     public function getEditorType(): string
     {
         return match ($this) {
