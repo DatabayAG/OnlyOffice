@@ -50,7 +50,7 @@ class FileSettingProperty implements Property
         private readonly FileMode $file_mode = FileMode::UPLOAD,
         private readonly ?UploadResult $upload_result = null,
         private readonly ?FileCreationType $file_creation_type = null,
-        private readonly ?string $file_template = null,
+        private readonly ?int $file_template_id = null,
     ) {
         global $DIC;
         $this->tmp_filesystem = $DIC->filesystem()->temp();
@@ -68,7 +68,7 @@ class FileSettingProperty implements Property
 
                 $upload_result = null;
                 $file_creation_type = null;
-                $file_template = null;
+                $file_template_id = null;
                 switch ($file_mode) {
                     case FileMode::UPLOAD:
                         $filesystem_path = end($vs[1][ObjectSettingsForm::POST_VAR_FILE]);
@@ -91,7 +91,9 @@ class FileSettingProperty implements Property
                         break;
 
                     case FileMode::TEMPLATE:
-                        $file_template = $vs[1][ObjectSettingsForm::POST_VAR_FILE_TEMPLATE_SETTING];
+                        $file_template_id = $vs[1][ObjectSettingsForm::POST_VAR_FILE_TEMPLATE_SETTING]
+                            ? (int) $vs[1][ObjectSettingsForm::POST_VAR_FILE_TEMPLATE_SETTING]
+                            : null;
                         break;
                 }
 
@@ -100,7 +102,7 @@ class FileSettingProperty implements Property
                     $file_mode,
                     $upload_result,
                     $file_creation_type,
-                    $file_template
+                    $file_template_id
                 );
             }
         );
@@ -109,7 +111,7 @@ class FileSettingProperty implements Property
         foreach ($this->templates as $template) {
             $type_translation = sprintf("form_template_%s", $template->getType()->value);
             $template_radio_option = $template_radio_option->withOption(
-                $template->getPath(),
+                (string) $template->getId(),
                 sprintf("%s %s", $template->getTitle(), $this->plugin->txt($type_translation)),
                 !empty($template->getDescription()) ? $template->getDescription() : null
             );
@@ -167,8 +169,8 @@ class FileSettingProperty implements Property
         return $this->file_creation_type;
     }
 
-    public function getFileTemplate(): ?string
+    public function getFileTemplateId(): ?int
     {
-        return $this->file_template;
+        return $this->file_template_id;
     }
 }

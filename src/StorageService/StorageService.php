@@ -33,6 +33,7 @@ use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
 use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\Repository\FileTemplateRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
@@ -44,6 +45,7 @@ class StorageService
     private readonly FileRepository $file_repository;
     private readonly FileVersionRepository $file_version_repository;
     private readonly FileChangeRepository $file_change_repository;
+    private readonly FileTemplateRepository $file_template_repository;
     protected FileSystemService $file_system_service;
     private readonly UUIDFactory $uuid_factory;
 
@@ -52,6 +54,7 @@ class StorageService
         ?FileRepository $file_repository = null,
         ?FileVersionRepository $file_version_repository = null,
         ?FileChangeRepository $file_change_repository = null,
+        ?FileTemplateRepository $file_template_repository = null,
         ?FileSystemService $file_system_service = null,
         ?UUIDFactory $uuid_factory = null
     ) {
@@ -60,6 +63,7 @@ class StorageService
         $this->file_repository = $file_repository ?? new FileRepository($this->dic->database());
         $this->file_version_repository = $file_version_repository ?? new FileVersionRepository($this->dic->database());
         $this->file_change_repository = $file_change_repository ?? new FileChangeRepository($this->dic->database());
+        $this->file_template_repository = $file_template_repository ?? new FileTemplateRepository($this->dic->database());
         $this->file_system_service = $file_system_service ?? new FileSystemService($this->dic);
         $this->uuid_factory = $uuid_factory ?? new UUIDFactory();
     }
@@ -192,7 +196,7 @@ class StorageService
     /**
      * @throws IOException
      */
-    public function createFileTemplate(UploadResult $upload_result, string $title, string $description): ?string
+    public function createFileTemplate(UploadResult $upload_result, string $title, string $description): ?FileTemplate
     {
         $extension = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
 
@@ -203,15 +207,37 @@ class StorageService
             return null;
         }
 
-        $path = $this->file_system_service->storeTemplate($upload_result, $type, $title, $description, $extension);
+        $rid = $this->file_system_service->createFileFromUpload($upload_result);
 
-        return $path;
+        $file_template = new FileTemplate(
+            $title,
+            $description,
+            $extension,
+            $type,
+            $rid
+        );
+
+        if ($this->file_template_repository->create($file_template)) {
+            return $file_template;
+        }
+
+        return null;
     }
 
-    public function deleteFileTemplate(string $target, string $extension): bool
+    public function deleteFileTemplate(int $template_id): bool
     {
-        $type = FileCreationType::determineDocType($extension);
-        return $this->file_system_service->deleteTemplate($target, $extension, $type);
+        $file_template = $this->fetchTemplate($template_id);
+
+        if (!$file_template) {
+            return false;
+        }
+
+        $file_deleted =  $this->file_system_service->deleteFile($file_template->getRid());
+        if (!$file_deleted) {
+            return false;
+        }
+
+        return $this->file_template_repository->delete($file_template);
     }
 
     public function createFileDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
@@ -224,10 +250,20 @@ class StorageService
         return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
     }
 
-    public function modifyFileTemplate(string $prev_title, string $prev_extension, string $title, string $description): bool
+    public function modifyTemplate(FileTemplate $file_template, ?UploadResult $upload_result = null): bool
     {
-        $prev_type = FileCreationType::determineDocType($prev_extension);
-        return $this->file_system_service->modifyTemplate($prev_type, $prev_title, $prev_extension, $title, $description);
+        if ($upload_result) {
+            $upload_success = $this->file_system_service->replaceFileWithUpload($file_template->getRid(), $upload_result);
+        } else {
+            $upload_success = true;
+        }
+
+        if (!$upload_success) {
+            return false;
+        }
+
+        $this->file_template_repository->update($file_template);
+        return true;
     }
 
     /**
@@ -235,13 +271,12 @@ class StorageService
      */
     public function fetchTemplates(FileCreationType $type): array
     {
-        return $this->file_system_service->fetchTemplates($type);
+        return $this->file_template_repository->readAll([$type]);
     }
 
-    public function fetchTemplate(string $target, string $extension): FileTemplate
+    public function fetchTemplate(int $template_id): ?FileTemplate
     {
-        $type = FileCreationType::determineDocType($extension);
-        return $this->file_system_service->fetchTemplate($target, $extension, $type);
+        return $this->file_template_repository->read($template_id);
     }
 
     public function createClone(int $child_id, int $parent_id): void

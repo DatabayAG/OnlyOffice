@@ -184,21 +184,21 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $tpl->setVariable('TYPE', $this->plugin->txt("form_input_create_file_" . $template->getType()->value));
             $tpl->setVariable('DESCRIPTION', empty($template->getDescription()) ? "-" : $template->getDescription());
             $tpl->setVariable('EXTENSION', $template->getExtension());
-            $ctrl_format = "%s&ootarget=%s&ooextension=%s";
 
+            $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
             $actions = $this->ui_factory->dropdown()->standard([
                 $this->ui_factory->link()->standard(
                     $this->plugin->txt("config_table_edit"),
                     $this->ctrl->getLinkTargetByClass(
                         self::class,
-                        sprintf($ctrl_format, self::CMD_EDIT_TEMPLATE, urlencode($template->getTitle()), urlencode($template->getExtension()))
+                        self::CMD_EDIT_TEMPLATE
                     )
                 ),
                 $this->ui_factory->link()->standard(
                     $this->plugin->txt("config_table_delete"),
                     $this->ctrl->getLinkTargetByClass(
                         self::class,
-                        sprintf($ctrl_format, self::CMD_CONFIRM_DELETE, urlencode($template->getTitle()), urlencode($template->getExtension()))
+                        self::CMD_CONFIRM_DELETE
                     )
                 )
             ])->withLabel($this->plugin->txt("config_table_options"));
@@ -295,10 +295,10 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->refinery->kindlyTo()->string()
         );
 
-        $path = $this->storage_service->createFileTemplate($result, $title, $description);
+        $file_template = $this->storage_service->createFileTemplate($result, $title, $description);
 
         // Return if file extension not recognized by OnlyOffice
-        if ($path === null) {
+        if (!$file_template) {
             $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
             $form->setValuesByPost();
             $this->tpl->setContent($form->getHTML());
@@ -314,66 +314,54 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
         $this->tabs->activateTab(self::TAB_CONFIGURATION);
         $this->tabs->activateSubTab(self::TAB_SUB_TEMPLATES);
 
-        $target = $this->http_wrapper->query()->retrieve(
-            "ootarget",
+        $template_id = $this->http_wrapper->query()->retrieve(
+            "template_id",
             $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
+                $this->refinery->kindlyTo()->int(),
+                $this->refinery->always(null)
             ])
         );
 
-        $extension = $this->http_wrapper->query()->retrieve(
-            "ooextension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
-
-        $template = $this->storage_service->fetchTemplate($target, $extension);
-
-        if (!is_null($template)) {
-            $value_array = [
-                "title" => $template->getTitle(),
-                "desc" => $template->getDescription(),
-                "file" => $template->getPath()
-            ];
-
-            $form = new TemplateForm(true);
-            $form->setValuesByArray($value_array);
-            $this->tpl->setContent($form->getHTML());
+        if (!$template_id) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
         }
 
+        $template = $this->storage_service->fetchTemplate($template_id);
+
+        if (!$template) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
+
+
+        $form = new TemplateForm($template->getId());
+        $form->setValuesByArray([
+            "title" => $template->getTitle(),
+            "desc" => $template->getDescription(),
+        ]);
+        $this->tpl->setContent($form->getHTML());
     }
 
     protected function saveEditTemplate(): void
     {
-        $target = $this->http_wrapper->post()->retrieve(
-            "title",
-            $this->refinery->kindlyTo()->string()
-        );
-        $description = $this->http_wrapper->post()->retrieve(
-            "desc",
-            $this->refinery->kindlyTo()->string()
-        );
-
-        $prev_title = $this->http_wrapper->query()->retrieve(
-            "prevTitle",
+        $template_id = $this->http_wrapper->query()->retrieve(
+            "template_id",
             $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
+                $this->refinery->kindlyTo()->int(),
+                $this->refinery->always(null)
             ])
         );
 
-        $prev_extension = $this->http_wrapper->query()->retrieve(
-            "prevExtension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
+        if (!$template_id) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
 
-        $form = new TemplateForm(true);
+        $template = $this->storage_service->fetchTemplate($template_id);
+
+        if (!$template) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
+
+        $form = new TemplateForm($template->getId());
 
         if (!$form->checkInput()) {
             $form->setValuesByPost();
@@ -385,67 +373,47 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->upload->process();
         }
 
-        $has_uploads = false;
         $results = $this->upload->getResults();
         /**
-         * @var UploadResult $result
+         * @var UploadResult $upload_result
          */
-        $result = end($results);
-        if ($result->getStatus()->getCode() !== ProcessingStatus::REJECTED) {
-            $has_uploads = true;
+        $upload_result = end($results);
+        if ($upload_result->getStatus()->getCode() !== ProcessingStatus::OK) {
+            $upload_result = null;
         }
 
-        // If no file is uploaded, merely change title and description
-        if (!$has_uploads) {
-            // Dont delete previous template
-            $this->storage_service->modifyFileTemplate($prev_title, $prev_extension, $target, $description);
-        } else {
+        $template
+            ->setTitle($form->getInput("title"))
+            ->setDescription($form->getInput("desc"));
+
+        if ($upload_result) {
             // Return if file extension not whitelisted by ILIAS instance
-            if (!ilFileUtils::getValidFilename($result->getName())) {
-                // Fix bug where previous title and name don't get saved into the form action
-                $adjusted_url = str_replace(
-                    ["prevTitle=", "prevExtension="],
-                    ["prevTitle=" . urlencode($prev_title), "prevExtension=" . urlencode($prev_extension)],
-                    $form->getFormAction()
-                );
-                $form->setFormAction($adjusted_url);
+            if (!ilFileUtils::getValidFilename($upload_result->getName())) {
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_invalid_extension"), true);
-                $template = $this->storage_service->fetchTemplate($prev_title, $prev_extension);
-                $value_array = [
-                    "title" => $target,
-                    "desc" => $description,
-                    "file" => $template->getPath()
-                ];
-                $form->setValuesByArray($value_array);
-                $this->tpl->setContent($form->getHTML());
+
+                $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
+                $this->ctrl->redirectByClass(self::class, self::CMD_EDIT_TEMPLATE);
                 return;
             }
+
+            $extension = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
+            $file_type = FileCreationType::determineDocType($extension);
 
             // Return if file extension not recognized by OnlyOffice
-            if (empty($path)) {
-                // Fix bug where previous title and name don't get saved into the form action
-                $adjusted_url = str_replace(
-                    ["prevTitle=", "prevExtension="],
-                    ["prevTitle=" . urlencode($prev_title), "prevExtension=" . urlencode($prev_extension)],
-                    $form->getFormAction()
-                );
-                $form->setFormAction($adjusted_url);
-
+            if ($file_type === FileCreationType::NONE) {
                 $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("config_template_unrecognised_extension"), true);
-                $template = $this->storage_service->fetchTemplate($prev_title, $prev_extension);
-                $value_array = [
-                    "title" => $target,
-                    "desc" => $description,
-                    "file" => $template->getPath()
-                ];
-                $form->setValuesByArray($value_array);
-                $this->tpl->setContent($form->getHTML());
+
+                $this->ctrl->setParameterByClass(self::class, "template_id", $template->getId());
+                $this->ctrl->redirectByClass(self::class, self::CMD_EDIT_TEMPLATE);
                 return;
             }
 
-            $this->storage_service->deleteFileTemplate($target, $prev_extension);
-            $this->storage_service->createFileTemplate($result, $target, $description);
+            $template
+                ->setType($file_type)
+                ->setExtension($extension);
         }
+
+        $this->storage_service->modifyTemplate($template, $upload_result);
 
         $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_edited"), true);
 
@@ -454,22 +422,35 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     public function confirmDelete(): void
     {
-        $this->ctrl->saveParameter($this, "ootarget");
-        $this->ctrl->saveParameter($this, "ooextension");
-
         $conf = new ilConfirmationGUI();
         $conf->setFormAction($this->ctrl->getFormAction($this));
         $conf->setHeaderText($this->plugin->txt('config_template_delete'));
 
-        $oo_target = $this->http_wrapper->query()->retrieve(
-            "ootarget",
+        $template_id = $this->http_wrapper->query()->retrieve(
+            "template_id",
             $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
+                $this->refinery->kindlyTo()->int(),
+                $this->refinery->always(null)
             ])
         );
 
-        $conf->addItem('tableview', "1", $oo_target);
+        if (!$template_id) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
+
+        $template = $this->storage_service->fetchTemplate($template_id);
+
+        if (!$template) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
+
+        $conf->addItem("template_id", (string) $template_id, sprintf(
+            "| %s | %s | %s | %s |",
+            $template->getId(),
+            $template->getTitle(),
+            $this->plugin->txt("form_input_create_file_" . $template->getType()->value),
+            $template->getExtension(),
+        ));
 
         $conf->setConfirm($this->lng->txt('delete'), self::CMD_DELETE_TEMPLATE);
         $conf->setCancel($this->lng->txt('cancel'), self::CMD_TEMPLATES);
@@ -479,23 +460,19 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
 
     protected function deleteTemplate(): void
     {
-        $target = $this->http_wrapper->query()->retrieve(
-            "ootarget",
+        $template_id = $this->http_wrapper->post()->retrieve(
+            "template_id",
             $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
+                $this->refinery->kindlyTo()->int(),
+                $this->refinery->always(null)
             ])
         );
 
-        $extension = $this->http_wrapper->query()->retrieve(
-            "ooextension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
+        if (!$template_id) {
+            $this->ctrl->redirect($this, self::CMD_TEMPLATES);
+        }
 
-        $success = $this->storage_service->deleteFileTemplate($target, $extension);
+        $success = $this->storage_service->deleteFileTemplate($template_id);
 
         if ($success) {
             $this->tpl->setOnScreenMessage('success', $this->plugin->txt("config_template_deleted"), true);

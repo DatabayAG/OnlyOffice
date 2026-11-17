@@ -39,7 +39,7 @@ class TemplateForm extends ilPropertyFormGUI
     private readonly mixed $dic;
     private readonly WrapperFactory $http_wrapper;
 
-    public function __construct(bool $edit = false)
+    public function __construct(?int $template_id = null)
     {
         parent::__construct();
         global $DIC;
@@ -49,31 +49,19 @@ class TemplateForm extends ilPropertyFormGUI
 
         $this->setId("onlyoffice_template_form");
         $this->setTitle($this->plugin->txt("config_configuration"));
-        $this->setFormAction($this->ctrl->getFormActionByClass(
-            ilOnlyOfficeConfigGUI::class,
-            ilOnlyOfficeConfigGUI::CMD_CONFIGURE
-        ));
+
+
+
         $this->setTarget("_top");
 
-        $oo_target = $this->http_wrapper->query()->retrieve(
-            "ootarget",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
+        if($template_id) {
+            $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "template_id", $template_id);
+        }
 
-        $oo_extension = $this->http_wrapper->query()->retrieve(
-            "ooextension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
-
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevTitle", $oo_target);
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevExtension", $oo_extension);
-        $this->setFormAction($this->ctrl->getFormActionByClass(ilOnlyOfficeConfigGUI::class));
+        $this->setFormAction($this->ctrl->getFormActionByClass(
+            ilOnlyOfficeConfigGUI::class,
+            ilOnlyOfficeConfigGUI::CMD_TEMPLATES
+        ));
 
         // title
         $ti = new ilTextInputGUI($this->plugin->txt("config_table_title"), "title");
@@ -90,10 +78,9 @@ class TemplateForm extends ilPropertyFormGUI
 
         // file upload option
         $file_input = new ilFileInputGUI($this->plugin->txt("form_input_file"), "file");
-        $file_input->setRequired(!$edit);
         $this->addItem($file_input);
 
-        if ($edit) {
+        if ($template_id) {
             $this->setTitle($this->plugin->txt("config_edit_template"));
             $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SAVE_EDIT_TEMPLATE, $this->plugin->txt("config_save"));
         } else {
