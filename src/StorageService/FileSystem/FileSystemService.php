@@ -38,8 +38,6 @@ use ilLogger;
 
 class FileSystemService
 {
-    public const string BASE_PATH = '/only_office/';
-    public const string BASE_TEMPLATE_PATH = '/only_office/templates/';
     private Filesystem $web_file_system;
     private ilLogger $logger;
     private FileUpload $upload;
