@@ -3,6 +3,13 @@ obj_xono_duplicate#:#OnlyOffice kopieren
 objs_xono#:#OnlyOffices
 objs_xono_duplicate#:#OnlyOffices kopieren
 rbac_create_xono#:#OnlyOffice anlegen
+crs_create_xono#:#OnlyOffice anlegen
+fold_create_xono#:#OnlyOffice anlegen
+grp_create_xono#:#OnlyOffice anlegen
+xono_copy#:#OnlyOffice kopieren
+xono_rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
+
+
 xono_add#:#Hinzufügen
 xono_delete#:#Löschen
 xono_edit_permission#:#Rechte bearbeiten
@@ -58,7 +65,6 @@ settings_start_time#:#Startzeit
 settings_end_time#:#Endzeit
 settings_time_greater_than#:#Die Startzeit des begrenzten Zeitraumes muss kleiner sein als die Endzeit. Bitte erneut versuchen.
 settings_file_mode_create_title_required#:#Ein Titel ist für den Modus <strong>%s</strong> erforderlich.
-rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
 form_input_file#:#Datei
 form_input_upload_file#:#Datei hochladen
 form_input_create_file#:#Neue Datei erstellen

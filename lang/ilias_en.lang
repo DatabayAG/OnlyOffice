@@ -3,6 +3,12 @@ obj_xono_duplicate#:#Copy OnlyOffice
 objs_xono#:#OnlyOffices
 objs_xono_duplicate#:#Copy OnlyOffices
 rbac_create_xono#:#Create OnlyOffice
+crs_create_xono#:#Create OnlyOffice
+fold_create_xono#:#Create OnlyOffice
+grp_create_xono#:#Create OnlyOffice
+xono_copy#:#Copy OnlyOffice
+xono_rep_robj_xono_perm_editFile#:#Edit File
+
 xono_add#:#Add
 xono_delete#:#Delete
 xono_edit_permission#:#Edit permission
@@ -52,7 +58,6 @@ settings_start_time#:#Start Time
 settings_end_time#:#End Time
 settings_time_greater_than#:#The start time of the limited period must be smaller than the end time. Please try again.
 settings_file_mode_create_title_required#:#A title is required for mode <strong>%s</strong>.
-rep_robj_xono_perm_editFile#:#Edit File
 form_input_file#:#File
 form_input_upload_file#:#Upload a File
 form_input_create_file#:#Create a new File
