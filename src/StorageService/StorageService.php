@@ -362,6 +362,11 @@ class StorageService
 
     }
 
+    public function getSource(ResourceIdentification $rid): ?string
+    {
+        return $this->file_system_service->getSource($rid);
+    }
+
     public function getPreviousVersion(Uuid $uuid, int $version): FileVersion
     {
         return $this->file_version_repository->readByUuid($uuid, $version - 1);

@@ -29,8 +29,8 @@ use ILIAS\Plugin\OnlyOffice\Model\File;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Model\ObjectSettings;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use ILIAS\ResourceStorage\Services;
 
 class xonoEditorGUI extends xonoAbstractGUI
 {
@@ -43,7 +43,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected string $onlyoffice_key;
     private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly ObjectSettingsRepository $object_settings_repo;
-    private Services $resource_storage;
+    private StorageService $storage_service;
 
     public function __construct(
         Container $dic,
@@ -55,7 +55,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $this->onlyoffice_url = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_URL, "");
         $this->onlyoffice_key = $this->plugin->settings->get(PluginConfigForm::KEY_ONLYOFFICE_SECRET, "");
         $this->main_tpl = $this->dic->ui()->mainTemplate();
-        $this->resource_storage = $this->dic->resourceStorage();
+        $this->storage_service = $this->plugin->getStorageService();
 
         $this->object_settings_repo = new ObjectSettingsRepository($this->dic->database());
     }
@@ -83,17 +83,15 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     protected function editFile(): void
     {
-        $storage_service = $this->plugin->getStorageService();
-
         $object_settings = $this->object_settings_repo->read($this->file_id);
 
-        $file = $storage_service->getFile($this->file_id);
+        $file = $this->storage_service->getFile($this->file_id);
         $latest_version = null;
         $all_versions = null;
 
         if (!is_null($file)) {
-            $all_versions = $storage_service->getAllVersions($this->file_id);
-            $latest_version = $storage_service->getLatestVersion($file->getUuid());
+            $all_versions = $this->storage_service->getAllVersions($this->file_id);
+            $latest_version = $this->storage_service->getLatestVersion($file->getUuid());
         }
 
         $this->main_tpl->addJavaScript($this->plugin->assetsFile(PluginAsset::Js, "editor.js"));
@@ -172,7 +170,7 @@ class xonoEditorGUI extends xonoAbstractGUI
         $document['fileType'] = $file->getFileType();
         $document['key'] = $this->generateDocumentKey($file_version);
         $document['title'] = $file->getTitle();
-        $document['url'] = $this->resource_storage->consume()->src($file_version->getRid())->getSrc();
+        $document['url'] = $file_version->getRid() ? $this->storage_service->getSource($file_version->getRid()) : "";
         $as_array['document'] = $document;
 
         // editor config
@@ -211,7 +209,7 @@ class xonoEditorGUI extends xonoAbstractGUI
      */
     protected function history(FileVersion $latest_version, array $all_versions): array
     {
-        $all_changes = $this->plugin->getStorageService()->getAllChanges($latest_version->getFileUuid());
+        $all_changes = $this->storage_service->getAllChanges($latest_version->getFileUuid());
         $history_array = [];
 
         // add all versions to history
@@ -238,6 +236,7 @@ class xonoEditorGUI extends xonoAbstractGUI
 
     /**
      * Builds and returns an array containing information about all file versions
+     * @param list<FileVersion> $all_versions
      */
     protected function historyData(array $all_versions): array
     {
@@ -247,7 +246,7 @@ class xonoEditorGUI extends xonoAbstractGUI
             $v = $version->getVersion();
             $uuid = $version->getFileUuid()->toString();
 
-            $data_array['changesUrl'] = $this->plugin->getStorageService()->getChangeUrl($version);
+            $data_array['changesUrl'] = $this->storage_service->getChangeUrl($version);
 
             $data_array['key'] = $uuid . '-' . $v;
 
@@ -255,7 +254,7 @@ class xonoEditorGUI extends xonoAbstractGUI
                 $data_array['previous'] = $this->buildPreviousArray($version);
             }
 
-            $data_array['url'] = $this->resource_storage->consume()->src($version->getRid())->getSrc();
+            $data_array['url'] = $version->getRid() ? $this->storage_service->getSource($version->getRid()) : "";
 
             $data_array['version'] = $v;
 
@@ -301,13 +300,13 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected function buildPreviousArray(FileVersion $version): array
     {
         $result = [];
-        $previous = $this->plugin->getStorageService()->getPreviousVersion(
+        $previous = $this->storage_service->getPreviousVersion(
             $version->getFileUuid(),
             $version->getVersion()
         );
         $key = $previous->getFileUuid()->toString() . '-' . $previous->getVersion();
         $result['key'] = $key;
-        $result['url'] = $this->resource_storage->consume()->src($previous->getRid())->getSrc();
+        $result['url'] = $previous->getRid() ? $this->storage_service->getSource($previous->getRid()) : "";
         return $result;
     }
 

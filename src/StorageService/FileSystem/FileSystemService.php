@@ -167,4 +167,9 @@ class FileSystemService
 
         return $this->resource_storage->consume()->src($file_change->getRid())->getSrc();
     }
+
+    public function getSource(ResourceIdentification $rid): ?string
+    {
+        return $this->resource_storage->consume()->src($rid)->getSrc();
+    }
 }
