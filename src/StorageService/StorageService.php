@@ -37,6 +37,7 @@ use ILIAS\Plugin\OnlyOffice\Repository\FileTemplateRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
+use ILIAS\ResourceStorage\Consumer\DownloadConsumer;
 use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class StorageService
@@ -364,6 +365,11 @@ class StorageService
     public function getSource(ResourceIdentification $rid): ?string
     {
         return $this->file_system_service->getSource($rid);
+    }
+
+    public function getDownload(ResourceIdentification $rid): DownloadConsumer
+    {
+        return $this->file_system_service->getDownload($rid);
     }
 
     public function getPreviousVersion(Uuid $uuid, int $version): FileVersion

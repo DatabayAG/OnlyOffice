@@ -26,7 +26,6 @@ use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 use ILIAS\Refinery\Factory;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use ILIAS\ResourceStorage\Services;
 
 class xonoContentGUI extends xonoAbstractGUI
 {
@@ -41,7 +40,6 @@ class xonoContentGUI extends xonoAbstractGUI
     private readonly Factory $refinery;
     private readonly WrapperFactory $http_wrapper;
     private readonly ObjectSettingsRepository $object_settings_repo;
-    private Services $resource_storage;
     private UiUtil $ui_util;
 
     public function __construct(
@@ -55,7 +53,6 @@ class xonoContentGUI extends xonoAbstractGUI
 
         parent::__construct($dic, $plugin);
         $this->main_tpl = $dic->ui()->mainTemplate();
-        $this->resource_storage = $dic->resourceStorage();
 
         $this->object_settings_repo = new ObjectSettingsRepository($dic->database());
         $this->ui_util = new UiUtil($dic);
@@ -177,7 +174,7 @@ class xonoContentGUI extends xonoAbstractGUI
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
-        $download = $this->resource_storage->consume()->download($file_version->getRid());
+        $download = $storage_service->getDownload($file_version->getRid());
         $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
         $file_name = rtrim($file->getTitle(), '.' . $ext);
 

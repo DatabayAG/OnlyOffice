@@ -32,6 +32,7 @@ use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Model\FileChange;
 use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
 use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
+use ILIAS\ResourceStorage\Consumer\DownloadConsumer;
 use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 use ILIAS\ResourceStorage\Services;
 use ilLogger;
@@ -100,5 +101,10 @@ class FileSystemService
     public function getSource(ResourceIdentification $rid): ?string
     {
         return $this->resource_storage->consume()->src($rid)->getSrc();
+    }
+
+    public function getDownload(ResourceIdentification $rid): DownloadConsumer
+    {
+        return $this->resource_storage->consume()->download($rid);
     }
 }
