@@ -220,9 +220,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 $this->plugin->txt("settings_file_mode_create_title_required"),
                 $this->plugin->txt("form_input_create_file")
             ));
-            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
-            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+            $this->redirectToObjectCreation();
 
             return;
         }
@@ -232,9 +230,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             && $allow_edit->getStartTime()->getTimestamp() >= $allow_edit->getEndTime()->getTimestamp()
         ) {
             $this->ui_util->sendFailure($this->plugin->txt("settings_time_greater_than"));
-            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
-            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+            $this->redirectToObjectCreation();
             return;
         }
 
@@ -420,6 +416,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
 
         //$this->dic->tabs()->manual_activation = true; // Show all tabs as links when no activation
+    }
+
+    private function redirectToObjectCreation(): void
+    {
+        $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
+        $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
+        $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
     }
 
     public static function getStartCmd(): string
