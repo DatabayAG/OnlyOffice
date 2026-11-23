@@ -318,10 +318,14 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 if (!$this->dic->upload()->hasBeenProcessed()) {
                     $this->dic->upload()->process();
                 }
-                $storage_service->createNewFileFromUpload(
+                $file = $storage_service->createNewFileFromUpload(
                     $upload_result,
                     $new_object->getId()
                 );
+
+                if (!$file) {
+                    $this->redirectToObjectCreation();
+                }
 
                 if ($title === "") {
                     $new_object->setTitle(pathinfo($upload_result->getName(), PATHINFO_FILENAME));
@@ -329,17 +333,26 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 }
             }
         } elseif ($file_setting->getFileMode() === FileMode::CREATE) {
-            $storage_service->createNewFileFromDraft(
+            $file = $storage_service->createNewFileFromDraft(
                 FileSanitizer::sanitizeFileName($title),
                 $file_setting->getFileCreationType(),
                 $new_object->getId()
             );
+
+            if (!$file) {
+                $this->redirectToObjectCreation();
+            }
+
         } elseif ($file_setting->getFileMode() === FileMode::TEMPLATE) {
-            $storage_service->createNewFileFromTemplate(
+            $file = $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
                 $file_setting->getFileTemplateId(),
                 $new_object->getId()
             );
+
+            if (!$file) {
+                $this->redirectToObjectCreation();
+            }
         }
 
         parent::afterSave($new_object);

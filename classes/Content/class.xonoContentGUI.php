@@ -174,15 +174,22 @@ class xonoContentGUI extends xonoAbstractGUI
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
 
-        $download = $storage_service->getDownload($file_version->getRid());
-        $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
-        $file_name = rtrim($file->getTitle(), '.' . $ext);
+
 
         try {
+            $download = $storage_service->getDownload($file_version->getRid());
+
+            if (!$download) {
+                throw new Exception("No download received");
+            }
+
+            $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
+            $file_name = rtrim($file->getTitle(), '.' . $ext);
+
             $download->overrideFileName(
                 "{$file_name}_V{$file_version->getVersion()}.$ext"
             )->run();
-        } catch (Throwable $ex) {
+        } catch (Throwable) {
             $this->ui_util->sendFailure($this->plugin->txt("file.not_found"));
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }

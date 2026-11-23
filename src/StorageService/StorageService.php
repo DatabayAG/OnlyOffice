@@ -73,11 +73,15 @@ class StorageService
      * @throws IOException
      * @throws ilDateTimeException
      */
-    public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): File
+    public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): ?File
     {
         // Create DB Entries for File & FileVersion
         $new_file_id = $this->uuid_factory->uuid4();
         $rid = $this->file_system_service->createFileFromUpload($upload_result);
+
+        if (!$rid) {
+            return null;
+        }
 
         $file = new File(
             $obj_id,
@@ -93,7 +97,7 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromDraft(string $title, FileCreationType $file_type, int $obj_id): File
+    public function createNewFileFromDraft(string $title, FileCreationType $file_type, int $obj_id): ?File
     {
         $extension = $file_type->toDocumentType();
         $new_file_id = $this->uuid_factory->uuid4();
@@ -101,6 +105,10 @@ class StorageService
         //when immediately downloaded because it's mime type will not be set correctly yet.
         //It may be a good idea to set anything else than empty to avoid this.
         $rid = $this->file_system_service->createFileFromString("");
+
+        if (!$rid) {
+            return null;
+        }
 
         $file = new File(
             $obj_id,
@@ -127,6 +135,9 @@ class StorageService
         $new_file_id = $this->uuid_factory->uuid4();
         $rid = $this->file_system_service->copyFile($template->getRid());
 
+        if (!$rid) {
+            return null;
+        }
         $file = new File(
             $obj_id,
             $new_file_id,
@@ -151,13 +162,17 @@ class StorageService
         string $changes_object,
         string $server_version,
         string $change_content,
-    ): FileVersion {
+    ): ?FileVersion {
 
         // Store FileVersion and Create Database Entry
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->getLatestVersion($uuid)->getVersion() + 1;
         echo $version;
         $rid = $this->file_system_service->createFileFromString($file_content);
+
+        if (!$rid) {
+            return null;
+        }
 
         $file_version = new FileVersion(
             $uuid,
@@ -170,6 +185,11 @@ class StorageService
 
         //Store Changes and Create Database Entry
         $rid = $this->file_system_service->createFileFromString($change_content);
+
+        if (!$rid) {
+            return null;
+        }
+
         $this->file_change_repository->create(new FileChange(
             $uuid,
             $version,
@@ -196,6 +216,10 @@ class StorageService
         }
 
         $rid = $this->file_system_service->createFileFromUpload($upload_result);
+
+        if (!$rid) {
+            return null;
+        }
 
         $file_template = new FileTemplate(
             $title,
@@ -277,7 +301,7 @@ class StorageService
         // clone file versions
         $parent_file_versions = $this->file_version_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_file_versions as $file_version) {
-            $rid = $this->file_system_service->copyFile($file_version->getRid());
+            $rid = $file_version->getRid() ? $this->file_system_service->copyFile($file_version->getRid()) : $file_version->getRid();
             $this->file_version_repository->create(new FileVersion(
                 $uuid,
                 $this->dic->user()->getId(),
@@ -290,7 +314,7 @@ class StorageService
         // clone file changes
         $parent_changes = $this->file_change_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_changes as $file_change) {
-            $rid = $this->file_system_service->copyFile($file_change->getRid());
+            $rid = $file_change->getRid() ? $this->file_system_service->copyFile($file_change->getRid()) : $file_change->getRid();
 
             $this->file_change_repository->create(new FileChange(
                 $uuid,
@@ -367,7 +391,7 @@ class StorageService
         return $this->file_system_service->getSource($rid);
     }
 
-    public function getDownload(ResourceIdentification $rid): DownloadConsumer
+    public function getDownload(ResourceIdentification $rid): ?DownloadConsumer
     {
         return $this->file_system_service->getDownload($rid);
     }
