@@ -99,38 +99,6 @@ class FileSystemService
         return $this->replaceFile($rid, new Stream($stream));
     }
 
-
-    public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
-    {
-        $path = $this->createAndGetPath($obj_id, $uuid, true) . $version . '.' . $extension;
-        $stream = Streams::ofString($content);
-        $web = $this->web_file_system;
-        $web->writeStream($path, $stream);
-        return $path;
-    }
-
-    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id): ?ResourceIdentification
-    {
-        $parent_rid = $parent_version->getRid();
-
-        if (!$parent_rid) {
-            return null;
-        }
-
-        return $this->copyFile($parent_rid);
-    }
-
-    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): ?ResourceIdentification
-    {
-        $parent_rid = $parent_change->getRid();
-
-        if (!$parent_rid) {
-            return null;
-        }
-
-        return $this->copyFile($parent_rid);
-    }
-
     public function deletePath(int $file_id): void
     {
         $path = self::BASE_PATH . $file_id;

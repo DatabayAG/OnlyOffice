@@ -276,7 +276,7 @@ class StorageService
         // clone file versions
         $parent_file_versions = $this->file_version_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_file_versions as $file_version) {
-            $rid = $this->file_system_service->storeVersionCopy($file_version, $uuid->toString(), $child_id);
+            $rid = $this->file_system_service->copyFile($file_version->getRid());
             $this->file_version_repository->create(new FileVersion(
                 $uuid,
                 $this->dic->user()->getId(),
@@ -289,7 +289,7 @@ class StorageService
         // clone file changes
         $parent_changes = $this->file_change_repository->readAllByUuid($parent_file->getUuid());
         foreach ($parent_changes as $file_change) {
-            $rid = $this->file_system_service->storeChangeCopy($file_change, $uuid->toString(), $child_id);
+            $rid = $this->file_system_service->copyFile($file_change->getRid());
 
             $this->file_change_repository->create(new FileChange(
                 $uuid,
