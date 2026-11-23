@@ -72,6 +72,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
     private Container $dic;
     private UUIDFactory $uuid_factory;
     private UiUtil $ui_util;
+    private ilGlobalTemplateInterface $main_tpl;
 
     protected function afterConstructor(): void
     {
@@ -79,6 +80,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 
         $this->dic = $DIC;
 
+        $this->main_tpl = $this->dic->ui()->mainTemplate();
         $this->uuid_factory = new UUIDFactory();
         $this->ui_util = new UiUtil();
     }
@@ -349,7 +351,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             if (!$file_template) {
                 $this->redirectToObjectCreation();
             }
-
+            
             $file = $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
                 $file_template,
