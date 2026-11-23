@@ -2,15 +2,14 @@ obj_xono#:#OnlyOffice
 obj_xono_duplicate#:#OnlyOffice kopieren
 objs_xono#:#OnlyOffices
 objs_xono_duplicate#:#OnlyOffices kopieren
+
 rbac_create_xono#:#OnlyOffice anlegen
 crs_create_xono#:#OnlyOffice anlegen
 fold_create_xono#:#OnlyOffice anlegen
 grp_create_xono#:#OnlyOffice anlegen
-xono_copy#:#OnlyOffice kopieren
-xono_rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
-
 
 xono_add#:#Hinzufügen
+xono_copy#:#OnlyOffice kopieren
 xono_delete#:#Löschen
 xono_edit_permission#:#Rechte bearbeiten
 xono_new#:#OnlyOffice anlegen
@@ -25,6 +24,8 @@ xono_date#:#Datum
 xono_editor#:#Erstellt von
 xono_download#:#Herunterladen
 xono_new_from_template#:#Von Template erstellen
+xono_rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
+
 create_from_template#:#Template
 create_from_template_info#:#Verwende Template aus der Plugin-Konfiguration
 filetype_word#:#Text

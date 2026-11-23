@@ -2,14 +2,14 @@ obj_xono#:#OnlyOffice
 obj_xono_duplicate#:#Copy OnlyOffice
 objs_xono#:#OnlyOffices
 objs_xono_duplicate#:#Copy OnlyOffices
+
 rbac_create_xono#:#Create OnlyOffice
 crs_create_xono#:#Create OnlyOffice
 fold_create_xono#:#Create OnlyOffice
 grp_create_xono#:#Create OnlyOffice
-xono_copy#:#Copy OnlyOffice
-xono_rep_robj_xono_perm_editFile#:#Edit File
 
 xono_add#:#Add
+xono_copy#:#Copy OnlyOffice
 xono_delete#:#Delete
 xono_edit_permission#:#Edit permission
 xono_new#:#Create OnlyOffice
@@ -23,6 +23,8 @@ xono_version#:#Version
 xono_date#:#Date
 xono_editor#:#Created By
 xono_download#:#Download
+xono_rep_robj_xono_perm_editFile#:#Edit File
+
 form_open_editor#:#Show in ONLYOFFICE Online Editor
 form_open_download#:#Download the File
 form_open_ilias#:#Show Version History on ILIAS
