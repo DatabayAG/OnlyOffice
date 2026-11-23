@@ -124,10 +124,21 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         }
     }
 
+    public function step_1(): void
+    {
+        $table_name = "xono_config";
+
+        if (!$this->db->tableExists($table_name)) {
+            return;
+        }
+
+        $this->db->dropTable($table_name);
+    }
+
     /**
      * Base migration to fix incorrect/malformed ActiveRecord db table structure for ObjectSettings
      */
-    public function step_1(): void
+    public function step_2(): void
     {
         $table_name = "rep_robj_xono_set";
 
@@ -182,7 +193,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
     /**
      * Base migration to fix incorrect/malformed ActiveRecord db table structure for FileChange
      */
-    public function step_2(): void
+    public function step_3(): void
     {
         $table_name = "xono_file_change";
 
@@ -277,7 +288,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
     /**
      * Base migration to fix incorrect/malformed ActiveRecord db table structure for File
      */
-    public function step_3(): void
+    public function step_4(): void
     {
         $table_name = "xono_file";
 
@@ -300,7 +311,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         }
     }
 
-    public function step_4(): void
+    public function step_5(): void
     {
         $table_name = "rep_robj_xono_set";
 
@@ -361,7 +372,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
 
-    public function step_5(): void
+    public function step_6(): void
     {
         $table_name = "xono_file_version";
 
@@ -403,7 +414,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->createSequence($table_name);
     }
 
-    public function step_6(): void
+    public function step_7(): void
     {
         $table_name = "xono_file_change";
 
@@ -450,7 +461,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->createSequence($table_name);
     }
 
-    public function step_7(): void
+    public function step_8(): void
     {
         $table_name = "xono_file";
 
@@ -489,7 +500,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         $this->db->addPrimaryKey($table_name, ["obj_id"]);
     }
 
-    public function step_8(): void
+    public function step_9(): void
     {
         $table_name = "xono_file_change";
         if (!$this->db->tableExists($table_name)) {
@@ -505,7 +516,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         }
     }
 
-    public function step_9(): void
+    public function step_10(): void
     {
         $file_version_table_name = "xono_file_version";
         $file_change_table_name = "xono_file_change";
@@ -532,7 +543,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
         }
     }
 
-    public function step_10(): void
+    public function step_11(): void
     {
         $table_name = "xono_file_template";
         if ($this->db->tableExists($table_name)) {
