@@ -481,6 +481,12 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
         }
 
+        $file_template = $this->storage_service->fetchTemplate($template_id);
+
+        if (!$file_template) {
+            $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
+        }
+
         $success = $this->storage_service->deleteFileTemplate($template_id);
 
         if ($success) {

@@ -344,9 +344,15 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             }
 
         } elseif ($file_setting->getFileMode() === FileMode::TEMPLATE) {
+            $file_template = $storage_service->fetchTemplate($file_setting->getFileTemplateId());
+
+            if (!$file_template) {
+                $this->redirectToObjectCreation();
+            }
+
             $file = $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
-                $file_setting->getFileTemplateId(),
+                $file_template,
                 $new_object->getId()
             );
 

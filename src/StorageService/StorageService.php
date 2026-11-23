@@ -124,16 +124,10 @@ class StorageService
         return $file;
     }
 
-    public function createNewFileFromTemplate(string $title, $template_id, int $obj_id): ?File
+    public function createNewFileFromTemplate(string $title, FileTemplate $file_template, int $obj_id): ?File
     {
-        $template = $this->file_template_repository->read($template_id);
-
-        if (!$template) {
-            return null;
-        }
-
         $new_file_id = $this->uuid_factory->uuid4();
-        $rid = $this->file_system_service->copyFile($template->getRid());
+        $rid = $this->file_system_service->copyFile($file_template->getRid());
 
         if (!$rid) {
             return null;
@@ -141,8 +135,8 @@ class StorageService
         $file = new File(
             $obj_id,
             $new_file_id,
-            "$title.{$template->getExtension()}",
-            $template->getExtension(),
+            "$title.{$file_template->getExtension()}",
+            $file_template->getExtension(),
             $this->file_system_service->getMimeType($rid)
         );
 
@@ -236,14 +230,8 @@ class StorageService
         return null;
     }
 
-    public function deleteFileTemplate(int $template_id): bool
+    public function deleteFileTemplate(FileTemplate $file_template): bool
     {
-        $file_template = $this->fetchTemplate($template_id);
-
-        if (!$file_template) {
-            return false;
-        }
-
         $file_deleted =  $this->file_system_service->deleteFile($file_template->getRid());
         if (!$file_deleted) {
             return false;
