@@ -29,6 +29,7 @@ use ilDBStepReader;
 use ilDBUpdateNewObjectType;
 use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileTemplateRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
 use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
 use ILIAS\Setup\ArrayEnvironment;
@@ -96,6 +97,7 @@ class DBUpdateSteps implements ilDatabaseUpdateSteps
             FileRepository::TABLE_NAME,
             FileVersionRepository::TABLE_NAME,
             FileChangeRepository::TABLE_NAME,
+            FileTemplateRepository::TABLE_NAME
         ];
 
         foreach ($tables_to_drop as $table_name) {
