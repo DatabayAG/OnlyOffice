@@ -408,6 +408,10 @@ class StorageService
         foreach ($this->file_repository->readAll() as $file) {
             $this->delete($file->getObjId());
         }
+
+        foreach ($this->file_template_repository->readAll() as $file_template) {
+            $this->deleteFileTemplate($file_template);
+        }
     }
 
     /**
