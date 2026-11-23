@@ -86,6 +86,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     protected function uninstallCustom(): void
     {
+        $this->settings->deleteAll();
         $this->getStorageService()->deleteAll();
 
         (new DBUpdateSteps())->uninstall($this->db);
