@@ -304,11 +304,6 @@ class StorageService
 
     public function delete(int $obj_id): void
     {
-        // remove physical structure
-
-        $this->file_system_service->deletePath($obj_id);
-
-
         $file = $this->file_repository->read($obj_id);
         if (!$file) {
             return;
@@ -358,8 +353,12 @@ class StorageService
         if (!$file_change) {
             return null;
         }
-        return $this->file_system_service->getChangeUrl($file_change);
 
+        if (!$file_change->getRid()) {
+            return null;
+        }
+
+        return $this->getSource($file_change->getRid());
     }
 
     public function getSource(ResourceIdentification $rid): ?string
