@@ -302,17 +302,32 @@ class StorageService
 
     }
 
-    public function deleteFile(int $file_id): void
+    public function delete(int $obj_id): void
     {
         // remove physical structure
-        $this->file_system_service->deletePath($file_id);
-        $file = $this->file_repository->read($file_id);
+
+        $this->file_system_service->deletePath($obj_id);
+
+
+        $file = $this->file_repository->read($obj_id);
         if (!$file) {
             return;
         }
         $uuid = $file->getUuid();
 
-        $this->file_repository->deleteById($file_id);
+        foreach ($this->file_version_repository->readAllByUuid($uuid) as $file_version) {
+            if ($file_version->getRid()) {
+                $this->file_system_service->deleteFile($file_version->getRid());
+            }
+        }
+
+        foreach ($this->file_change_repository->readAllByUuid($uuid) as $file_change) {
+            if ($file_change->getRid()) {
+                $this->file_system_service->deleteFile($file_change->getRid());
+            }
+        }
+
+        $this->file_repository->deleteById($obj_id);
         $this->file_version_repository->deleteByFileUuid($uuid);
         $this->file_change_repository->deleteByFileUuid($uuid);
     }
@@ -369,7 +384,7 @@ class StorageService
     public function deleteAll(): void
     {
         foreach ($this->file_repository->readAll() as $file) {
-            $this->deleteFile($file->getObjId());
+            $this->delete($file->getObjId());
         }
     }
 

@@ -184,7 +184,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
     public function doDelete(): void
     {
         $this->object_settings_repo->delete($this->object_settings);
-        $this->plugin->getStorageService()->deleteFile($this->getId());
+        $this->plugin->getStorageService()->delete($this->getId());
 
     }
 
