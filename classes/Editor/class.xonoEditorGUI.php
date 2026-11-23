@@ -130,8 +130,8 @@ class xonoEditorGUI extends xonoAbstractGUI
                 "editing" => [
                     "limited" => $object_settings->isLimitedPeriod(),
                     "withinTimeLimit" => $within_potential_time_limit,
-                    "startTime" => $object_settings->getStartTime(),
-                    "endTime" => $object_settings->getEndTime(),
+                    "startTime" => $object_settings->getStartTime()?->getUnixTime(),
+                    "endTime" => $object_settings->getEndTime()->getUnixTime(),
                 ],
                 "file" => [
                     "currentVersion" => $current_version,
