@@ -37,7 +37,7 @@ use ILIAS\Setup\Environment;
 use ilOnlyOfficePlugin;
 use ilRbacReview;
 
-class DBUpdateSteps implements ilDatabaseUpdateSteps
+class UpdateSteps implements ilDatabaseUpdateSteps
 {
     public const string PREFIX = "step_";
 

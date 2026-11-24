@@ -53,7 +53,7 @@ class SetupAgent implements Agent
         return new Setup\ObjectiveCollection(
             "ILIAS\Plugin\OnlyOffice",
             true,
-            new ilDatabaseUpdateStepsExecutedObjective(new DBUpdateSteps()),
+            new ilDatabaseUpdateStepsExecutedObjective(new UpdateSteps()),
         );
     }
 
@@ -62,7 +62,7 @@ class SetupAgent implements Agent
         return new Setup\ObjectiveCollection(
             "ILIAS\Plugin\OnlyOffice",
             true,
-            new ilDatabaseUpdateStepsExecutedObjective(new DBUpdateSteps()),
+            new ilDatabaseUpdateStepsExecutedObjective(new UpdateSteps()),
         );
     }
 
