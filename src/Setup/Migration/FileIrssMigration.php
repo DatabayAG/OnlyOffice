@@ -179,7 +179,7 @@ class FileIrssMigration implements Migration
             ]);
         }
 
-        //Only drop table column if migration was completly finished
+        //Only drop table column if migration was completely finished
         if ($this->getRemainingAmountOfStepsForTable($table_name) === 0) {
             $db->dropTableColumn($table_name, "url");
         }
