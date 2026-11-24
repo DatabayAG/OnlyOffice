@@ -184,12 +184,12 @@ class xonoContentGUI extends xonoAbstractGUI
             }
 
             $ext = pathinfo($file->getTitle(), PATHINFO_EXTENSION);
-            $file_name = rtrim($file->getTitle(), '.' . $ext);
+            $file_name = pathinfo($file->getTitle(), PATHINFO_FILENAME);
 
             $download->overrideFileName(
                 "{$file_name}_V{$file_version->getVersion()}.$ext"
             )->run();
-        } catch (Throwable) {
+        } catch (Throwable $ex) {
             $this->ui_util->sendFailure($this->plugin->txt("file.not_found"));
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
