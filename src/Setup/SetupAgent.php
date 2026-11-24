@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Setup;
 
 use ilDatabaseUpdateStepsExecutedObjective;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\ExistingInstallationUpdateSteps;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\UpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Setup\Migration\FileIrssMigration;
 use ILIAS\Plugin\OnlyOffice\Setup\Migration\FileTemplateIrssMigration;
 use ILIAS\Refinery\Transformation;
@@ -53,6 +55,7 @@ class SetupAgent implements Agent
         return new Setup\ObjectiveCollection(
             "ILIAS\Plugin\OnlyOffice",
             true,
+            new ilDatabaseUpdateStepsExecutedObjective(new ExistingInstallationUpdateSteps()),
             new ilDatabaseUpdateStepsExecutedObjective(new UpdateSteps()),
         );
     }
@@ -62,6 +65,7 @@ class SetupAgent implements Agent
         return new Setup\ObjectiveCollection(
             "ILIAS\Plugin\OnlyOffice",
             true,
+            new ilDatabaseUpdateStepsExecutedObjective(new ExistingInstallationUpdateSteps()),
             new ilDatabaseUpdateStepsExecutedObjective(new UpdateSteps()),
         );
     }

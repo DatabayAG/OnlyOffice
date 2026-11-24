@@ -22,6 +22,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\ExistingInstallationUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Setup\Database\UpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 
@@ -72,14 +73,20 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 
     public function install(): void
     {
-        (new UpdateSteps())->install($this->db);
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->install($this->db);
+        }
         parent::install();
     }
 
     public function update(): bool
     {
-        //UpdateSteps should be executed before the parent update so potential exceptions result in no il_plugin db changes
-        (new UpdateSteps())->install($this->db);
+        //Update steps should be executed before the parent update so potential exceptions result in no il_plugin db changes
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->install($this->db);
+        }
 
         return parent::update();
     }
@@ -89,7 +96,10 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         $this->settings->deleteAll();
         $this->getStorageService()->deleteAll();
 
-        (new UpdateSteps())->uninstall($this->db);
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->uninstall($this->db);
+        }
     }
 
     public function allowCopy(): bool

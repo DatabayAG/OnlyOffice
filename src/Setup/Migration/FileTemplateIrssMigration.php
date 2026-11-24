@@ -25,6 +25,7 @@ use ilDatabaseUpdateStepsExecutedObjective;
 use ilDBConstants;
 use ilDBStatement;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\ExistingInstallationUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Setup\Database\UpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
 use ILIAS\Setup\CLI\IOWrapper;
@@ -62,6 +63,7 @@ class FileTemplateIrssMigration implements Migration
     {
         return [
             ...ilResourceStorageMigrationHelper::getPreconditions(),
+            new ilDatabaseUpdateStepsExecutedObjective(new ExistingInstallationUpdateSteps()),
             new ilDatabaseUpdateStepsExecutedObjective(new UpdateSteps())
         ];
     }
