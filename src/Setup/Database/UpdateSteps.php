@@ -73,7 +73,7 @@ class UpdateSteps implements ilDatabaseUpdateSteps
         // => SetupAgent should usually do these next steps using NewTypeAddedObjective & ilAccessCustomRBACOperationAddedObjective objectives,
         //    however SetupAgent objectives are only executed when installed/updated through CLI.
 
-        require_once dirname(__DIR__, 10) . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php";
+        require_once dirname(__DIR__, 11) . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php";
 
         $xono_type_id = ilDBUpdateNewObjectType::addNewType(ilOnlyOfficePlugin::ID, 'Plugin OnlyOffice');
 
