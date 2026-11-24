@@ -54,7 +54,7 @@ class TemplateForm extends ilPropertyFormGUI
 
         $this->setTarget("_top");
 
-        if($template_id) {
+        if ($template_id) {
             $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "template_id", $template_id);
         }
 

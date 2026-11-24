@@ -21,7 +21,6 @@ declare(strict_types=1);
 use ILIAS\Data\UUID\Uuid;
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\CryptoService\JwtService;
-use ILIAS\Plugin\OnlyOffice\CryptoService\WebAccessService;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
 use ILIAS\Plugin\OnlyOffice\Form\PluginConfigForm;

@@ -351,7 +351,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             if (!$file_template) {
                 $this->redirectToObjectCreation();
             }
-            
+
             $file = $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
                 $file_template,

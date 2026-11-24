@@ -232,7 +232,7 @@ class StorageService
 
     public function deleteFileTemplate(FileTemplate $file_template): bool
     {
-        $file_deleted =  $this->file_system_service->deleteFile($file_template->getRid());
+        $file_deleted = $this->file_system_service->deleteFile($file_template->getRid());
         if (!$file_deleted) {
             return false;
         }

@@ -74,7 +74,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     public function install(): void
     {
         /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
-        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
             $update_step->install($this->db);
         }
         parent::install();
@@ -84,7 +84,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
     {
         //Update steps should be executed before the parent update so potential exceptions result in no il_plugin db changes
         /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
-        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
             $update_step->install($this->db);
         }
 
@@ -97,7 +97,7 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         $this->getStorageService()->deleteAll();
 
         /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
-        foreach([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
             $update_step->uninstall($this->db);
         }
     }

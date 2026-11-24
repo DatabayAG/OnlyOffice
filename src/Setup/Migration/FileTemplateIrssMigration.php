@@ -23,7 +23,6 @@ namespace ILIAS\Plugin\OnlyOffice\Setup\Migration;
 use FilesystemIterator;
 use ilDatabaseUpdateStepsExecutedObjective;
 use ilDBConstants;
-use ilDBStatement;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
 use ILIAS\Plugin\OnlyOffice\Setup\Database\ExistingInstallationUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Setup\Database\UpdateSteps;
@@ -102,7 +101,7 @@ class FileTemplateIrssMigration implements Migration
             $file_name = pathinfo($file->getFilename(), PATHINFO_FILENAME);
             if ($file->getExtension() === "txt" || basename($file->getPath()) === self::DESCRIPTIONS_DIR_NAME) {
                 if (isset($file_map[$file_name])) {
-                    $file_map[$file_name]["description"] = $file->isReadable() ?  (file_get_contents($file->getRealPath()) ?? "") : "";
+                    $file_map[$file_name]["description"] = $file->isReadable() ? (file_get_contents($file->getRealPath()) ?? "") : "";
                     $file_map[$file_name]["description_file"] = $file;
                 }
                 continue;
@@ -163,8 +162,8 @@ class FileTemplateIrssMigration implements Migration
             $id = $db->nextId(self::TABLE_NAME);
 
             $success = $db->insert(
-                    self::TABLE_NAME,
-                    [
+                self::TABLE_NAME,
+                [
                         "id" => [ilDBConstants::T_INTEGER, $id],
                         "title" => [ilDBConstants::T_TEXT, $file_name],
                         "description" => [ilDBConstants::T_CLOB, $description],
@@ -172,7 +171,7 @@ class FileTemplateIrssMigration implements Migration
                         "extension" => [ilDBConstants::T_TEXT, $file->getExtension()],
                         "rid" => [ilDBConstants::T_CLOB, $rid->serialize()],
                     ]
-                ) === 1;
+            ) === 1;
 
             if ($success) {
                 if (!unlink($file->getRealPath())) {

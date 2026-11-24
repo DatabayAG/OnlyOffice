@@ -83,8 +83,8 @@ class FileTemplateRepository
         $file_template->setId($this->db->nextId(self::TABLE_NAME));
 
         return $this->db->insert(
-                self::TABLE_NAME,
-                [
+            self::TABLE_NAME,
+            [
                     "id" => [ilDBConstants::T_INTEGER, $file_template->getId()],
                     "title" => [ilDBConstants::T_TEXT, $file_template->getTitle()],
                     "description" => [ilDBConstants::T_CLOB, $file_template->getDescription()],
@@ -92,22 +92,22 @@ class FileTemplateRepository
                     "extension" => [ilDBConstants::T_TEXT, $file_template->getExtension()],
                     "rid" => [ilDBConstants::T_CLOB, $file_template->getRid()->serialize()],
                 ]
-            ) === 1;
+        ) === 1;
     }
 
     public function update(FileTemplate $file_template): bool
     {
         return $this->db->update(
-                self::TABLE_NAME,
-                [
+            self::TABLE_NAME,
+            [
                     "title" => [ilDBConstants::T_TEXT, $file_template->getTitle()],
                     "description" => [ilDBConstants::T_CLOB, $file_template->getDescription()],
                     "type" => [ilDBConstants::T_TEXT, $file_template->getType()->value],
                     "extension" => [ilDBConstants::T_TEXT, $file_template->getExtension()],
                     "rid" => [ilDBConstants::T_CLOB, $file_template->getRid()->serialize()],
                 ],
-                ["id" => [ilDBConstants::T_INTEGER, $file_template->getId()]]
-            ) === 1;
+            ["id" => [ilDBConstants::T_INTEGER, $file_template->getId()]]
+        ) === 1;
     }
 
     public function store(FileTemplate $file_template): bool
@@ -127,19 +127,19 @@ class FileTemplateRepository
     public function deleteById(int $id): bool
     {
         return $this->db->manipulateF(
-                "DELETE FROM " . self::TABLE_NAME . " WHERE id = %s",
-                [ilDBConstants::T_INTEGER],
-                [$id]
-            ) === 1;
+            "DELETE FROM " . self::TABLE_NAME . " WHERE id = %s",
+            [ilDBConstants::T_INTEGER],
+            [$id]
+        ) === 1;
     }
 
     public function deleteByFileUuid(Uuid $uuid): bool
     {
         return $this->db->manipulateF(
-                "DELETE FROM " . self::TABLE_NAME . " WHERE file_uuid = %s",
-                [ilDBConstants::T_TEXT],
-                [$uuid->toString()]
-            ) === 1;
+            "DELETE FROM " . self::TABLE_NAME . " WHERE file_uuid = %s",
+            [ilDBConstants::T_TEXT],
+            [$uuid->toString()]
+        ) === 1;
     }
 
     public function exists(int $id): bool

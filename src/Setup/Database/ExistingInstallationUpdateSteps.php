@@ -20,22 +20,11 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\Setup\Database;
 
-use ilAccessRBACOperationDeletedObjective;
 use ilDatabaseUpdateSteps;
 use ilDBConstants;
 use ilDBInterface;
 use ilDBStepExecutionDB;
 use ilDBStepReader;
-use ilDBUpdateNewObjectType;
-use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileTemplateRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
-use ILIAS\Setup\ArrayEnvironment;
-use ILIAS\Setup\Environment;
-use ilOnlyOfficePlugin;
-use ilRbacReview;
 
 class ExistingInstallationUpdateSteps implements ilDatabaseUpdateSteps
 {
