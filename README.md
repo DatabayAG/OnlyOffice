@@ -54,7 +54,7 @@ Files are deleted from the original web dir after successful migration.
 
 ```shell
 cd /var/www/<ilias installation path>
-php8.3 cli/setup.php migrate --run OnlyOffice.FileIrssMigration -y
+sudo -u www-data php8.3 cli/setup.php migrate --run OnlyOffice.FileIrssMigration -y
 ```
 
 #### File templates to IRSS migration
@@ -65,7 +65,7 @@ Files are deleted from the original web dir after successful migration
 
 ```shell
 cd /var/www/<ilias installation path>
-php8.3 cli/setup.php migrate --run OnlyOffice.FileTemplateIrssMigration -y
+sudo -u www-data php8.3 cli/setup.php migrate --run OnlyOffice.FileTemplateIrssMigration -y
 ```
 
 ### OnlyOffice docker container
