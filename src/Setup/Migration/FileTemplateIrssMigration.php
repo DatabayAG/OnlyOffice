@@ -149,10 +149,18 @@ class FileTemplateIrssMigration implements Migration
                 true
             );
 
-            if ($rid) {
-                $id = $db->nextId(self::TABLE_NAME);
+            if (!$rid) {
+                $this->error(sprintf(
+                    "Error occurred trying to migrate template file '%s' (path: '%s'). Original file was not deleted!",
+                    $file->getFilename(),
+                    $file->getPath()
+                ));
+                continue;
+            }
 
-                $success = $db->insert(
+            $id = $db->nextId(self::TABLE_NAME);
+
+            $success = $db->insert(
                     self::TABLE_NAME,
                     [
                         "id" => [ilDBConstants::T_INTEGER, $id],
@@ -164,37 +172,30 @@ class FileTemplateIrssMigration implements Migration
                     ]
                 ) === 1;
 
-                if ($success) {
-                    if (!unlink($file->getRealPath())) {
-                        $this->error(sprintf(
-                            "Error occurred trying to delete original file '%s' in path '%s'. Manual deletion required. Re-run of migration may lead to duplicate templates!",
-                            $file->getFilename(),
-                            $file->getPath(),
-                        ));
-                    }
-                    if ($description_file && !unlink($description_file->getRealPath())) {
-                        $this->error(sprintf(
-                            "Error occurred trying to delete original description file '%s' in path '%s'. Manual deletion required. Re-run of migration may lead to duplicate templates!",
-                            $description_file->getFilename(),
-                            $description_file->getPath(),
-                        ));
-                    }
-
-                    $this->inform(sprintf(
-                        "Successfully migrated template file '%s' (path: '%s'). New ID: '%s', new rid: '%s'",
+            if ($success) {
+                if (!unlink($file->getRealPath())) {
+                    $this->error(sprintf(
+                        "Error occurred trying to delete original file '%s' in path '%s'. Manual deletion required. Re-run of migration may lead to duplicate templates!",
                         $file->getFilename(),
                         $file->getPath(),
-                        $id,
-                        $rid->serialize()
                     ));
                 }
-            }
+                if ($description_file && !unlink($description_file->getRealPath())) {
+                    $this->error(sprintf(
+                        "Error occurred trying to delete original description file '%s' in path '%s'. Manual deletion required. Re-run of migration may lead to duplicate templates!",
+                        $description_file->getFilename(),
+                        $description_file->getPath(),
+                    ));
+                }
 
-            $this->error(sprintf(
-                "Error occurred trying to migrate template file '%s' (path: '%s'). Original file was not deleted!",
-                $file->getFilename(),
-                $file->getPath()
-            ));
+                $this->inform(sprintf(
+                    "Successfully migrated template file '%s' (path: '%s'). New ID: '%s', new rid: '%s'",
+                    $file->getFilename(),
+                    $file->getPath(),
+                    $id,
+                    $rid->serialize()
+                ));
+            }
         }
     }
 

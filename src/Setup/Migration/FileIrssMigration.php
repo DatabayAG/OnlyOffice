@@ -25,6 +25,7 @@ use ilDBConstants;
 use ilDBStatement;
 use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
+use ILIAS\Setup\CLI\IOWrapper;
 use ILIAS\Setup\Environment;
 use ILIAS\Setup\Migration;
 use ilResourceStorageMigrationHelper;
@@ -38,6 +39,7 @@ class FileIrssMigration implements Migration
     public const string FILE_CHANGE_TABLE_NAME = "xono_file_change";
 
     private ilResourceStorageMigrationHelper $helper;
+    private ?IOWrapper $io = null;
     private ilDBStatement $file_version_prepared_statement;
     private ilDBStatement $file_change_prepared_statement;
 
@@ -65,6 +67,11 @@ class FileIrssMigration implements Migration
             new FileStakeholder(),
             $environment
         );
+
+        $io = $environment->getResource(Environment::RESOURCE_ADMIN_INTERACTION);
+        if ($io instanceof IOWrapper) {
+            $this->io = $io;
+        }
 
         $this->file_version_prepared_statement = $this->helper->getDatabase()->prepareManip(
             "UPDATE " . self::FILE_VERSION_TABLE_NAME . " SET url = '', rid = ? WHERE id = ?",
@@ -160,13 +167,57 @@ class FileIrssMigration implements Migration
 
                 $full_path = ILIAS_ABSOLUTE_PATH . "/" . ILIAS_WEB_DIR . "/" . CLIENT_ID . "/" . $sanitized_url;
 
-                $rid = $this->helper->movePathToStorage(
-                    $full_path,
-                    $this->helper->getStakeholder()->getOwnerOfNewResources(),
-                    null,
-                    null,
-                    true
-                );
+                $access_error = false;
+
+                $file_exists = file_exists($full_path);
+
+                if ($file_exists && !is_readable($full_path)) {
+                    $this->error("Missing permission to read file '$full_path'. Please check permissions before re-running migration");
+                    $access_error = true;
+                }
+
+                if ($file_exists && !is_writable($full_path)) {
+                    $this->error("Missing permission to write file '$full_path'. Please check permissions before re-running migration");
+                    $access_error = true;
+                }
+
+                if ($access_error) {
+                    continue;
+                }
+
+                if ($file_exists) {
+                    $rid = $this->helper->movePathToStorage(
+                        $full_path,
+                        $this->helper->getStakeholder()->getOwnerOfNewResources(),
+                        null,
+                        null,
+                        true
+                    );
+
+                    if (!$rid) {
+                        $this->error(sprintf(
+                            "Error occurred trying to migrate file '%s'. Original file was not deleted!",
+                            $full_path
+                        ));
+                        continue;
+                    }
+
+                    if (!unlink($full_path)) {
+                        $this->error(sprintf(
+                            "Error occurred trying to delete original file '%s'. Manual deletion required!",
+                            $full_path
+                        ));
+                    }
+
+                    $this->inform(sprintf(
+                        "Successfully migrated file '%s'. New rid: '%s'",
+                        $full_path,
+                        $rid->serialize()
+                    ));
+                } else {
+                    $this->error("File '$full_path' does not exist. File will not be migrated. Resource identification falling back to 'null'");
+                    $rid = null;
+                }
 
                 $migrated_url_rid_cache[$file_url] = $rid;
             }
@@ -195,5 +246,23 @@ class FileIrssMigration implements Migration
         return "SELECT "
             . implode(", ", $select_fields)
             . " FROM $table_name WHERE rid IS NULL AND url != ''";
+    }
+
+    private function inform(string $text, bool $force = false): void
+    {
+        if ($this->io === null || (!$force && !$this->io->isVerbose())) {
+            return;
+        }
+
+        $this->io->inform($text);
+    }
+
+    private function error(string $text): void
+    {
+        if ($this->io === null) {
+            return;
+        }
+
+        $this->io->error($text);
     }
 }
