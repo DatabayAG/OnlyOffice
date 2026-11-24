@@ -40,7 +40,7 @@ class xonoContentGUI extends xonoAbstractGUI
     private readonly Factory $refinery;
     private readonly WrapperFactory $http_wrapper;
     private readonly ObjectSettingsRepository $object_settings_repo;
-    private UiUtil $ui_util;
+    private readonly UiUtil $ui_util;
 
     public function __construct(
         Container $dic,

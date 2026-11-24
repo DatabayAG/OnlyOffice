@@ -42,7 +42,7 @@ class xonoEditorGUI extends xonoAbstractGUI
     protected string $onlyoffice_key;
     private readonly ilGlobalTemplateInterface $main_tpl;
     private readonly ObjectSettingsRepository $object_settings_repo;
-    private StorageService $storage_service;
+    private readonly StorageService $storage_service;
 
     public function __construct(
         Container $dic,

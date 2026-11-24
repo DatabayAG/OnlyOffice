@@ -37,10 +37,10 @@ use ilLogger;
 
 class FileSystemService
 {
-    private Filesystem $web_file_system;
-    private ilLogger $logger;
-    private FileUpload $upload;
-    private Services $resource_storage;
+    private readonly Filesystem $web_file_system;
+    private readonly ilLogger $logger;
+    private readonly FileUpload $upload;
+    private readonly Services $resource_storage;
 
     public function __construct(private readonly Container $dic)
     {

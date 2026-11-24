@@ -62,15 +62,15 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
     private Container $dic;
     private readonly ilOnlyOfficePlugin $plugin;
     private readonly StorageService $storage_service;
-    private ilToolbarGUI $toolbar;
-    private ilCtrlInterface $ctrl;
-    private ilTabsGUI $tabs;
-    private ilLocatorGUI $locator;
-    private ILIAS\UI\Factory $ui_factory;
-    private Renderer $ui_renderer;
-    private FileUpload $upload;
-    private ilLanguage $lng;
-    private UiUtil $ui_util;
+    private readonly ilToolbarGUI $toolbar;
+    private readonly ilCtrlInterface $ctrl;
+    private readonly ilTabsGUI $tabs;
+    private readonly ilLocatorGUI $locator;
+    private readonly ILIAS\UI\Factory $ui_factory;
+    private readonly Renderer $ui_renderer;
+    private readonly FileUpload $upload;
+    private readonly ilLanguage $lng;
+    private readonly UiUtil $ui_util;
 
     public function __construct()
     {
