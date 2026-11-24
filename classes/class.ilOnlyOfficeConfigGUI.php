@@ -314,7 +314,7 @@ class ilOnlyOfficeConfigGUI extends ilPluginConfigGUI
             return;
         }
 
-        $this->ui_util->sendFailure($this->plugin->txt("config_template_saved"));
+        $this->ui_util->sendSuccess($this->plugin->txt("config_template_saved"));
         $this->ctrl->redirect($this, self::CMD_SHOW_TEMPLATES);
     }
 
