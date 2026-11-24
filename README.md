@@ -52,6 +52,11 @@ If updating from an existing installation migrations are required to move files 
 This migration will iterate over all existing db entries and attempt to move files to the IRSS and store the resource identification in a new db column **rid**.  
 Files are deleted from the original web dir after successful migration.
 
+```shell
+cd /var/www/<ilias installation path>
+php8.3 cli/setup.php migrate --run OnlyOffice.FileIrssMigration -y
+```
+
 #### File templates to IRSS migration
 
 This migration will iterate over all existing file template files in the web dir and move them to the IRSS.   
