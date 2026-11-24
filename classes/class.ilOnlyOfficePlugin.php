@@ -22,7 +22,7 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
-use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin

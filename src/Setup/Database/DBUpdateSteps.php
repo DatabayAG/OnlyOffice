@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\Setup;
+namespace ILIAS\Plugin\OnlyOffice\Setup\Database;
 
 use ilAccessRBACOperationDeletedObjective;
 use ilDatabaseUpdateSteps;

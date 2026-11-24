@@ -23,7 +23,7 @@ namespace ILIAS\Plugin\OnlyOffice\Setup\Migration;
 use ilDatabaseUpdateStepsExecutedObjective;
 use ilDBConstants;
 use ilDBStatement;
-use ILIAS\Plugin\OnlyOffice\Setup\DBUpdateSteps;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\DBUpdateSteps;
 use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
 use ILIAS\Setup\CLI\IOWrapper;
 use ILIAS\Setup\Environment;
