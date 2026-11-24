@@ -13,12 +13,15 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
 
 <!-- TOC -->
 * [ILIAS Plugin OnlyOffice](#ilias-plugin-onlyoffice)
-  * [Requirements](#requirements)
-  * [Installation](#installation)
-    * [OnlyOffice docker container](#onlyoffice-docker-container)
-  * [Lucene Indexing](#lucene-indexing)
-  * [Troubleshooting](#troubleshooting)
-  * [License](#license)
+    * [Requirements](#requirements)
+    * [Installation](#installation)
+        * [Migration](#migration)
+            * [Files to IRSS migration](#files-to-irss-migration)
+            * [File templates to IRSS migration](#file-templates-to-irss-migration)
+        * [OnlyOffice docker container](#onlyoffice-docker-container)
+    * [Lucene Indexing](#lucene-indexing)
+    * [Troubleshooting](#troubleshooting)
+    * [License](#license)
 <!-- TOC -->
 
 ---
@@ -39,6 +42,26 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
 6. Search for the **OnlyOffice** plugin in the list of plugin and choose **Install** from the **Actions**
    drop-down.
 7. Choose **Activate** from the **Actions** dropdown.
+
+### Migration
+
+If updating from an existing installation migrations are required to move files from the web directory to the ILIAS Resource Storage (IRSS).
+
+#### Files to IRSS migration
+
+This migration will iterate over all existing db entries and attempt to move files to the IRSS and store the resource identification in a new db column **rid**.  
+Files are deleted from the original web dir after successful migration.
+
+#### File templates to IRSS migration
+
+This migration will iterate over all existing file template files in the web dir and move them to the IRSS.   
+Their resource identification is then stored in the new **xono_file_template** db table.   
+Files are deleted from the original web dir after successful migration
+
+```shell
+cd /var/www/<ilias installation path>
+php8.3 cli/setup.php migrate --run OnlyOffice.FileTemplateIrssMigration -y
+```
 
 ### OnlyOffice docker container
 
