@@ -152,6 +152,10 @@ class FileIrssMigration implements Migration
     ): void {
         $db = $this->helper->getDatabase();
 
+        if (!$db->tableColumnExists($table_name, "url")) {
+            return;
+        }
+
         $result = $db->query($this->buildSelectQuery($table_name));
 
         /** @var array{id: string, url: string} $row */
