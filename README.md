@@ -47,6 +47,10 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
 
 If updating from an existing installation migrations are required to move files from the web directory to the ILIAS Resource Storage (IRSS).
 
+**Important:** 
+> Make sure to run the migration scripts as the same user ILIAS is being run by (usually **www-data**), otherwise files will not be accessible once migrated.  
+> This also prevents issues with file accessing while migrating.
+
 #### Files to IRSS migration
 
 This migration will iterate over all existing db entries and attempt to move files to the IRSS and store the resource identification in a new db column **rid**.  
