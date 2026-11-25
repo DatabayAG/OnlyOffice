@@ -189,7 +189,7 @@ class xonoContentGUI extends xonoAbstractGUI
             $download->overrideFileName(
                 "{$file_name}_V{$file_version->getVersion()}.$ext"
             )->run();
-        } catch (Throwable $ex) {
+        } catch (Throwable) {
             $this->ui_util->sendFailure($this->plugin->txt("file.not_found"));
             $this->dic->ctrl()->redirectByClass(self::class, self::CMD_SHOW_VERSIONS);
         }
