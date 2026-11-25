@@ -132,7 +132,7 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     public function doUpdate(?StandardForm &$form = null): void
     {
-        $form ??= (new ObjectSettingsForm($this->object_settings))
+        $form ??= (new ObjectSettingsForm(null, true))
             ->getForm()
             ->withRequest($this->dic->http()->request());
 
