@@ -127,7 +127,11 @@ class ilObjOnlyOffice extends ilObjectPlugin
 
     public function doRead(): void
     {
-        $this->object_settings = $this->object_settings_repo->read($this->getId());
+        $this->object_settings = $this->object_settings_repo->read($this->getId()) ?? new ObjectSettings(
+            $this->getId(),
+            "unknown",
+            "object does not exist"
+        );
     }
 
     public function doUpdate(?StandardForm &$form = null): void
