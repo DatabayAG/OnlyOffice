@@ -18,26 +18,20 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File;
+namespace ILIAS\Plugin\OnlyOffice\Stakeholder;
 
-use ActiveRecord;
-use ILIAS\Data\UUID\Uuid;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
+use ILIAS\ResourceStorage\Stakeholder\AbstractResourceStakeholder;
+use ilOnlyOfficePlugin;
 
-interface FileRepository
+class FileStakeholder extends AbstractResourceStakeholder
 {
-    public function create(
-        Uuid   $file_uuid,
-        int    $obj_id,
-        string $title,
-        string $file_type,
-        string $mime_type
-    ): void;
+    public function getId(): string
+    {
+        return ilOnlyOfficePlugin::ID;
+    }
 
-    public function getFile(int $obj_id): ?File;
-
-    public function getAR(int $file_id): ActiveRecord;
-
-    public function getAllFiles();
-
+    public function getOwnerOfNewResources(): int
+    {
+        return $this->default_owner;
+    }
 }

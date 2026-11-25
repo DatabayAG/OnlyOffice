@@ -18,43 +18,22 @@
 
 declare(strict_types=1);
 
-use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
-use ILIAS\Plugin\OnlyOffice\Repository;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\ObjectSettings\ObjectSettings;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
+require_once __DIR__ . "/../vendor/autoload.php";
 
-/**
- *         Sophie Pfister <sophie@fluxlabs.ch>
- */
+use ILIAS\DI\Container;
+use ILIAS\Plugin\OnlyOffice\Enum\PluginAsset;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\ExistingInstallationUpdateSteps;
+use ILIAS\Plugin\OnlyOffice\Setup\Database\UpdateSteps;
+use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
+
 class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
 {
-    public const PLUGIN_ID = "xono";
-    public const PLUGIN_NAME = "OnlyOffice";
-    public const PLUGIN_CLASS_NAME = self::class;
+    public const string ID = "xono";
 
-    protected static ?ilOnlyOfficePlugin $instance = null;
-    private Repository $repo;
+    private static ?self $instance = null;
+    public Container $dic;
     public ilSetting $settings;
-
-    public static function getInstance(): self
-    {
-        if (static::$instance === null) {
-            global $DIC;
-
-            /** @var $component_factory ilComponentFactory */
-            $component_factory = $DIC['component.factory'];
-            /** @var $plugin ilOnlyOfficePlugin */
-            $plugin = $component_factory->getPlugin(self::PLUGIN_ID);
-
-            static::$instance = $plugin;
-        }
-
-        return self::$instance;
-    }
+    private ?StorageService $storage_service = null;
 
     public function __construct(
         ilDBInterface $db,
@@ -62,57 +41,65 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         string $id
     ) {
         global $DIC;
+        $this->dic = $DIC;
+        $this->settings = new ilSetting(self::ID . "_config");
         parent::__construct($db, $component_repository, $id);
-        $this->repo = Repository::getInstance();
-        $this->settings = new ilSetting(self::PLUGIN_ID . "_config");
-
-        $this->db = $DIC->database();
     }
 
-    public function getPluginName(): string
+    public static function getInstance(): self
     {
-        return self::PLUGIN_NAME;
+        if (self::$instance) {
+            return self::$instance;
+        }
+
+        global $DIC;
+
+        /**
+         * @var ilComponentFactory $component_factory
+         */
+        $component_factory = $DIC["component.factory"];
+        self::$instance = $component_factory->getPlugin(self::ID);
+        return self::$instance;
     }
 
-    protected function deleteData(): void
+    public function getStorageService(): StorageService
     {
-        $this->repo->dropTables();
+        if (!$this->storage_service) {
+            $this->storage_service = new StorageService();
+        }
+        return $this->storage_service;
     }
 
-    protected function shouldUseOneUpdateStepOnly(): bool
+
+    public function install(): void
     {
-        return false;
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->install($this->db);
+        }
+        parent::install();
     }
 
-    protected function beforeUninstallCustom(): bool
+    public function update(): bool
     {
-        require_once(ILIAS_ABSOLUTE_PATH . "/components/ILIAS/Migration/DBUpdate_3560/classes/class.ilDBUpdateNewObjectType.php");
-        $op_id = ilDBUpdateNewObjectType::getCustomRBACOperationId('rep_robj_xono_perm_editFile');
-        $type = ilDBUpdateNewObjectType::getObjectTypeId(ilOnlyOfficePlugin::PLUGIN_ID);
-        ilDBUpdateNewObjectType::deleteRBACOperation((string) $type, $op_id);
+        //Update steps should be executed before the parent update so potential exceptions result in no il_plugin db changes
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->install($this->db);
+        }
 
-        return parent::beforeUninstallCustom();
+        return parent::update();
     }
 
     protected function uninstallCustom(): void
     {
-        // Delete all file data
-        global $DIC;
-        $all_files = FileAR::get();
-        $storage = new StorageService(
-            $DIC,
-            new ilDBFileVersionRepository(),
-            new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
-        );
-        $storage->deleteAll();
-        ObjectSettings::truncateDB();
+        $this->settings->deleteAll();
+        $this->getStorageService()->deleteAll();
 
-    }
-
-    public static function checkPluginClassNameConst(): string
-    {
-        return self::PLUGIN_CLASS_NAME;
+        /** @var ExistingInstallationUpdateSteps|UpdateSteps $update_step */
+        foreach ([new ExistingInstallationUpdateSteps(), new UpdateSteps()] as $update_step) {
+            $update_step->uninstall($this->db);
+        }
     }
 
     public function allowCopy(): bool
@@ -130,14 +117,9 @@ class ilOnlyOfficePlugin extends ilRepositoryObjectPlugin
         );
     }
 
-    public function getRelativeDirectory(): string
+    public function assetsFile(PluginAsset $asset_type, string $file, bool $relative = true): string
     {
-        return str_replace(ILIAS_ABSOLUTE_PATH . "/public/", "", realpath($this->getDirectory()));
-    }
-
-    public function assetsFile(PluginAsset $assetType, string $file, bool $relative = true): string
-    {
-        $basePath = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
-        return $basePath . "/assets/" . $assetType->value . "/" . $file;
+        $base_path = $relative ? $this->getRelativeDirectory() : $this->getDirectory();
+        return $base_path . "/assets/" . $asset_type->value . "/" . $file;
     }
 }

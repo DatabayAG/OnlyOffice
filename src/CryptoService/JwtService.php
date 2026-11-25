@@ -32,12 +32,12 @@ class JwtService
             "alg" => "HS256",
             "typ" => "JWT"
         ];
-        $payloadString = json_encode($payload, JSON_THROW_ON_ERROR);
-        $encHeader = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
-        $encPayload = self::base64UrlEncode($payloadString);
-        $hash = self::base64UrlEncode(self::calculateHash($encHeader, $encPayload, $key));
+        $payload_string = json_encode($payload, JSON_THROW_ON_ERROR);
+        $enc_header = self::base64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR));
+        $enc_payload = self::base64UrlEncode($payload_string);
+        $hash = self::base64UrlEncode(self::calculateHash($enc_header, $enc_payload, $key));
 
-        return "$encHeader.$encPayload.$hash";
+        return "$enc_header.$enc_payload.$hash";
     }
 
     public static function jwtDecode($token, $key): string
@@ -56,9 +56,9 @@ class JwtService
         return self::base64UrlDecode($split[1]);
     }
 
-    protected static function calculateHash($encHeader, $encPayload, $key): string
+    protected static function calculateHash($enc_header, $enc_payload, $key): string
     {
-        return hash_hmac("sha256", "$encHeader.$encPayload", $key, true);
+        return hash_hmac("sha256", "$enc_header.$enc_payload", $key, true);
     }
 
     protected static function base64UrlEncode($str): string
@@ -69,14 +69,11 @@ class JwtService
     protected static function base64UrlDecode($payload): string
     {
         $b64 = str_replace(["-", "_"], ["+", "/"], $payload);
-        switch (strlen($b64) % 4) {
-            case 2:
-                $b64 .= "==";
-                break;
-            case 3:
-                $b64 .= "=";
-                break;
-        }
+        match (strlen($b64) % 4) {
+            2 => $b64 .= "==",
+            3 => $b64 .= "=",
+            default => base64_decode($b64),
+        };
         return base64_decode($b64);
     }
 }

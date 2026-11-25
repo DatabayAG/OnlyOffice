@@ -22,13 +22,13 @@ namespace ILIAS\Plugin\OnlyOffice\Utils;
 
 class FileSanitizer
 {
-    public static function sanitizeFileName(string $fileNameToSanitize): string
+    public static function sanitizeFileName(string $file_name_to_sanitize): string
     {
-        $fileNameToSanitize = preg_replace('/ä+/u', 'ae', $fileNameToSanitize);
-        $fileNameToSanitize = preg_replace('/ü+/u', 'ue', $fileNameToSanitize);
-        $fileNameToSanitize = preg_replace('/ö+/u', 'oe', $fileNameToSanitize);
-        $fileNameToSanitize = preg_replace('/ß+/u', 'ss', $fileNameToSanitize);
-        $fileNameToSanitize = preg_replace('/\s+/', '_', $fileNameToSanitize);
-        return preg_replace('/[^a-zA-Z0-9\-_]+/', '', $fileNameToSanitize);
+        $file_name_to_sanitize = preg_replace('/ä+/u', 'ae', $file_name_to_sanitize);
+        $file_name_to_sanitize = preg_replace('/ü+/u', 'ue', $file_name_to_sanitize);
+        $file_name_to_sanitize = preg_replace('/ö+/u', 'oe', $file_name_to_sanitize);
+        $file_name_to_sanitize = preg_replace('/ß+/u', 'ss', $file_name_to_sanitize);
+        $file_name_to_sanitize = preg_replace('/\s+/', '_', $file_name_to_sanitize);
+        return preg_replace('/[^a-zA-Z0-9\-_]+/', '', $file_name_to_sanitize);
     }
 }

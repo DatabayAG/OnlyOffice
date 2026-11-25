@@ -19,24 +19,14 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
-use ILIAS\Plugin\OnlyOffice\Repository;
+use ILIAS\Plugin\OnlyOffice\Repository\ObjectSettingsRepository;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 
 class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
     protected static ?ilObjOnlyOfficeAccess $instance = null;
 
-    private Container $dic;
-
-    public static function getInstance(): self
-    {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
-
+    private readonly Container $dic;
     public function __construct()
     {
         parent::__construct();
@@ -44,19 +34,18 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
         $this->dic = $DIC;
     }
 
+    public static function getInstance(): self
+    {
+        self::$instance ??= new self();
+
+        return self::$instance;
+    }
+
     public function _checkAccess(string $cmd, string $permission, ?int $ref_id = null, ?int $obj_id = null, ?int $user_id = null): bool
     {
-        if ($ref_id === null) {
-            $ref_id = (int) filter_input(INPUT_GET, "ref_id");
-        }
-
-        if ($obj_id === null) {
-            $obj_id = ilObjOnlyOffice::_lookupObjectId($ref_id);
-        }
-
-        if ($user_id === null) {
-            $user_id = $this->dic->user()->getId();
-        }
+        $ref_id ??= (int) filter_input(INPUT_GET, "ref_id");
+        $obj_id ??= ilObjOnlyOffice::_lookupObjectId($ref_id);
+        $user_id ??= $this->dic->user()->getId();
 
         return match ($permission) {
             "visible", "read" => ($this->dic->access()->checkAccessOfUser($user_id, $permission, "", $ref_id) && !self::_isOffline($obj_id))
@@ -76,31 +65,28 @@ class ilObjOnlyOfficeAccess extends ilObjectPluginAccess
     public static function redirectNonAccess($class, string $cmd = ""): void
     {
         global $DIC;
-        /** @var $component_factory ilComponentFactory */
-        $component_factory = $DIC['component.factory'];
-        /** @var $plugin ilOnlyOfficePlugin */
-        $pl = $component_factory->getPlugin(ilOnlyOfficePlugin::PLUGIN_ID);
-        $tpl = $DIC->ui()->mainTemplate();
-        $tpl->setOnScreenMessage('failure', $pl->txt("object_permission_denied"), true);
+        $ctrl = $DIC->ctrl();
+
+        (new UiUtil())->sendFailure(ilOnlyOfficePlugin::getInstance()->txt("object_permission_denied"));
 
         if (is_object($class)) {
-            $DIC->ctrl()->clearParameters($class);
-            $DIC->ctrl()->redirect($class, $cmd);
+            $ctrl->clearParameters($class);
+            $ctrl->redirect($class, $cmd);
         } else {
-            $DIC->ctrl()->clearParametersByClass($class);
-            $DIC->ctrl()->redirectByClass($class, $cmd);
+            $ctrl->clearParametersByClass($class);
+            $ctrl->redirectByClass($class, $cmd);
         }
     }
 
     public static function _isOffline(?int $obj_id): bool
     {
-        $object_settings = Repository::getInstance()->objectSettings()->getObjectSettingsById(intval($obj_id));
+        $object_settings = (new ObjectSettingsRepository())->read((int) $obj_id);
 
-        if ($object_settings !== null) {
-            return (!$object_settings->isOnline());
+        if (!$object_settings) {
+            return true;
         }
 
-        return true;
+        return !$object_settings->isOnline();
     }
 
     public static function hasVisibleAccess(?int $ref_id = null): bool

@@ -25,17 +25,14 @@ use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Exception\IllegalStateException;
 use ILIAS\FileUpload\Handler\BasicHandlerResult;
 use ILIAS\FileUpload\Handler\HandlerResult;
+use ILIAS\ILIASObject\Properties\CoreProperties\TitleAndDescription;
 use ILIAS\Plugin\OnlyOffice\Enum\FileMode;
 use ILIAS\Plugin\OnlyOffice\Enum\OpenSetting;
 use ILIAS\Plugin\OnlyOffice\Form\Property\AllowEditProperty;
 use ILIAS\Plugin\OnlyOffice\Form\Property\FileSettingProperty;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
-use ILIAS\Plugin\OnlyOffice\Repository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
 use ILIAS\Plugin\OnlyOffice\Utils\FileSanitizer;
+use ILIAS\Plugin\OnlyOffice\Utils\UiUtil;
 use ILIAS\UI\Component\Input\Container\Form\Standard as StandardForm;
 use ILIAS\UI\Component\Input\Field\UploadHandler as UploadHandlerInterface;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
@@ -53,55 +50,44 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
  */
 class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-
-    public const CMD_MANAGE_CONTENTS = "manageContents";
-    public const CMD_PERMISSIONS = "perm";
-    public const CMD_SETTINGS = "settings";
-    public const CMD_SETTINGS_STORE = "settingsStore";
-    public const CMD_SHOW_CONTENTS = "showContents";
-    public const CMD_SHOW_VERSIONS = "showVersions";
+    public const string CMD_MANAGE_CONTENTS = "manageContents";
+    public const string CMD_PERMISSIONS = "perm";
+    public const string CMD_SETTINGS = "settings";
+    public const string CMD_SETTINGS_STORE = "settingsStore";
+    public const string CMD_SHOW_CONTENTS = "showContents";
+    public const string CMD_SHOW_VERSIONS = "showVersions";
     /* standard commands */
-    public const CMD_SAVE = 'save';
-    public const CMD_CANCEL = 'cancel';
-    public const CMD_SHOW_INFO = 'infoScreen';
-    public const CMD_TEMPLATE = 'createFromTemplate';
+    public const string CMD_SAVE = 'save';
+    public const string CMD_CANCEL = 'cancel';
+    public const string CMD_SHOW_INFO = 'infoScreen';
+    public const string CMD_TEMPLATE = 'createFromTemplate';
 
-    public const TAB_PERMISSIONS = "perm_settings";
-    public const TAB_SETTINGS = "settings";
-    public const TAB_INFO = "info_short";
-    public const TAB_SHOW_CONTENTS = "show_contents";
+    public const string TAB_PERMISSIONS = "perm_settings";
+    public const string TAB_SETTINGS = "settings";
+    public const string TAB_INFO = "info_short";
+    public const string TAB_SHOW_CONTENTS = "show_contents";
 
     public ilObjOnlyOffice|ilObject|null $object = null;
-    protected StorageService $storage_service;
-    /**
-     * @var ilPlugin|ilOnlyOfficePlugin|null
-     */
     protected ilPlugin|ilOnlyOfficePlugin|null $plugin = null;
-    private Repository $repo;
     private Container $dic;
-    private UUIDFactory $uuidFactory;
+    private UUIDFactory $uuid_factory;
+    private UiUtil $ui_util;
+    private ilGlobalTemplateInterface $main_tpl;
 
     protected function afterConstructor(): void
     {
         global $DIC;
 
-        $this->repo = Repository::getInstance();
         $this->dic = $DIC;
 
-        $this->uuidFactory = new UUIDFactory();
-
-        $this->storage_service = new StorageService(
-            $this->dic,
-            new ilDBFileVersionRepository(),
-            new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
-        );
+        $this->main_tpl = $this->dic->ui()->mainTemplate();
+        $this->uuid_factory = new UUIDFactory();
+        $this->ui_util = new UiUtil();
     }
 
     final public function getType(): string
     {
-        return ilOnlyOfficePlugin::PLUGIN_ID;
+        return ilOnlyOfficePlugin::ID;
     }
 
     /**
@@ -109,7 +95,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function performCommand(string $cmd): void
     {
-        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->dic->help()->setScreenIdComponent(ilOnlyOfficePlugin::ID);
         $next_class = $this->dic->ctrl()->getNextClass($this);
 
         switch (strtolower($next_class)) {
@@ -119,8 +105,8 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                 ) {
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
-                $xonoContentGUI = new xonoContentGUI($this->dic, $this->plugin, $this->object_id);
-                $this->dic->ctrl()->forwardCommand($xonoContentGUI);
+                $xono_content_gui = new xonoContentGUI($this->dic, $this->plugin, $this->object_id);
+                $this->dic->ctrl()->forwardCommand($xono_content_gui);
                 break;
             case strtolower(xonoEditorGUI::class):
                 if (
@@ -129,27 +115,30 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
                     ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                 }
 
-                $xonoEditorGUI = new xonoEditorGUI($this->dic, $this->plugin, $this->obj_id);
-                $this->dic->ctrl()->forwardCommand($xonoEditorGUI);
+                $xono_editor_gui = new xonoEditorGUI($this->dic, $this->plugin, $this->obj_id);
+                $this->dic->ctrl()->forwardCommand($xono_editor_gui);
                 break;
             default:
                 switch ($cmd) {
                     case self::CMD_SHOW_CONTENTS:
                     case self::CMD_MANAGE_CONTENTS:
+
                         // Read commands
                         if (!ilObjOnlyOfficeAccess::hasReadAccess() &&
-                            !$this->repo->objectSettings()->getObjectSettingsById($this->object_id)->allowEdit()) {
+                            !$this->object->object_settings->isAllowEdit()) {
                             ilObjOnlyOfficeAccess::redirectNonAccess(ilRepositoryGUI::class);
                         }
 
-                        switch ($this->object->object_settings->getOpen()) {
+                        switch ($this->object->object_settings->getOpenSetting()) {
                             case OpenSetting::DOWNLOAD:
+                                $storage_service = $this->plugin->getStorageService();
+
                                 $next_cmd = xonoContentGUI::CMD_DOWNLOAD;
-                                $file = $this->storage_service->getFile($this->obj_id);
+                                $file = $storage_service->getFile($this->obj_id);
                                 if (is_null($file)) {
                                     return;
                                 }
-                                $file_version = $this->storage_service->getLatestVersion($file->getUuid());
+                                $file_version = $storage_service->getLatestVersion($file->getUuid());
                                 $this->dic->ctrl()->setParameterByClass(
                                     xonoContentGUI::class,
                                     "version",
@@ -207,51 +196,43 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             }
         }
 
-        $this->tpl->setContent($html);
+        $this->main_tpl->setContent($html);
     }
 
     public function save(): void
     {
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->dic->http()->request());
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        if ($formData === null) {
+        if ($form_data === null) {
             return;
         }
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
 
-        /** @var FileSettingProperty $fileSetting */
-        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
-        /** @var AllowEditProperty $allowEdit */
-        $allowEdit = $formData[ObjectSettingsForm::POST_VAR_EDIT];
+        /** @var FileSettingProperty $file_setting */
+        $file_setting = $form_data[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var AllowEditProperty $allow_edit */
+        $allow_edit = $form_data[ObjectSettingsForm::POST_VAR_EDIT];
 
-        if ($fileSetting->getFileMode() === FileMode::CREATE && $title === "") {
-            $this->tpl->setOnScreenMessage(
-                'failure',
-                sprintf(
-                    $this->plugin->txt("settings_file_mode_create_title_required"),
-                    $this->plugin->txt("form_input_create_file")
-                ),
-                true
-            );
-            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
-            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+        if ($file_setting->getFileMode() === FileMode::CREATE && $title === "") {
+            $this->ui_util->sendFailure(sprintf(
+                $this->plugin->txt("settings_file_mode_create_title_required"),
+                $this->plugin->txt("form_input_create_file")
+            ));
+            $this->redirectToObjectCreation();
 
             return;
         }
 
         if (
-            $allowEdit->isLimitedPeriod()
-            && $allowEdit->getStartTime()->getTimestamp() >= $allowEdit->getEndTime()->getTimestamp()
+            $allow_edit->isLimitedPeriod()
+            && $allow_edit->getStartTime()->getTimestamp() >= $allow_edit->getEndTime()->getTimestamp()
         ) {
-            $this->tpl->setOnScreenMessage('failure', $this->plugin->txt("settings_time_greater_than"), true);
-            $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
-            $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::PLUGIN_ID);
-            $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
+            $this->ui_util->sendFailure($this->plugin->txt("settings_time_greater_than"));
+            $this->redirectToObjectCreation();
             return;
         }
 
@@ -272,18 +253,18 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         /** @var UploadResult $result */
         $result = end($results);
 
-        $tempName = "";
+        $temp_name = "";
         if ($result instanceof UploadResult && $result->isOK()) {
             $status = HandlerResult::STATUS_OK;
             $message = 'Upload ok';
-            $uuid = $this->uuidFactory->uuid4();
+            $uuid = $this->uuid_factory->uuid4();
 
-            $tmpFilesystem = $this->dic->filesystem()->temp();
-            $tempName = $uuid->toString() . "/" . ilFileUtils::getValidFilename($result->getName());
-            $tmpFilesystem->createDir($uuid->toString());
+            $tmp_filesystem = $this->dic->filesystem()->temp();
+            $temp_name = $uuid->toString() . "/" . ilFileUtils::getValidFilename($result->getName());
+            $tmp_filesystem->createDir($uuid->toString());
 
-            $tmpFilesystem->put(
-                $tempName,
+            $tmp_filesystem->put(
+                $temp_name,
                 file_get_contents($result->getPath())
             );
         } else {
@@ -291,13 +272,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $message = $result->getStatus()->getMessage();
         }
 
-        $responseData = new BasicHandlerResult(
+        $response_data = new BasicHandlerResult(
             UploadHandlerInterface::DEFAULT_FILE_ID_PARAMETER,
             $status,
-            $tempName,
+            $temp_name,
             $message
         );
-        $content = json_encode($responseData, JSON_THROW_ON_ERROR);
+        $content = json_encode($response_data, JSON_THROW_ON_ERROR);
 
         $response = $this->dic->http()->response()->withBody(Streams::ofString($content));
         $this->dic->http()->saveResponse($response);
@@ -311,56 +292,75 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
      */
     public function afterSave(ilObjOnlyOffice|ilObject $new_object): void
     {
+        $storage_service = $this->plugin->getStorageService();
+
         $form = (new ObjectSettingsForm())->getForm()->withRequest($this->request);
 
         /** @var array{
-         *     title_and_description: ilObjectPropertyTitleAndDescription,
+         *     title_and_description: TitleAndDescription,
          *     file_setting: FileSettingProperty,
          *     online: bool,
          *     allow_edit: AllowEditProperty,
          *     open_setting: OpenSetting
-         * } $formData
+         * } $form_data
          */
-        $formData = $form->getData();
+        $form_data = $form->getData();
 
-        /** @var ilObjectPropertyTitleAndDescription $titleAndDescription */
-        $titleAndDescription = $formData["title_and_description"];
-        $title = $titleAndDescription->getTitle();
+        /** @var TitleAndDescription $title_and_description */
+        $title_and_description = $form_data["title_and_description"];
+        $title = $title_and_description->getTitle();
 
-        /** @var FileSettingProperty $fileSetting */
-        $fileSetting = $formData[ObjectSettingsForm::POST_VAR_FILE_SETTING];
+        /** @var FileSettingProperty $file_setting */
+        $file_setting = $form_data[ObjectSettingsForm::POST_VAR_FILE_SETTING];
 
         // Handle file upload, otherwise create new document
-        if ($fileSetting->getFileMode() === FileMode::UPLOAD) {
-            $uploadResult = $fileSetting->getUploadResult();
-            if ($uploadResult) {
+        if ($file_setting->getFileMode() === FileMode::UPLOAD) {
+            $upload_result = $file_setting->getUploadResult();
+            if ($upload_result) {
                 if (!$this->dic->upload()->hasBeenProcessed()) {
                     $this->dic->upload()->process();
                 }
-                $this->storage_service->createNewFileFromUpload(
-                    $uploadResult,
+                $file = $storage_service->createNewFileFromUpload(
+                    $upload_result,
                     $new_object->getId()
                 );
 
+                if (!$file) {
+                    $this->redirectToObjectCreation();
+                }
+
                 if ($title === "") {
-                    $new_object->setTitle(pathinfo($uploadResult->getName(), PATHINFO_FILENAME));
+                    $new_object->setTitle(pathinfo($upload_result->getName(), PATHINFO_FILENAME));
                     $new_object->update();
                 }
             }
-        } elseif ($fileSetting->getFileMode() === FileMode::CREATE) {
-            $fileCreationType = $fileSetting->getFileCreationType();
+        } elseif ($file_setting->getFileMode() === FileMode::CREATE) {
+            $file = $storage_service->createNewFileFromDraft(
+                FileSanitizer::sanitizeFileName($title),
+                $file_setting->getFileCreationType(),
+                $new_object->getId()
+            );
 
-            $this->storage_service->createNewFileFromDraft(
+            if (!$file) {
+                $this->redirectToObjectCreation();
+            }
+
+        } elseif ($file_setting->getFileMode() === FileMode::TEMPLATE) {
+            $file_template = $storage_service->fetchTemplate($file_setting->getFileTemplateId());
+
+            if (!$file_template) {
+                $this->redirectToObjectCreation();
+            }
+
+            $file = $storage_service->createNewFileFromTemplate(
                 FileSanitizer::sanitizeFileName($title),
-                $fileCreationType->toDocumentType(),
+                $file_template,
                 $new_object->getId()
             );
-        } elseif ($fileSetting->getFileMode() === FileMode::TEMPLATE) {
-            $this->storage_service->createNewFileFromTemplate(
-                FileSanitizer::sanitizeFileName($title),
-                $fileSetting->getFileTemplate(),
-                $new_object->getId()
-            );
+
+            if (!$file) {
+                $this->redirectToObjectCreation();
+            }
         }
 
         parent::afterSave($new_object);
@@ -374,7 +374,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             $form = (new ObjectSettingsForm($this->object->object_settings))->getForm();
         }
 
-        $this->tpl->setContent($this->ui_renderer->render($form));
+        $this->main_tpl->setContent($this->ui_renderer->render($form));
     }
 
     protected function settingsStore(): void
@@ -390,7 +390,7 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
             return;
         }
 
-        $this->tpl->setOnScreenMessage('success', $this->plugin->txt("saved"), true);
+        $this->ui_util->sendSuccess($this->plugin->txt("saved"));
 
         $this->dic->ctrl()->redirect($this, self::CMD_SETTINGS);
     }
@@ -437,6 +437,13 @@ class ilObjOnlyOfficeGUI extends ilObjectPluginGUI
         }
 
         //$this->dic->tabs()->manual_activation = true; // Show all tabs as links when no activation
+    }
+
+    private function redirectToObjectCreation(): void
+    {
+        $this->dic->ctrl()->setParameterByClass(self::class, "ref_id", 1);
+        $this->dic->ctrl()->setParameterByClass(self::class, "new_type", ilOnlyOfficePlugin::ID);
+        $this->dic->ctrl()->redirectByClass([ilRepositoryGUI::class, self::class], "create");
     }
 
     public static function getStartCmd(): string

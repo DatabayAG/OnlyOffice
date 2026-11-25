@@ -27,102 +27,123 @@ use ILIAS\DI\Container;
 use ILIAS\Filesystem\Exception\IOException;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\File;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
+use ILIAS\Plugin\OnlyOffice\Model\File;
+use ILIAS\Plugin\OnlyOffice\Model\FileChange;
+use ILIAS\Plugin\OnlyOffice\Model\FileVersion;
+use ILIAS\Plugin\OnlyOffice\Repository\FileChangeRepository;
+use ILIAS\Plugin\OnlyOffice\Repository\FileRepository;
+use ILIAS\Plugin\OnlyOffice\Model\FileTemplate;
+use ILIAS\Plugin\OnlyOffice\Repository\FileTemplateRepository;
 use ILIAS\Plugin\OnlyOffice\StorageService\FileSystem\FileSystemService;
 use ILIAS\Data\UUID\Uuid;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileAR;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileVersionAR;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\FileChangeAR;
+use ILIAS\Plugin\OnlyOffice\Repository\FileVersionRepository;
+use ILIAS\ResourceStorage\Consumer\DownloadConsumer;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class StorageService
 {
-    protected Container $dic;
-    protected FileVersionRepository $file_version_repository;
+    private readonly Container $dic;
+    private readonly FileRepository $file_repository;
+    private readonly FileVersionRepository $file_version_repository;
+    private readonly FileChangeRepository $file_change_repository;
+    private readonly FileTemplateRepository $file_template_repository;
     protected FileSystemService $file_system_service;
-    protected FileRepository $file_repository;
-    protected FileChangeRepository $file_change_repository;
-    private UUIDFactory $uuidFactory;
+    private readonly UUIDFactory $uuid_factory;
 
     public function __construct(
-        Container $dic,
-        FileVersionRepository $file_version_repository,
-        FileRepository $file_repository,
-        FileChangeRepository $file_change_repository
+        ?Container $dic = null,
+        ?FileRepository $file_repository = null,
+        ?FileVersionRepository $file_version_repository = null,
+        ?FileChangeRepository $file_change_repository = null,
+        ?FileTemplateRepository $file_template_repository = null,
+        ?FileSystemService $file_system_service = null,
+        ?UUIDFactory $uuid_factory = null
     ) {
-        $this->dic = $dic;
-        $this->file_version_repository = $file_version_repository;
-        $this->file_repository = $file_repository;
-        $this->file_system_service = new FileSystemService($dic);
-        $this->file_change_repository = $file_change_repository;
-        $this->uuidFactory = new UUIDFactory();
+        global $DIC;
+        $this->dic = $dic ?? $DIC;
+        $this->file_repository = $file_repository ?? new FileRepository($this->dic->database());
+        $this->file_version_repository = $file_version_repository ?? new FileVersionRepository($this->dic->database());
+        $this->file_change_repository = $file_change_repository ?? new FileChangeRepository($this->dic->database());
+        $this->file_template_repository = $file_template_repository ?? new FileTemplateRepository($this->dic->database());
+        $this->file_system_service = $file_system_service ?? new FileSystemService($this->dic);
+        $this->uuid_factory = $uuid_factory ?? new UUIDFactory();
     }
 
     /**
      * @throws IOException
      * @throws ilDateTimeException
      */
-    public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): File
+    public function createNewFileFromUpload(UploadResult $upload_result, int $obj_id): ?File
     {
         // Create DB Entries for File & FileVersion
-        $new_file_id = $this->uuidFactory->uuid4();
-        $path = $this->file_system_service->storeUploadResult($upload_result, $obj_id, $new_file_id->toString());
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
-        $this->file_repository->create($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
+        $new_file_id = $this->uuid_factory->uuid4();
+        $rid = $this->file_system_service->createFileFromUpload($upload_result);
 
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
-        $file = new File($new_file_id, $obj_id, $upload_result->getName(), $extension, $upload_result->getMimeType());
+        if (!$rid) {
+            return null;
+        }
+
+        $file = new File(
+            $obj_id,
+            $new_file_id,
+            $upload_result->getName(),
+            pathinfo($upload_result->getPath(), PATHINFO_EXTENSION),
+            $upload_result->getMimeType()
+        );
+
+        $this->file_repository->create($file);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
+
         return $file;
     }
 
-    public function createNewFileFromDraft(string $title, string $extension, int $obj_id): File
+    public function createNewFileFromDraft(string $title, FileCreationType $file_type, int $obj_id): ?File
     {
-        $new_file_id = $this->uuidFactory->uuid4();
-        $path = $this->createFileDraft(
-            $title,
+        $extension = $file_type->toDocumentType();
+        $new_file_id = $this->uuid_factory->uuid4();
+        //Empty string will cause the new file to not be opened with the correct application,
+        //when immediately downloaded because it's mime type will not be set correctly yet.
+        //It may be a good idea to set anything else than empty to avoid this.
+        $rid = $this->file_system_service->createFileFromString("");
+
+        if (!$rid) {
+            return null;
+        }
+
+        $file = new File(
+            $obj_id,
+            $new_file_id,
+            "$title.$extension",
             $extension,
-            $obj_id,
-            $new_file_id->toString()
+            $file_type->toMimeType()
         );
 
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $this->file_repository->create($file);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
 
-        // Create DB Entries for File & FileVersion
-        $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
-
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
-        $file = new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
         return $file;
     }
 
-    public function createNewFileFromTemplate(string $title, string $template_path, int $obj_id): File
+    public function createNewFileFromTemplate(string $title, FileTemplate $file_template, int $obj_id): ?File
     {
-        $new_file_id = $this->uuidFactory->uuid4();
-        $extension = pathinfo($template_path, PATHINFO_EXTENSION);
+        $new_file_id = $this->uuid_factory->uuid4();
+        $rid = $this->file_system_service->copyFile($file_template->getRid());
 
-        $path = $this->createFileFromTemplate(
-            $title,
-            $template_path,
+        if (!$rid) {
+            return null;
+        }
+        $file = new File(
             $obj_id,
-            $new_file_id->toString()
+            $new_file_id,
+            "$title.{$file_template->getExtension()}",
+            $file_template->getExtension(),
+            $this->file_system_service->getMimeType($rid)
         );
 
-        // Create DB Entries for File & FileVersion
-        $this->file_repository->create($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
-        list($created_at, $version) = $this->createNewFile($new_file_id, $path);
+        $this->file_repository->create($file);
+        $file_version = $this->createNewFileVersion($new_file_id, $rid);
 
-        // Create & Return FileVersion object
-        $file_version = new FileVersion($version, $created_at, $this->dic->user()->getId(), $path, $new_file_id);
-        return new File($new_file_id, $obj_id, basename($path), $extension, $this->dic->filesystem()->web()->getMimeType($path));
+        return $file;
     }
 
     /**
@@ -130,87 +151,109 @@ class StorageService
      */
     public function updateFileFromUpload(
         string $file_content,
-        int $file_id,
         Uuid $uuid,
         int $editor_id,
-        string $file_extension,
         string $changes_object,
-        string $serverVersion,
+        string $server_version,
         string $change_content,
-        string $change_extension
-    ): FileVersion {
+    ): ?FileVersion {
 
         // Store FileVersion and Create Database Entry
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
         $version = $this->getLatestVersion($uuid)->getVersion() + 1;
         echo $version;
-        $path = $this->file_system_service->storeNewVersionFromString(
-            $file_content,
-            $file_id,
-            $uuid->toString(),
-            $version,
-            $file_extension
+        $rid = $this->file_system_service->createFileFromString($file_content);
+
+        if (!$rid) {
+            return null;
+        }
+
+        $file_version = new FileVersion(
+            $uuid,
+            $editor_id,
+            $created_at,
+            $rid
         );
-        $this->file_version_repository->create($uuid, $editor_id, $created_at, $path);
+
+        $this->file_version_repository->create($file_version);
 
         //Store Changes and Create Database Entry
-        $change_path = $this->file_system_service->storeChanges(
-            $change_content,
-            $file_id,
-            $uuid->toString(),
-            $version,
-            $change_extension
-        );
-        $this->file_change_repository->create(
+        $rid = $this->file_system_service->createFileFromString($change_content);
+
+        if (!$rid) {
+            return null;
+        }
+
+        $this->file_change_repository->create(new FileChange(
             $uuid,
             $version,
             $changes_object,
-            $serverVersion,
-            $change_path
-        );
+            $rid,
+            $server_version
+        ));
 
-        // Return FileVersion object
-        return new FileVersion($version, $created_at, $editor_id, $path, $uuid);
+        return $file_version;
     }
 
     /**
      * @throws IOException
      */
-    public function createFileTemplate(UploadResult $upload_result, string $title, string $description): ?string
+    public function createFileTemplate(UploadResult $upload_result, string $title, string $description): ?FileTemplate
     {
         $extension = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
-        $type = File::determineDocType($extension);
+
+        $type = FileCreationType::determineDocType($extension);
 
         // If file extension not supported/recongnized by OnlyOffice
-        if (empty($type)) {
+        if ($type === FileCreationType::NONE) {
             return null;
         }
 
-        $path = $this->file_system_service->storeTemplate($upload_result, $type, $title, $description, $extension);
+        $rid = $this->file_system_service->createFileFromUpload($upload_result);
 
-        return $path;
+        if (!$rid) {
+            return null;
+        }
+
+        $file_template = new FileTemplate(
+            $title,
+            $description,
+            $extension,
+            $type,
+            $rid
+        );
+
+        if ($this->file_template_repository->create($file_template)) {
+            return $file_template;
+        }
+
+        return null;
     }
 
-    public function deleteFileTemplate(string $target, string $extension): bool
+    public function deleteFileTemplate(FileTemplate $file_template): bool
     {
-        $type = File::determineDocType($extension);
-        return $this->file_system_service->deleteTemplate($target, $extension, $type);
+        $file_deleted = $this->file_system_service->deleteFile($file_template->getRid());
+        if (!$file_deleted) {
+            return false;
+        }
+
+        return $this->file_template_repository->delete($file_template);
     }
 
-    public function createFileDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
+    public function modifyTemplate(FileTemplate $file_template, ?UploadResult $upload_result = null): bool
     {
-        return $this->file_system_service->storeDraft($name, $extension, $obj_id, $new_file_id);
-    }
+        if ($upload_result) {
+            $upload_success = $this->file_system_service->replaceFileWithUpload($file_template->getRid(), $upload_result);
+        } else {
+            $upload_success = true;
+        }
 
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
-    {
-        return $this->file_system_service->createFileFromTemplate($new_title, $template_path, $obj_id, $new_file_id);
-    }
+        if (!$upload_success) {
+            return false;
+        }
 
-    public function modifyFileTemplate(string $prevTitle, string $prevExtension, string $title, string $description): bool
-    {
-        $prevType = File::determineDocType($prevExtension);
-        return $this->file_system_service->modifyTemplate($prevType, $prevTitle, $prevExtension, $title, $description);
+        $this->file_template_repository->update($file_template);
+        return true;
     }
 
     /**
@@ -218,115 +261,142 @@ class StorageService
      */
     public function fetchTemplates(FileCreationType $type): array
     {
-        return $this->file_system_service->fetchTemplates($type);
+        return $this->file_template_repository->readAll([$type]);
     }
 
-    public function fetchTemplate(string $target, string $extension): FileTemplate
+    public function fetchTemplate(int $template_id): ?FileTemplate
     {
-        $type = File::determineDocType($extension);
-        return $this->file_system_service->fetchTemplate($target, $extension, $type);
+        return $this->file_template_repository->read($template_id);
     }
 
     public function createClone(int $child_id, int $parent_id): void
     {
         // create new file
-        $uuid = $this->uuidFactory->uuid4();
-        $parent_file = $this->file_repository->getFile($parent_id);
-        if (is_null($parent_file)) {
+        $uuid = $this->uuid_factory->uuid4();
+        $parent_file = $this->file_repository->read($parent_id);
+        if (!$parent_file) {
             return;
         }
-        $this->file_repository->create($uuid, $child_id, $parent_file->getTitle(), $parent_file->getFileType(), $parent_file->getMimeType());
+
+        $this->file_repository->create(new File(
+            $child_id,
+            $uuid,
+            $parent_file->getTitle(),
+            $parent_file->getFileType(),
+            $parent_file->getMimeType()
+        ));
 
         // clone file versions
-        $parent_file_versions = $this->file_version_repository->getAllVersions($parent_file->getFileUuid());
-        foreach ($parent_file_versions as $version) {
-            $path = $this->file_system_service->storeVersionCopy($version, $uuid->toString(), $child_id);
-            $created_at = new ilDateTime(time(), IL_CAL_UNIX);
-            $this->file_version_repository->create(
+        $parent_file_versions = $this->file_version_repository->readAllByUuid($parent_file->getUuid());
+        foreach ($parent_file_versions as $file_version) {
+            $rid = $file_version->getRid() ? $this->file_system_service->copyFile($file_version->getRid()) : $file_version->getRid();
+            $this->file_version_repository->create(new FileVersion(
                 $uuid,
                 $this->dic->user()->getId(),
-                $created_at,
-                $path,
-                $version->getVersion()
-            );
+                new ilDateTime(time(), IL_CAL_UNIX),
+                $rid,
+                $file_version->getVersion()
+            ));
         }
 
         // clone file changes
-        $parent_changes = $this->file_change_repository->getAllChanges($parent_file->getUuid()->toString());
-        foreach ($parent_changes as $changes) {
-            $path = $this->file_system_service->storeChangeCopy($changes, $uuid->toString(), $child_id);
-            $this->file_change_repository->create(
+        $parent_changes = $this->file_change_repository->readAllByUuid($parent_file->getUuid());
+        foreach ($parent_changes as $file_change) {
+            $rid = $file_change->getRid() ? $this->file_system_service->copyFile($file_change->getRid()) : $file_change->getRid();
+
+            $this->file_change_repository->create(new FileChange(
                 $uuid,
-                $changes->getVersion(),
-                $changes->getChangesObjectString(),
-                $changes->getServerVersion(),
-                $path
-            );
+                $file_change->getVersion(),
+                $file_change->getChangesObjectString(),
+                $rid,
+                $file_change->getServerVersion(),
+            ));
         }
 
     }
 
-    public function deleteFile(int $file_id): void
+    public function delete(int $obj_id): void
     {
-        // remove physical structure
-        $this->file_system_service->deletePath($file_id);
-        $file = $this->file_repository->getFile($file_id);
-        if (is_null($file)) {
+        $file = $this->file_repository->read($obj_id);
+        if (!$file) {
             return;
         }
         $uuid = $file->getUuid();
 
-        // delete File entry
-        $query = 'DELETE FROM xono_file WHERE obj_id=' . $file_id . ';';
-        $this->dic->database()->query($query);
-
-        // delete FileVersion entries
-        $query = 'DELETE FROM xono_file_version WHERE file_uuid="' . $uuid->toString() . '";';
-        $this->dic->database()->query($query);
-
-        // delete FileChange entries
-        $query = 'DELETE FROM xono_file_change WHERE file_uuid="' . $uuid->toString() . '";';
-        $this->dic->database()->query($query);
-
-    }
-
-    public function getAllVersions(int $object_id): array
-    {
-        $file = $this->file_repository->getFile($object_id);
-        if (is_null($file)) {
-            return [];
+        foreach ($this->file_version_repository->readAllByUuid($uuid) as $file_version) {
+            if ($file_version->getRid()) {
+                $this->file_system_service->deleteFile($file_version->getRid());
+            }
         }
-        return $this->file_version_repository->getAllVersions($file->getFileUuid());
+
+        foreach ($this->file_change_repository->readAllByUuid($uuid) as $file_change) {
+            if ($file_change->getRid()) {
+                $this->file_system_service->deleteFile($file_change->getRid());
+            }
+        }
+
+        $this->file_repository->deleteById($obj_id);
+        $this->file_version_repository->deleteByFileUuid($uuid);
+        $this->file_change_repository->deleteByFileUuid($uuid);
     }
 
     /**
-     * @param string $uuid
+     * @return list<FileVersion>
+     */
+    public function getAllVersions(int $obj_id): array
+    {
+        $file = $this->file_repository->read($obj_id);
+        if (!$file) {
+            return [];
+        }
+        return $this->file_version_repository->readAllByUuid($file->getUuid());
+    }
+
+    /**
      * @return array<int, FileChange>
      */
-    public function getAllChanges(string $uuid): array
+    public function getAllChanges(Uuid $uuid): array
     {
-        return $this->file_change_repository->getAllChanges($uuid);
+        return $this->file_change_repository->readAllByUuid($uuid);
     }
 
-    public function getChangeUrl(string $uuid, int $version): string
+    public function getChangeUrl(FileVersion $file_version): ?string
     {
-        return $this->file_change_repository->getChange($uuid, $version)->getChangesUrl();
+        $file_change = $this->file_change_repository->readByUuid($file_version->getFileUuid(), $file_version->getVersion());
+        if (!$file_change) {
+            return null;
+        }
 
+        if (!$file_change->getRid()) {
+            return null;
+        }
+
+        return $this->getSource($file_change->getRid());
     }
 
-    public function getPreviousVersion(string $uuid, int $version): FileVersion
+    public function getSource(ResourceIdentification $rid): ?string
     {
-        return $this->file_version_repository->getPreviousVersion($uuid, $version);
+        return $this->file_system_service->getSource($rid);
+    }
+
+    public function getDownload(ResourceIdentification $rid): ?DownloadConsumer
+    {
+        return $this->file_system_service->getDownload($rid);
+    }
+
+    public function getPreviousVersion(Uuid $uuid, int $version): FileVersion
+    {
+        return $this->file_version_repository->readByUuid($uuid, $version - 1);
     }
 
     public function getFile(int $file_id): ?File
     {
-        return $this->file_repository->getFile($file_id);
+        return $this->file_repository->read($file_id);
     }
 
     public function getLatestVersion(Uuid $file_uuid): ?FileVersion
     {
-        return $this->file_version_repository->getLatestVersion($file_uuid);
+        return $this->file_version_repository->readLatestByUuid($file_uuid);
     }
 
     /**
@@ -335,28 +405,30 @@ class StorageService
      */
     public function deleteAll(): void
     {
-        $all_files = $this->file_repository->getAllFiles();
-        /** @var File $file */
-        foreach ($all_files as $file) {
-            $this->deleteFile($file->getObjId());
+        foreach ($this->file_repository->readAll() as $file) {
+            $this->delete($file->getObjId());
         }
-        FileAR::truncateDB();
-        FileVersionAR::truncateDB();
-        FileChangeAR::truncateDB();
+
+        foreach ($this->file_template_repository->readAll() as $file_template) {
+            $this->deleteFileTemplate($file_template);
+        }
     }
 
     /**
      * @throws ilDateTimeException
      */
-    private function createNewFile(Uuid $new_file_id, string $path): array
+    private function createNewFileVersion(Uuid $new_file_id, ResourceIdentification $rid): FileVersion
     {
         $created_at = new ilDateTime(time(), IL_CAL_UNIX);
-        $version = $this->file_version_repository->create(
+
+        $file_version = new FileVersion(
             $new_file_id,
             $this->dic->user()->getId(),
             $created_at,
-            $path
+            $rid
         );
+
+        $this->file_version_repository->create($file_version);
 
         // Create DB Entry for FileChange
         $changes = json_encode([
@@ -366,13 +438,14 @@ class StorageService
                 "name" => $this->dic->user()->getFullname()
             ]
         ], JSON_THROW_ON_ERROR);
-        $this->file_change_repository->create(
+        $this->file_change_repository->create(new FileChange(
             $new_file_id,
-            $version,
+            $file_version->getVersion(),
             $changes,
-            FileChangeRepository::DEFAULT_SERVER_VERSION,
-            $path
-        );
-        return [$created_at, $version];
+            $rid,
+            FileChange::DEFAULT_SERVER_VERSION
+        ));
+
+        return $file_version;
     }
 }

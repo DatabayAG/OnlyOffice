@@ -2,8 +2,14 @@ obj_xono#:#OnlyOffice
 obj_xono_duplicate#:#OnlyOffice kopieren
 objs_xono#:#OnlyOffices
 objs_xono_duplicate#:#OnlyOffices kopieren
+
 rbac_create_xono#:#OnlyOffice anlegen
+crs_create_xono#:#OnlyOffice anlegen
+fold_create_xono#:#OnlyOffice anlegen
+grp_create_xono#:#OnlyOffice anlegen
+
 xono_add#:#Hinzufügen
+xono_copy#:#OnlyOffice kopieren
 xono_delete#:#Löschen
 xono_edit_permission#:#Rechte bearbeiten
 xono_new#:#OnlyOffice anlegen
@@ -18,6 +24,8 @@ xono_date#:#Datum
 xono_editor#:#Erstellt von
 xono_download#:#Herunterladen
 xono_new_from_template#:#Von Template erstellen
+xono_rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
+
 create_from_template#:#Template
 create_from_template_info#:#Verwende Template aus der Plugin-Konfiguration
 filetype_word#:#Text
@@ -58,7 +66,6 @@ settings_start_time#:#Startzeit
 settings_end_time#:#Endzeit
 settings_time_greater_than#:#Die Startzeit des begrenzten Zeitraumes muss kleiner sein als die Endzeit. Bitte erneut versuchen.
 settings_file_mode_create_title_required#:#Ein Titel ist für den Modus <strong>%s</strong> erforderlich.
-rep_robj_xono_perm_editFile#:#Aktuellste Version in OnlyOffice bearbeiten
 form_input_file#:#Datei
 form_input_upload_file#:#Datei hochladen
 form_input_create_file#:#Neue Datei erstellen
@@ -105,3 +112,5 @@ settings_allow_edit_info#:#Alle Benutzer mit Leserecht dürfen die Datei auch be
 editor_edit_timeup#:#Der Bearbeitungszeitraum für das Dokument ist abgelaufen. Das Dokument befindet sich nun im Lesemodus.
 editor_edit_timewasup#:#Die aktuelle Zeit liegt ausserhalb des Bearbeitungszeitraumes für das Dokument. Das Dokument befindet sich nun im Lesemodus.
 editor_edit_period#:#Der Bearbeitungszeitraum für das Dokument ist %s.
+
+file.not_found#:#Datei nicht gefunden

@@ -20,356 +20,166 @@ declare(strict_types=1);
 
 namespace ILIAS\Plugin\OnlyOffice\StorageService\FileSystem;
 
+use Exception;
 use ILIAS\DI\Container;
-use ILIAS\Filesystem\Exception\FileNotFoundException;
-use ILIAS\Filesystem\Exception\IOException;
+use ILIAS\Filesystem\Filesystem;
 use ILIAS\Filesystem\Stream\Stream;
-use ILIAS\FileUpload\DTO\UploadResult;
-use ILIAS\FileUpload\Location;
-use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileTemplate;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileVersion;
 use ILIAS\Filesystem\Stream\Streams;
-use ILIAS\Plugin\OnlyOffice\StorageService\DTO\FileChange;
+use ILIAS\FileUpload\DTO\UploadResult;
+use ILIAS\FileUpload\FileUpload;
+use ILIAS\Plugin\OnlyOffice\Stakeholder\FileStakeholder;
+use ILIAS\ResourceStorage\Consumer\DownloadConsumer;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
+use ILIAS\ResourceStorage\Policy\FileNamePolicyException;
+use ILIAS\ResourceStorage\Resource\ResourceNotFoundException;
+use ILIAS\ResourceStorage\Services;
+use ilLogger;
 
 class FileSystemService
 {
-    public const BASE_PATH = '/only_office/';
-    public const BASE_TEMPLATE_PATH = '/only_office/templates/';
-    protected Container $dic;
+    private readonly Filesystem $web_file_system;
+    private readonly ilLogger $logger;
+    private readonly FileUpload $upload;
+    private readonly Services $resource_storage;
 
-    public function __construct(Container $dic)
+    public function __construct(private readonly Container $dic)
     {
-        $this->dic = $dic;
+        $this->upload = $this->dic->upload();
+        $this->web_file_system = $this->dic->filesystem()->web();
+        $this->resource_storage = $this->dic->resourceStorage();
+        $this->logger = $this->dic->logger()->root();
     }
 
-    /**
-     * @throws IOException
-     */
-    public function storeUploadResult(
-        UploadResult $upload_result,
-        int $obj_id,
-        string $file_id,
-        ?string $file_name = null
-    ): string {
-        if ($file_name === null) {
-            $file_name = (string) FileVersion::FIRST_VERSION;
+    public function createFileFromStream(Stream $stream): ?ResourceIdentification
+    {
+        try {
+            return $this->resource_storage->manage()->stream($stream, new FileStakeholder());
+        } catch (FileNamePolicyException $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to create file from stream. Ex.: %s",
+                $ex->getMessage()
+            ));
+            return null;
         }
-        $ext = pathinfo($upload_result->getName(), PATHINFO_EXTENSION);
-        $file_name .= '.' . $ext;
+    }
 
-        $path = $this->createAndGetPath($obj_id, $file_id);
-
-        $filesystem = $this->dic->filesystem()->web();
-        $path = rtrim($path, "/") . '/' . ($file_name === "" ? $upload_result->getName() : $file_name);
+    public function createFileFromUpload(UploadResult $upload_result): ?ResourceIdentification
+    {
         $stream = fopen($upload_result->getPath(), 'rb');
-        $filesystem->writeStream($path, new Stream($stream));
-        return $path;
-    }
-
-    public function storeNewVersionFromString(
-        string $content,
-        int $obj_id,
-        string $uuid,
-        int $version,
-        string $extension
-    ): string {
-        $path = $this->createAndGetPath($obj_id, $uuid) . $version . '.' . $extension;
-        $this->dic->logger()->root()->info('Storing as: ' . $path);
-        $stream = Streams::ofString($content);
-        $web = $this->dic->filesystem()->web();
-        $web->writeStream($path, $stream);
-        return $path;
-    }
-
-    /**
-     * Store a template from the config form
-     * @throws IOException
-     */
-    public function storeTemplate(UploadResult $upload_result, FileCreationType $type, string $title, string $description, string $extension): string
-    {
-        // Define path and create it if it does not exist
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
+        if (!is_resource($stream)) {
+            $this->logger->error("Error occurred trying to create file from upload. Upload could not be opened.");
+            return null;
         }
-
-        $file_name = $title . "." . $extension;
-        $full_path = $path . $file_name;
-
-        // delete the old template file if it already exists
-        if ($this->dic->filesystem()->web()->has($full_path)) {
-            $this->dic->filesystem()->web()->delete($full_path);
-        }
-
-        $this->dic->upload()->moveOneFileTo(
-            $upload_result,
-            $path,
-            Location::WEB,
-            $file_name
-        );
-
-        // Create a description in a separate folder, if available
-
-        $this->generateTemplateDescription($description, $type, $title);
-
-        return $full_path;
+        return $this->createFileFromStream(new Stream($stream));
     }
 
-    public function fetchTemplate(string $target, string $extension, FileCreationType $type): ?FileTemplate
+    public function createFileFromString(string $content): ?ResourceIdentification
     {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $file_name = $target . "." . $extension;
-        $full_path = $path . $file_name;
-
-        if ($this->dic->filesystem()->web()->has($full_path)) {
-            /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-            $extension = pathinfo($full_path, PATHINFO_EXTENSION);
-            $title = pathinfo($full_path, PATHINFO_FILENAME);
-
-            $template = new FileTemplate();
-            $template->setTitle($title);
-            $template->setType($type);
-            $template->setPath($full_path);
-            $template->setExtension($extension);
-
-            $description_path = $path . "descriptions/" . $title . ".txt";
-
-            try {
-                $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
-                $template->setDescription($description_stream->getContents());
-            } catch (FileNotFoundException) {
-                $template->setDescription("");
-            }
-
-            return $template;
-        }
-        return null;
+        return $this->createFileFromStream(Streams::ofString($content));
     }
 
-    public function fetchTemplates(FileCreationType $type): array
+    public function deleteFile(ResourceIdentification $rid): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $converted_files = [];
-
-        if ($this->dic->filesystem()->web()->hasDir($path)) {
-            $files = $this->dic->filesystem()->web()->listContents($path);
-
-            foreach ($files as $file) {
-                $file = $file->getPath();
-                $extension = pathinfo($file, PATHINFO_EXTENSION);
-
-                if (empty($extension)) {
-                    continue;
-                }
-
-                $title = pathinfo($file, PATHINFO_FILENAME);
-
-                $converted_file = new FileTemplate();
-                $converted_file->setTitle($title);
-                $converted_file->setType($type);
-                $converted_file->setPath($file);
-                $converted_file->setExtension($extension);
-
-                $description_path = $path . "descriptions/" . $title . ".txt";
-
-                try {
-                    $description_stream = $this->dic->filesystem()->web()->readStream($description_path);
-                    $converted_file->setDescription($description_stream->getContents());
-                } catch (FileNotFoundException $ex) {
-                    $converted_file->setDescription("");
-                }
-
-                $converted_files[] = $converted_file;
-            }
-        }
-
-        return $converted_files;
-    }
-
-    public function deleteTemplate(string $target, string $extension, FileCreationType $type): bool
-    {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $file_name = $target . "." . $extension;
-        $full_path = $path . $file_name;
-
-        if ($this->dic->filesystem()->web()->has($full_path)) {
-            // Delete template
-            $this->dic->filesystem()->web()->delete($full_path);
-            $this->deleteTemplateDescription($path, $target);
-
+        try {
+            $this->resource_storage->manage()->remove($rid, new FileStakeholder());
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Deleting file with rid '%s' failed because resource could not be found. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
             return true;
         }
-
-        return false;
+        return !$this->resource_storage->manage()->find($rid->serialize());
     }
 
-    public function modifyTemplate(FileCreationType $type, string $prevTitle, string $extension, string $title, string $description): bool
+    public function replaceFile(ResourceIdentification $rid, Stream $stream): bool
     {
-        $path = self::BASE_TEMPLATE_PATH . $type->value . "/";
-        $old_file_name = $prevTitle . "." . $extension;
-        $full_old_path = $path . $old_file_name;
-
-        $new_file_name = $title . "." . $extension;
-        $full_new_path = $path . $new_file_name;
-
-        if (
-            !empty($title)
-            && $this->dic->filesystem()->web()->has($full_old_path) && $full_old_path !== $full_new_path
-        ) {
-            $this->dic->filesystem()->web()->rename($full_old_path, $full_new_path);
+        try {
+            $revision = $this->resource_storage->manage()->replaceWithStream($rid, $stream, new FileStakeholder());
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Replacing file with rid '%s' failed because resource could not be found. Ex.: %s",
+                $rid,
+                $ex->getMessage()
+            ));
+            return false;
+        } catch (FileNamePolicyException|Exception $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to replace file with rid '%s'. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
+            return false;
         }
-
-        if (!empty($description)) {
-            $this->deleteTemplateDescription($path, $prevTitle);
-            $this->generateTemplateDescription($description, $type, $title);
-        }
-
-        return true;
+        return $revision->isAvailable();
     }
 
-    /**
-     * Store a draft
-     * @throws IOException
-     */
-    public function storeDraft(string $name, string $extension, int $obj_id, string $new_file_id): string
+    public function copyFile(ResourceIdentification $rid): ?ResourceIdentification
     {
-        $path = $this->createAndGetPath($obj_id, $new_file_id);
-
-        // Define path and create it if it does not exist
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
-        }
-        $file_name = $name . "." . $extension;
-        $path .= $file_name;
-
-        // delete the old draft file if it already exists
-        if ($this->dic->filesystem()->web()->has($path)) {
-            $this->dic->filesystem()->web()->delete($path);
-        }
-        // store the new draft file
-        $stream = Streams::ofString("");
-        $this->dic->filesystem()->web()->writeStream($path, $stream);
-        return $path;
-
-    }
-
-    /**
-     * Store a draft
-     * @throws IOException
-     */
-    public function createFileFromTemplate(string $new_title, string $template_path, int $obj_id, string $new_file_id): string
-    {
-        $extension = pathinfo($template_path, PATHINFO_EXTENSION);
-        $name = pathinfo($template_path, PATHINFO_FILENAME);
-
-        $path = $this->createAndGetPath($obj_id, $new_file_id);
-
-        // Define path and create it if it does not exist
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
-        }
-
-        $file_name = $new_title . "." . $extension;
-        $path .= $file_name;
-
-        $this->dic->filesystem()->web()->copy($template_path, $path);
-
-        return $path;
-    }
-
-    public function storeChanges(string $content, int $obj_id, string $uuid, int $version, string $extension): string
-    {
-        $path = $this->createAndGetPath($obj_id, $uuid, true) . $version . '.' . $extension;
-        $stream = Streams::ofString($content);
-        $web = $this->dic->filesystem()->web();
-        $web->writeStream($path, $stream);
-        return $path;
-    }
-
-    public function storeVersionCopy(FileVersion $parent_version, string $uuid, int $file_id): string
-    {
-        $parent_path = $parent_version->getUrl();
-        $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath(
-            $file_id,
-            $uuid
-            ) . $parent_version->getVersion() . '.' . $extension;
-        ;
-        $web = $this->dic->filesystem()->web();
-        $web->copy($parent_path, $child_path);
-        return $child_path;
-    }
-
-    public function storeChangeCopy(FileChange $parent_change, string $uuid, int $file_id): string
-    {
-        $parent_path = $parent_change->getChangesUrl();
-        $extension = pathinfo($parent_path, PATHINFO_EXTENSION);
-        $child_path = $this->createAndGetPath($file_id, $uuid, true) . $parent_change->getVersion() . '.' . $extension;
-        ;
-        $web = $this->dic->filesystem()->web();
-        $web->copy($parent_path, $child_path);
-        return $child_path;
-    }
-
-    public function deletePath(int $file_id): void
-    {
-        $path = self::BASE_PATH . $file_id;
-        $web = $this->dic->filesystem()->web();
-        $web->deleteDir($path);
-
-    }
-
-    /**
-     * @throws IOException
-     */
-    protected function createAndGetPath(int $file_id, string $uuid, bool $isChange = false): string
-    {
-        if (!$isChange) {
-            $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR;
-        } else {
-            $path = self::BASE_PATH . $file_id . DIRECTORY_SEPARATOR . $uuid . DIRECTORY_SEPARATOR . 'changes' . DIRECTORY_SEPARATOR;
-        }
-
-        if (!$this->dic->filesystem()->web()->hasDir($path)) {
-            $this->dic->filesystem()->web()->createDir($path);
-        }
-
-        return $path;
-    }
-
-    /**
-     * @throws IOException
-     */
-    private function generateTemplateDescription(string $description, FileCreationType $type, string $title): void
-    {
-        if (!empty($description)) {
-            $description_path = self::BASE_TEMPLATE_PATH . $type->value . "/descriptions/";
-
-            if (!$this->dic->filesystem()->web()->hasDir($description_path)) {
-                $this->dic->filesystem()->web()->createDir($description_path);
-            }
-
-            // Add file name to path
-            $description_path .= $title . ".txt";
-
-            $stream = Streams::ofString($description);
-            $this->dic->filesystem()->web()->writeStream($description_path, $stream);
+        try {
+            return $this->resource_storage->manage()->clone($rid);
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to copy file with rid '%s' because the resource was not found. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
+            return null;
         }
     }
 
-    /**
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    private function deleteTemplateDescription(string $path, string $target): void
+    public function getMimeType(ResourceIdentification $rid): string
     {
-        // Delete template description
-        $full_path_description = $path . "descriptions/" . $target . ".txt";
+        try {
+            $stream = $this->resource_storage->consume()->stream($rid);
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to determine mime_type of file with rid '%s' because the resource was not found. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
+            return "";
+        }
+        $resource = $stream->getStream()->detach();
+        /** @noinspection PhpComposerExtensionStubsInspection */
+        $mime_type = mime_content_type($resource);
+        fclose($resource);
+        return $mime_type;
+    }
 
-        if ($this->dic->filesystem()->web()->has($full_path_description)) {
-            $this->dic->filesystem()->web()->delete($full_path_description);
+    public function replaceFileWithUpload(ResourceIdentification $rid, UploadResult $upload_result): bool
+    {
+        $stream = fopen($upload_result->getPath(), 'rb');
+        return $this->replaceFile($rid, new Stream($stream));
+    }
+
+    public function getSource(ResourceIdentification $rid): ?string
+    {
+        try {
+            return $this->resource_storage->consume()->src($rid)->getSrc();
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to get source for file with rid '%s' because the resource was not found. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
+            return "";
+        }
+    }
+
+    public function getDownload(ResourceIdentification $rid): ?DownloadConsumer
+    {
+        try {
+            return $this->resource_storage->consume()->download($rid);
+        } catch (ResourceNotFoundException $ex) {
+            $this->logger->error(sprintf(
+                "Error occurred trying to get source for file with rid '%s' because the resource was not found. Ex.: %s",
+                $rid->serialize(),
+                $ex->getMessage()
+            ));
+
+            return null;
         }
     }
 }

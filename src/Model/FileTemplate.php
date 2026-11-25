@@ -18,26 +18,44 @@
 
 declare(strict_types=1);
 
-namespace ILIAS\Plugin\OnlyOffice\StorageService\DTO;
+namespace ILIAS\Plugin\OnlyOffice\Model;
 
 use ILIAS\Plugin\OnlyOffice\Enum\FileCreationType;
+use ILIAS\ResourceStorage\Identification\ResourceIdentification;
 
 class FileTemplate
 {
-    protected string $title;
-    protected string $description;
-    protected string $extension;
-    protected string $path;
-    protected FileCreationType $type;
+    private int $id;
+
+    public function __construct(
+        private string $title,
+        private string $description,
+        private string $extension,
+        private FileCreationType $type,
+        private readonly ResourceIdentification $rid,
+    ) {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
 
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(string $title): self
     {
         $this->title = $title;
+        return $this;
     }
 
     public function getDescription(): string
@@ -45,9 +63,10 @@ class FileTemplate
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(string $description): self
     {
         $this->description = $description;
+        return $this;
     }
 
     public function getExtension(): string
@@ -55,19 +74,10 @@ class FileTemplate
         return $this->extension;
     }
 
-    public function setExtension(string $extension): void
+    public function setExtension(string $extension): self
     {
         $this->extension = $extension;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    public function setPath(string $path): void
-    {
-        $this->path = $path;
+        return $this;
     }
 
     public function getType(): FileCreationType
@@ -75,9 +85,14 @@ class FileTemplate
         return $this->type;
     }
 
-    public function setType(FileCreationType $type): void
+    public function setType(FileCreationType $type): self
     {
         $this->type = $type;
+        return $this;
     }
 
+    public function getRid(): ResourceIdentification
+    {
+        return $this->rid;
+    }
 }

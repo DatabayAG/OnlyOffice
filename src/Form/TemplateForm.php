@@ -32,48 +32,36 @@ use ilTextInputGUI;
 
 class TemplateForm extends ilPropertyFormGUI
 {
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
     /**
      * @var Container|mixed
      */
-    private mixed $dic;
-    private WrapperFactory $httpWrapper;
+    private readonly mixed $dic;
+    private readonly WrapperFactory $http_wrapper;
 
-    public function __construct(bool $edit = false)
+    public function __construct(?int $template_id = null)
     {
         parent::__construct();
         global $DIC;
         $this->dic = $DIC;
         $this->plugin = ilOnlyOfficePlugin::getInstance();
-        $this->httpWrapper = $this->dic->http()->wrapper();
+        $this->http_wrapper = $this->dic->http()->wrapper();
 
         $this->setId("onlyoffice_template_form");
         $this->setTitle($this->plugin->txt("config_configuration"));
-        $this->setFormAction($this->ctrl->getFormActionByClass(
-            ilOnlyOfficeConfigGUI::class,
-            ilOnlyOfficeConfigGUI::CMD_CONFIGURE
-        ));
+
+
+
         $this->setTarget("_top");
 
-        $ooTarget = $this->httpWrapper->query()->retrieve(
-            "ootarget",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
+        if ($template_id) {
+            $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "template_id", $template_id);
+        }
 
-        $ooExtension = $this->httpWrapper->query()->retrieve(
-            "ooextension",
-            $this->refinery->byTrying([
-                $this->refinery->kindlyTo()->string(),
-                $this->refinery->always("")
-            ])
-        );
-
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevTitle", $ooTarget);
-        $this->ctrl->setParameterByClass(ilOnlyOfficeConfigGUI::class, "prevExtension", $ooExtension);
-        $this->setFormAction($this->ctrl->getFormActionByClass(ilOnlyOfficeConfigGUI::class));
+        $this->setFormAction($this->ctrl->getFormActionByClass(
+            ilOnlyOfficeConfigGUI::class,
+            ilOnlyOfficeConfigGUI::CMD_SHOW_TEMPLATES
+        ));
 
         // title
         $ti = new ilTextInputGUI($this->plugin->txt("config_table_title"), "title");
@@ -90,17 +78,17 @@ class TemplateForm extends ilPropertyFormGUI
 
         // file upload option
         $file_input = new ilFileInputGUI($this->plugin->txt("form_input_file"), "file");
-        $file_input->setRequired(!$edit);
+        $file_input->setRequired($template_id === null);
         $this->addItem($file_input);
 
-        if ($edit) {
+        if ($template_id) {
             $this->setTitle($this->plugin->txt("config_edit_template"));
             $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SAVE_EDIT_TEMPLATE, $this->plugin->txt("config_save"));
         } else {
             $this->setTitle($this->plugin->txt("config_create_template"));
-            $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_UPDATE_TEMPLATES, $this->plugin->txt("config_save"));
+            $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SAVE_TEMPLATE, $this->plugin->txt("config_save"));
         }
 
-        $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_TEMPLATES, $this->plugin->txt("settings_cancel"));
+        $this->addCommandButton(ilOnlyOfficeConfigGUI::CMD_SHOW_TEMPLATES, $this->plugin->txt("settings_cancel"));
     }
 }

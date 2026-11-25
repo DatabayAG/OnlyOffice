@@ -21,51 +21,51 @@ declare(strict_types=1);
 namespace ILIAS\Plugin\OnlyOffice\Form\Property;
 
 use DateTimeImmutable;
+use ILIAS\ILIASObject\Properties\Property;
 use ILIAS\Plugin\OnlyOffice\Form\ObjectSettingsForm;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\FormInput;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ilLanguage;
-use ilObjectProperty;
 use ilOnlyOfficePlugin;
 
-class AllowEditProperty implements ilObjectProperty
+class AllowEditProperty implements Property
 {
-    private ilOnlyOfficePlugin $plugin;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     public function __construct(
-        private readonly bool $allowEdit = true,
-        private readonly bool $limitedPeriod = false,
-        private readonly ?DateTimeImmutable $startTime = null,
-        private readonly ?DateTimeImmutable $endTime = null
+        private readonly bool $allow_edit = true,
+        private readonly bool $limited_period = false,
+        private readonly ?DateTimeImmutable $start_time = null,
+        private readonly ?DateTimeImmutable $end_time = null
     ) {
         $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function toForm(
         ilLanguage $language,
-        FieldFactory $fieldFactory,
+        FieldFactory $field_factory,
         Refinery $refinery
     ): FormInput {
         $trafo = $refinery->custom()->transformation(
-            function ($vs): ilObjectProperty {
-                $editLimited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
+            function ($vs): Property {
+                $edit_limited = $vs[ObjectSettingsForm::POST_VAR_EDIT][ObjectSettingsForm::POST_VAR_EDIT_LIMITED] ?? [];
                 return new AllowEditProperty(
                     isset($vs[ObjectSettingsForm::POST_VAR_EDIT]),
-                    $editLimited !== [],
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
-                    $editLimited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
+                    $edit_limited !== [],
+                    $edit_limited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START] ?? null,
+                    $edit_limited[ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END] ?? null
                 );
             }
         );
 
-        return $fieldFactory->optionalGroup([
-            ObjectSettingsForm::POST_VAR_EDIT => $fieldFactory->group([
-                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $fieldFactory->optionalGroup([
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $fieldFactory->dateTime(
+        return $field_factory->optionalGroup([
+            ObjectSettingsForm::POST_VAR_EDIT => $field_factory->group([
+                ObjectSettingsForm::POST_VAR_EDIT_LIMITED => $field_factory->optionalGroup([
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_START => $field_factory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_start')
                     )->withUseTime(true)->withRequired(true),
-                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $fieldFactory->dateTime(
+                    ObjectSettingsForm::POST_VAR_EDIT_LIMITED_END => $field_factory->dateTime(
                         $this->plugin->txt('settings_allow_edit_limited_end')
                     )->withUseTime(true)->withRequired(true)
                 ], $this->plugin->txt('settings_allow_edit_limited'))
@@ -89,21 +89,21 @@ class AllowEditProperty implements ilObjectProperty
 
     public function isAllowEdit(): bool
     {
-        return $this->allowEdit;
+        return $this->allow_edit;
     }
 
     public function isLimitedPeriod(): bool
     {
-        return $this->limitedPeriod;
+        return $this->limited_period;
     }
 
     public function getStartTime(): ?DateTimeImmutable
     {
-        return $this->startTime;
+        return $this->start_time;
     }
 
     public function getEndTime(): ?DateTimeImmutable
     {
-        return $this->endTime;
+        return $this->end_time;
     }
 }

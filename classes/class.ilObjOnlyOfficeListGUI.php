@@ -20,20 +20,10 @@ declare(strict_types=1);
 
 use ILIAS\DI\Container;
 use ILIAS\Plugin\OnlyOffice\Utils\DateFetcher;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 
 class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 {
-    public const PLUGIN_CLASS_NAME = ilOnlyOfficePlugin::class;
-
-    //protected $settings = false;
-    //protected $versions = true;
-    //protected $available = false;
-
-    private Container $dic;
+    private readonly Container $dic;
 
     public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
     {
@@ -74,7 +64,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
         $this->tags_enabled = false;
         $this->timings_enabled = true;
 
-        $commands = [
+        return [
             [
                 "permission" => "read",
                 "cmd" => ilObjOnlyOfficeGUI::getStartCmd(),
@@ -93,23 +83,16 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
                 "lang_var" => "versions"
             ],
         ];
-
-        return $commands;
     }
 
     public function getProperties(): array
     {
-        $storage = new StorageService(
-            $this->dic,
-            new ilDBFileVersionRepository(),
-            new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
-        );
-        $file = $storage->getFile($this->obj_id);
+        $storage_service = ilOnlyOfficePlugin::getInstance()->getStorageService();
+        $file = $storage_service->getFile($this->obj_id);
         if (is_null($file)) {
             return [];
         }
-        $last_version = $storage->getLatestVersion($file->getUuid());
+        $last_version = $storage_service->getLatestVersion($file->getUuid());
         $props = [];
 
         if (ilObjOnlyOfficeAccess::_isOffline($this->obj_id)) {
@@ -155,7 +138,7 @@ class ilObjOnlyOfficeListGUI extends ilObjectPluginListGUI
 
     public function initType(): void
     {
-        $this->setType(ilOnlyOfficePlugin::PLUGIN_ID);
+        $this->setType(ilOnlyOfficePlugin::ID);
     }
 
 }

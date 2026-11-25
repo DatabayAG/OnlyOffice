@@ -7,7 +7,8 @@
   ],
   "license": "GPL-3.0-only",
   "require": {
-    "php": "^8.2 || ^8.3",
+    "php": "^8.3 || ^8.4",
+    "ext-fileinfo": "*",
     "ramsey/uuid": "^4"
   },
   "autoload": {
@@ -21,12 +22,16 @@
   "config": {
     "classmap-authoritative": true,
     "optimize-autoloader": true,
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "captainhook/hook-installer": true
+    }
   },
   "require-dev": {
-    "roave/security-advisories": "dev-latest"
-    ,
     "captainhook/captainhook": "^5.24",
-    "friendsofphp/php-cs-fixer": "^3.66"
+    "captainhook/hook-installer": "^1.0",
+    "friendsofphp/php-cs-fixer": "^3.66",
+    "rector/rector": "^2.8",
+    "roave/security-advisories": "dev-latest"
   }
 }

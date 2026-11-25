@@ -37,11 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (config.editing.limited) {
       if (config.editing.startTime) {
-        config.editing.startTime = new Date(`${config.editing.startTime}Z`);
+        config.editing.startTime = new Date(config.editing.startTime * 1000);
       }
 
       if (config.editing.endTime) {
-        config.editing.endTime = new Date(`${config.editing.endTime}Z`);
+        config.editing.endTime = new Date(config.editing.endTime * 1000);
       }
     }
 
@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (config.editing.limited && config.editing.withinTimeLimit) {
       docEditor.showMessage(il.Language.txt("editor_edit_period"));
     }
+    checkEditingLimited();
   };
 
   const onRequestHistory = function(event) {
@@ -74,25 +75,35 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const onDocumentStateChange = function (event) {
+    checkEditingLimited();
+  };
+
+  const checkEditingLimited = () => {
     fetch('https://worldtimeapi.org/api/timezone/Etc/UTC')
       .then(response => response.json())
       .then(data => {
-        if (config.editing.limited) {
-          if (!(data.unixtime > config.editing.startTime.getTime() / 1000 && data.unixtime < config.editing.endTime.getTime() / 1000)) {
-            docEditor.denyEditingRights(il.Language.txt("editor_edit_timeup"));
-          }
+        if (isEditingLimited(new Date(data.unixtime * 1000))) {
+          docEditor.denyEditingRights(il.Language.txt("editor_edit_timeup"));
         }
       })
       .catch(error => {
         console.error('There has been a problem with your JavaScript time fetch operation, using local system time instead:', error);
-        if (config.editing.limited) {
-          const now = new Date();
-          if (!(now.getTime() > config.end.getTime() && now.getTime() < config.editing.endTime.getTime())) {
-            docEditor.denyEditingRights(il.Language.txt("editor_edit_timeup"));
-          }
+        if (isEditingLimited(new Date())) {
+          docEditor.denyEditingRights(il.Language.txt("editor_edit_timeup"));
         }
       });
-  };
+  }
+
+  const isEditingLimited = (date) => {
+    if (!config.editing.limited) {
+      return false;
+    }
+
+    return (
+      date.getTime() < config.editing.startTime.getTime()
+      || date.getTime() > config.editing.endTime.getTime()
+    );
+  }
 
 
   il.Util.addOnLoad(init);

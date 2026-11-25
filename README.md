@@ -6,19 +6,22 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
 
 | Component | Version(s)                                                                                    | Link                      |
 |-----------|-----------------------------------------------------------------------------------------------|---------------------------|
-| PHP       | ![](https://img.shields.io/badge/8.2-blue.svg) ![](https://img.shields.io/badge/8.3-blue.svg) | [PHP](https://php.net)    |
-| ILIAS     | ![](https://img.shields.io/badge/10-orange.svg)                                               | [ILIAS](https://ilias.de) |
+| PHP       | ![](https://img.shields.io/badge/8.3-blue.svg) ![](https://img.shields.io/badge/8.4-blue.svg) | [PHP](https://php.net)    |
+| ILIAS     | ![](https://img.shields.io/badge/11-orange.svg)                                               | [ILIAS](https://ilias.de) |
 
 ---
 
 <!-- TOC -->
 * [ILIAS Plugin OnlyOffice](#ilias-plugin-onlyoffice)
-  * [Requirements](#requirements)
-  * [Installation](#installation)
-    * [OnlyOffice docker container](#onlyoffice-docker-container)
-  * [Lucene Indexing](#lucene-indexing)
-  * [Troubleshooting](#troubleshooting)
-  * [License](#license)
+    * [Requirements](#requirements)
+    * [Installation](#installation)
+        * [Migration](#migration)
+            * [Files to IRSS migration](#files-to-irss-migration)
+            * [File templates to IRSS migration](#file-templates-to-irss-migration)
+        * [OnlyOffice docker container](#onlyoffice-docker-container)
+    * [Lucene Indexing](#lucene-indexing)
+    * [Troubleshooting](#troubleshooting)
+    * [License](#license)
 <!-- TOC -->
 
 ---
@@ -40,6 +43,35 @@ This plugin offers a way to connect an OnlyOffice document server to ILIAS. User
    drop-down.
 7. Choose **Activate** from the **Actions** dropdown.
 
+### Migration
+
+If updating from an existing installation migrations are required to move files from the web directory to the ILIAS Resource Storage (IRSS).
+
+**Important:** 
+> Make sure to run the migration scripts as the same user ILIAS is being run by (usually **www-data**), otherwise files will not be accessible once migrated.  
+> This also prevents issues with file accessing while migrating.
+
+#### Files to IRSS migration
+
+This migration will iterate over all existing db entries and attempt to move files to the IRSS and store the resource identification in a new db column **rid**.  
+Files are deleted from the original web dir after successful migration.
+
+```shell
+cd /var/www/<ilias installation path>
+sudo -u www-data php8.3 cli/setup.php migrate --run OnlyOffice.FileIrssMigration -y
+```
+
+#### File templates to IRSS migration
+
+This migration will iterate over all existing file template files in the web dir and move them to the IRSS.   
+Their resource identification is then stored in the new **xono_file_template** db table.   
+Files are deleted from the original web dir after successful migration
+
+```shell
+cd /var/www/<ilias installation path>
+sudo -u www-data php8.3 cli/setup.php migrate --run OnlyOffice.FileTemplateIrssMigration -y
+```
+
 ### OnlyOffice docker container
 
 See [docker-compose-ee.example.yml](doc/docker-compose-ee.example.yml) for an example.
@@ -54,10 +86,6 @@ Use `http://%onlyoffice_ip%` as `ONLYOFFICE root URL` in plugin configuration
 ## Lucene Indexing
 
 This plugin supports lucene indexing of the basic object data.
-
-Lucene indexing is broken for plugins since ILIAS 10.
-
-A Pr was created to fix this issue: https://github.com/ILIAS-eLearning/ILIAS/pull/11873
 
 ## Troubleshooting
 1. If the OnlyOffice window opens up but you can't access the file make sure that your webserver user has read and write access to the plugin folder and the data folder where the files are saved.

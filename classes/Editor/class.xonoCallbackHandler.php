@@ -19,10 +19,6 @@
 declare(strict_types=1);
 
 use ILIAS\DI\Container;
-use ILIAS\Plugin\OnlyOffice\StorageService\StorageService;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileVersionRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileRepository;
-use ILIAS\Plugin\OnlyOffice\StorageService\Infrastructure\File\ilDBFileChangeRepository;
 use ILIAS\Data\UUID\Uuid;
 use Matrix\Exception;
 use ILIAS\Data\UUID\Factory as UUIDFactory;
@@ -34,18 +30,15 @@ use ILIAS\Data\UUID\Factory as UUIDFactory;
 class xonoCallbackHandler
 {
     protected Container $dic;
-    protected StorageService $storage_service;
     protected string $file_data;
     protected Uuid $uuid;
-    protected int $file_id;
     protected int $editor_id;
-    protected string $file_extension;
     protected string $changes_object;
-    protected string $serverVersion;
+    protected string $server_version;
     protected string $change_data;
-    protected string $change_extension;
-    protected string $fileUrl;
-    protected string $changeUrl;
+    protected string $file_url;
+    protected string $change_url;
+    private readonly ilOnlyOfficePlugin $plugin;
 
     /**
      * @throws Exception if the data cannot be fetched
@@ -53,54 +46,37 @@ class xonoCallbackHandler
     public function __construct(
         Container $dic,
         string $uuid,
-        int $file_id,
+        protected int $file_id,
         array $data
     ) {
         $this->dic = $dic;
         $this->uuid = (new UUIDFactory())->fromString($uuid);
-        $this->file_id = $file_id;
 
-        $this->fileUrl = $data["url"];
+        $this->file_url = $data["url"];
         $this->editor_id = (int) $data["users"][0];
-        $this->serverVersion = $data["history"]["serverVersion"];
-        $this->changeUrl = $data["changesurl"];
+        $this->server_version = $data["history"]["serverVersion"];
+        $this->change_url = $data["changesurl"];
         $this->changes_object = json_encode($data["history"]["changes"], JSON_THROW_ON_ERROR);
-        $this->file_extension = pathinfo($this->fileUrl, PATHINFO_EXTENSION);
-        $this->change_extension = pathinfo($this->changeUrl, PATHINFO_EXTENSION);
         $this->fetchData();
         if (!$this->file_data || !$this->change_data) {
-            $this->dic->logger()->root()->error("Data could not be fetched - file data url:" . $this->fileUrl . " - change data url: " . $this->changeUrl);
+            $this->dic->logger()->root()->error("Data could not be fetched - file data url:" . $this->file_url . " - change data url: " . $this->change_url);
             throw new Exception("Data could not be fetched");
         }
 
-        $this->afterConstructor();
-
-    }
-
-    protected function afterConstructor(): void
-    {
-        $this->storage_service = new StorageService(
-            $this->dic,
-            new ilDBFileVersionRepository(),
-            new ilDBFileRepository(),
-            new ilDBFileChangeRepository()
-        );
+        $this->plugin = ilOnlyOfficePlugin::getInstance();
     }
 
     public function handleCallback(): bool
     {
         try {
             // Upload the new file
-            $this->storage_service->updateFileFromUpload(
+            $this->plugin->getStorageService()->updateFileFromUpload(
                 $this->file_data,
-                $this->file_id,
                 $this->uuid,
                 $this->editor_id,
-                $this->file_extension,
                 $this->changes_object,
-                $this->serverVersion,
+                $this->server_version,
                 $this->change_data,
-                $this->change_extension
             );
             return true;
         } catch (ilDateTimeException) {
@@ -110,7 +86,7 @@ class xonoCallbackHandler
 
     protected function fetchData(): void
     {
-        $this->file_data = file_get_contents($this->fileUrl);
-        $this->change_data = file_get_contents($this->changeUrl);
+        $this->file_data = file_get_contents($this->file_url);
+        $this->change_data = file_get_contents($this->change_url);
     }
 }
