@@ -22,10 +22,14 @@
   "config": {
     "classmap-authoritative": true,
     "optimize-autoloader": true,
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "captainhook/hook-installer": true
+    }
   },
   "require-dev": {
     "captainhook/captainhook": "^5.24",
+    "captainhook/hook-installer": "^1.0",
     "friendsofphp/php-cs-fixer": "^3.66",
     "rector/rector": "^2.8",
     "roave/security-advisories": "dev-latest"
